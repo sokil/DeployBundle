@@ -1,0 +1,17 @@
+{
+    "name": "sokil/deploy-bundle",
+    "description": "Symfony application deploy bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dmytro Sokil",
+            "email": "dmytro.sokil@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Sokil//DeployBundle//": "src/"
+        }
+    }
+}
