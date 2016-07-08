@@ -101,6 +101,9 @@ class DeployCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $environment = $input->getOption('env');
+        
+        // put env variable
+        putenv('SYMFONY_ENV', $environment);
 
         // deploy command features
         $requireGit = $input->getOption('git');
