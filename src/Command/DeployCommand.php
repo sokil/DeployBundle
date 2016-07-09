@@ -128,8 +128,6 @@ class DeployCommand extends ContainerAwareCommand
             || $requireClearCache
         );
 
-        $requirePerBundleTasks =  $requireBower || $requireNpm || $requireGrunt;
-
         if ($requireAll) {
             $requireGit = true;
             $requireComposer = true;
@@ -141,6 +139,8 @@ class DeployCommand extends ContainerAwareCommand
             $requireAssetsInstall = true;
             $requireClearCache = true;
         }
+
+        $requirePerBundleTasks =  $requireBower || $requireNpm || $requireGrunt;
 
         // git pull
         if ($requireGit) {
@@ -161,6 +161,11 @@ class DeployCommand extends ContainerAwareCommand
             if (!$success) {
                 return;
             }
+        }
+
+        // migrate doctrine entities
+        if ($requireMigrateDoctrine) {
+            $this->migrateDoctrine($output);
         }
 
         // per-bundle deploy
@@ -207,13 +212,6 @@ class DeployCommand extends ContainerAwareCommand
                     }
                 }
             }
-        }
-
-
-
-        // migrate doctrine entities
-        if ($requireMigrateDoctrine) {
-            $this->migrateDoctrine($output);
         }
 
         // dump assets
@@ -321,10 +319,26 @@ class DeployCommand extends ContainerAwareCommand
     {
         $output->writeln('<' . $this->h2Style . '>Updating source from Git repository</>');
 
+        // pull
         return $this->runShellCommand(
             'git pull ' . $remote . ' ' . $branch,
             function() use($output) {
                 $output->writeln('Source updated successfully');
+            },
+            function() use($output) {
+                $output->writeln('<error>Error updating source</error>');
+            },
+            $output
+        );
+
+        // add tag
+        $releaseTag = date('Y-m-d.H.i.s') . '-release';
+        $releaseMessage = $releaseTag;
+
+        return $this->runShellCommand(
+            'git tag -a ' . $releaseTag . ' -m ' . $releaseMessage,
+            function() use($output) {
+                $output->writeln('Release tagged');
             },
             function() use($output) {
                 $output->writeln('<error>Error updating source</error>');
