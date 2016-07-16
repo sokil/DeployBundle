@@ -8,7 +8,14 @@
             "email": "dmytro.sokil@gmail.com"
         }
     ],
-    "require": {},
+    "require": {
+        "symfony/framework-bundle": "~2.3",
+        "symfony/process": "~2.1|~3.0",
+        "symfony/console": "~2.0|~3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    },
     "autoload": {
         "psr-4": {
             "Sokil\\DeployBundle\\": "src/"

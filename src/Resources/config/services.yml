@@ -1,0 +1,19 @@
+parameters:
+
+services:
+  deploy.task_manager.resource_locator:
+    class: Sokil\DeployBundle\TaskManager\Resourcelocator
+    arguments:
+      - '@kernel'
+
+  deploy.task_manager:
+    class: Sokil\DeployBundle\TaskManager
+    arguments:
+      - '@deploy.task_manager.resource_locator'
+
+  deploy.task_manager.abstract_task.git:
+    class: Sokil\DeployBundle\Task\GitTask
+    abstract: true
+    public: false
+    tags:
+      - {name: "deploy.task", alias: "git"}
