@@ -8,10 +8,19 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command;
 
-class AssetInstallTask extends AbstractTask
+class AssetsInstallTask extends AbstractTask
 {
-    public function run()
+    public function getDescription()
     {
+        return 'Install bundle assets';
+    }
+
+    public function run(
+        callable $input,
+        callable $output,
+        $environment,
+        $verbosity
+    ) {
         $command = $this->getApplication()->find('assets:install');
         return $command->run(
             new ArrayInput(array(
@@ -19,17 +28,6 @@ class AssetInstallTask extends AbstractTask
                 '--env'    => $environment,
             )),
             $output
-        );
-    }
-
-    public function configureCommand(
-        Command $command
-    ) {
-        $command->addOption(
-            'assetsInstall',
-            null,
-            InputOption::VALUE_NONE,
-            'Install bundle assets'
         );
     }
 }

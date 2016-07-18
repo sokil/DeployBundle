@@ -34,10 +34,23 @@ class TaskDiscoveryCompilerPass implements CompilerPassInterface
 
                 // create task definition
                 $taskServiceId = 'deploy.task.' . $taskAlias;
-                $container
-                    ->setDefinition($taskServiceId, new DefinitionDecorator($abstractTaskServiceId))
+                $taskDefinition = new DefinitionDecorator($abstractTaskServiceId);
+                $taskDefinition
                     ->addArgument($taskAlias)
                     ->addArgument($tasksConfiguration[$taskAlias]);
+
+
+                if (!empty($taskServiceTagParameters['resourcesAware'])) {
+                    $taskDefinition->addMethodCall(
+                        'setResourceLocator',
+                        [
+                            new Resource('deploy.task_manager.resource_locator')
+                        ]
+                    );
+                }
+
+                // register definition
+                $container->setDefinition($taskServiceId, $taskDefinition);
 
                 // add task to task manager
                 $taskManagerDefinition->addMethodCall(

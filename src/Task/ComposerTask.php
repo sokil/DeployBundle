@@ -10,9 +10,18 @@ use Symfony\Component\Console\Command\Command;
 
 class ComposerTask extends AbstractTask
 {
-    public function run()
+    public function getDescription()
     {
-        $this->output->writeln('<' . $this->h2Style . '>Updating composer dependencies</>');
+        return 'Update composer dependencies';
+    }
+
+    public function run(
+        callable $input,
+        callable $output,
+        $environment,
+        $verbosity
+    ) {
+        $output->writeln('<' . $this->h2Style . '>Updating composer dependencies</>');
 
         $command = 'composer.phar update --optimize-autoloader --no-interaction';
 
@@ -21,7 +30,6 @@ class ComposerTask extends AbstractTask
         }
 
         // verbosity
-        $verbosity = $this->output->getVerbosity();
         switch ($verbosity) {
             case OutputInterface::VERBOSITY_VERBOSE:
                 $command .= ' -v';
@@ -36,24 +44,13 @@ class ComposerTask extends AbstractTask
 
         return $this->runShellCommand(
             $command,
-            function() {
-                $this->output->writeln('Composer dependencies updated successfully');
+            function() use ($output) {
+                $output->writeln('Composer dependencies updated successfully');
             },
-            function() {
-                $this->output->writeln('<error>Error updating composer dependencies</error>');
+            function() use ($output) {
+                $output->writeln('<error>Error updating composer dependencies</error>');
             },
-            $this->output
-        );
-    }
-
-    public function configureCommand(
-        Command $command
-    ) {
-        $command->addOption(
-            'composer',
-            null,
-            InputOption::VALUE_NONE,
-            'Update composer dependencies'
+            $output
         );
     }
 }

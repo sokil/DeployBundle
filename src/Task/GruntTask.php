@@ -3,44 +3,57 @@
 namespace Sokil\DeployBundle\Task;
 
 use Sokil\DeployBundle\TaskManager\AbstractTask;
-use Sokil\DeployBundle\TaskManager\BundleTaskInterface;
+use Sokil\DeployBundle\TaskManager\ResourceAwareInterface;
+use Sokil\DeployBundle\TaskManager\ResourceLocator;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command;
 
-class GruntTask extends AbstractTask implements BundleTaskInterface
+class GruntTask extends AbstractTask implements ResourceAwareInterface
 {
-    private $bundles;
+    /**
+     * @var ResourceLocator
+     */
+    private $resourceLocator;
 
-    public function setBundles(array $bundles)
+    public function setResourceLocator(ResourceLocator $locator)
     {
-        $this->bundles = $bundles;
+        $this->resourceLocator = $locator;
+        return $this;
     }
 
-    public function run()
-    {
-        // parse passed grunt tasks
-        $gruntTasks = $this->parseGruntTasks($input->getOption('grunt-task'));
+    public function run(
+        callable $input,
+        callable $output,
+        $environment,
+        $verbosity
+    ) {
+        // get allowed tasks
+        $tasks = $this->getOptions('tasks');
 
-        foreach ($this->bundles as $bundleName => $bundlePath) {
-            $bundleGruntTasks = !empty($gruntTasks[$bundleName]) ? $gruntTasks[$bundleName] : null;
+        // run task
+        foreach ($tasks as $bundleName => $taskList) {
+            // get bundle path
+            $bundlePath = $this->resourceLocator->locateResource('@' . $bundleName);
 
+            // find path to Gruntfile
             $gruntPath = $bundlePath . 'Gruntfile.js';
-
             if (!file_exists($gruntPath)) {
                 return true;
             }
 
             $output->writeln('<' . $this->h2Style . '>Execute grunt tasks from ' . $gruntPath . '</>');
 
+            // prepate command
             $command = 'cd ' . $bundlePath . '; grunt --env=' . $environment;
 
-            if ($tasks) {
-                $command .= ' ' . $tasks;
+            // configure grunt tasks
+            if (is_string($taskList)) {
+                $command .= ' ' . $taskList;
             }
 
-            return $this->runShellCommand(
+            $isSuccessfull = $this->runShellCommand(
                 $command,
                 function() use ($output) {
                     $output->writeln('Grunt tasks executed successfully');
@@ -50,50 +63,10 @@ class GruntTask extends AbstractTask implements BundleTaskInterface
                 },
                 $output
             );
-        }
-    }
 
-    /**
-     * Parse grunt tasks configuration obtainer from console input
-     * @param $gruntTasksString config in format "BundleName:grunt tasks delimited by whitespace;OtherBundleName:..."
-     * @return array
-     */
-    private function parseGruntTasks($gruntTasksString)
-    {
-        $tasks = [];
-
-        if (!$gruntTasksString) {
-            return [];
-        }
-
-        foreach (explode(';', $gruntTasksString) as $bundleGruntTasksString) {
-            $bundleGruntTasksArray = array_map('trim', explode(':', $bundleGruntTasksString));
-            if (count($bundleGruntTasksArray) != 2) {
-                continue;
+            if (!$isSuccessfull) {
+                throw new TaskExecuteException('Error updating bower dependencies for bundle ' . $bundleName);
             }
-
-            list($bundleName, $bundleTasks) = $bundleGruntTasksArray;
-            $tasks[$bundleName] = $bundleTasks;
         }
-
-        return $tasks;
-    }
-
-    public function configureCommand(
-        Command $command
-    ) {
-        $command
-            ->addOption(
-                'grunt',
-                null,
-                InputOption::VALUE_NONE,
-                'Executing grunt tasks'
-            )
-            ->addOption(
-                'grunt-task',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'List of grunt tasks'
-            );
     }
 }

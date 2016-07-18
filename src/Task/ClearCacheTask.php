@@ -10,19 +10,24 @@ use Symfony\Component\Console\Command\Command;
 
 class ClearCacheTask extends AbstractTask
 {
-    public function configureCommand(
-        Command $command
-    ) {
-        $command->addOption(
-            'clearCache',
-            null,
-            InputOption::VALUE_NONE,
-            'ClearCache'
-        );
+    public function getDescription()
+    {
+        return 'Clear cache';
     }
 
-    public function run()
-    {
-
+    public function run(
+        callable $input,
+        callable $output,
+        $environment,
+        $verbosity
+    ) {
+        $command = $this->getApplication()->find('cache:clear');
+        return $command->run(
+            new ArrayInput(array(
+                'command'  => 'cache:clear',
+                '--env'    => $environment,
+            )),
+            $output
+        );
     }
 }

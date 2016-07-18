@@ -15,8 +15,6 @@ abstract class AbstractTask
     protected $h1Style = 'fg=black;bg=cyan';
     protected $h2Style = 'fg=black;bg=yellow';
 
-    protected $stopDeployOnError = true;
-
     /**
      * @var InputInterface
      */
@@ -50,15 +48,19 @@ abstract class AbstractTask
         return 'Description not specified';
     }
 
-    public function configureCommand(
-        Command $command
-    ) {
-
+    /**
+     * @return array command options with parameters
+     */
+    public function getCommandOptions()
+    {
+        return [];
     }
 
     abstract public function run(
-        InputInterface $input,
-        OutputInterface $output
+        callable $input,
+        callable $output,
+        $environment,
+        $verbosity
     );
 
     /**
@@ -137,18 +139,29 @@ abstract class AbstractTask
         return true;
     }
 
+    /**
+     * @return string
+     */
     public function getAlias()
     {
         return $this->alias;
     }
 
+    /**
+     * @return array
+     */
     public function getOptions()
     {
         return $this->options;
     }
 
-    public function isStopDeployOnError()
+    /**
+     * @param string $name
+     * @param mixed|null $default
+     * @return mixed|null
+     */
+    public function getOption($name, $default = null)
     {
-        return $this->stopDeployOnError;
+        return isset($this->options[$name]) ? $this->options[$name] : $default;
     }
 }

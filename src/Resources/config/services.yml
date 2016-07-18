@@ -11,9 +11,65 @@ services:
     arguments:
       - '@deploy.task_manager.resource_locator'
 
+  deploy.task_manager.abstract_task.asseticdump:
+    class: Sokil\DeployBundle\Task\AsseticDumpTask
+    abstract: true
+    public: false
+    tags:
+      - {name: "deploy.task", alias: "asseticDump"}
+
+  deploy.task_manager.abstract_task.assetsinstall:
+    class: Sokil\DeployBundle\Task\AssetsInstallTask
+    abstract: true
+    public: false
+    tags:
+      - {name: "deploy.task", alias: "assetsInstall"}
+
+  deploy.task_manager.abstract_task.bower:
+    class: Sokil\DeployBundle\Task\BowerTask
+    abstract: true
+    public: false
+    tags:
+      - {name: "deploy.task", alias: "bower"}
+
+  deploy.task_manager.abstract_task.clearcache:
+    class: Sokil\DeployBundle\Task\ClearCacheTask
+    abstract: true
+    public: false
+    tags:
+      - {name: "deploy.task", alias: "clearCache"}
+
+  deploy.task_manager.abstract_task.composer:
+    class: Sokil\DeployBundle\Task\ComposerTask
+    abstract: true
+    public: false
+    tags:
+      - {name: "deploy.task", alias: "composer"}
+
   deploy.task_manager.abstract_task.git:
     class: Sokil\DeployBundle\Task\GitTask
     abstract: true
     public: false
     tags:
       - {name: "deploy.task", alias: "git"}
+
+  deploy.task_manager.abstract_task.grunt:
+    class: Sokil\DeployBundle\Task\GruntTask
+    abstract: true
+    public: false
+    tags:
+      - {name: "deploy.task", alias: "grunt"}
+
+  deploy.task_manager.abstract_task.migrate:
+    class: Sokil\DeployBundle\Task\MigrateTask
+    abstract: true
+    public: false
+    tags:
+      - {name: "deploy.task", alias: "migrate"}
+
+  deploy.task_manager.abstract_task.npm:
+    class: Sokil\DeployBundle\Task\NpmTask
+    abstract: true
+    public: false
+    tags:
+      - {name: "deploy.task", alias: "npm"}

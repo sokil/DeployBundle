@@ -2,10 +2,9 @@
 
 namespace Sokil\DeployBundle;
 
-use Sokil\DeployBundle\TaskManager\BundleTaskInterface;
-use Sokil\DeployBundle\TaskManager\ResourceLocator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Sokil\DeployBundle\TaskManager\AbstractTask;
 use Sokil\DeployBundle\Exception\TaskNotFoundException;
@@ -15,53 +14,56 @@ class TaskManager
     /**
      * @var array<AbstractTask>
      */
-    private $tasks;
-
-    /**
-     * @var ResourceLocator
-     */
-    private $resourceLocator;
-
-    public function __construct(ResourceLocator $resourceLocator)
-    {
-        $this->resourceLocator = $resourceLocator;
-    }
+    private $tasks = [];
 
     public function configureCommand(Command $command)
     {
         /* @var AbstractTask $task */
         foreach ($this->tasks as $task) {
 
+            $alias = $task->getAlias();
+
             // configure command parameter to launch task
             $command->addOption(
-                $task->getAlias(),
+                $alias,
                 null,
                 InputOption::VALUE_NONE,
                 $task->getDescription()
             );
 
             // configure command other parameters
-            $task->configureCommand($command);
+            foreach ($task->getCommandOptions() as $optionName => $optionParams) {
+                $description = !empty($optionParams['description']) ? $optionParams['description'] : null;
+                $command->addOption(
+                    $alias . '-' . $optionName,
+                    null,
+                    InputOption::VALUE_OPTIONAL,
+                    $description
+                );
+            }
         }
     }
 
     public function addTask(AbstractTask $task)
     {
-        if ($task instanceof BundleTaskInterface) {
-            $bundleNameList = [];
-            $task->setBundles($this->getBundlePathList($bundleNameList));
-        }
-
         $this->tasks[$task->getAlias()] = $task;
 
         return $this;
     }
 
+    /**
+     * @return array<AbstractTask>
+     */
     public function getTasks()
     {
         return $this->tasks;
     }
 
+    /**
+     * @param string $alias
+     * @return AbstractTask
+     * @throws TaskNotFoundException
+     */
     public function getTask($alias)
     {
         if (!isset($this->tasks[$alias])) {
@@ -69,22 +71,6 @@ class TaskManager
         }
 
         return $this->tasks[$alias];
-    }
-
-    /**
-     * Get pathes to bundles by list of bundle names
-     * @param array $bundleNameList
-     * @return array
-     */
-    private function getBundlePathList(array $bundleNameList)
-    {
-        $bundlePathList = [];
-        foreach ($bundleNameList as $bundleName) {
-            $bundlePath = $this->resourceLocator->locateResource('@' . $bundleName);
-            $bundlePathList[$bundleName] = $bundlePath;
-        }
-
-        return $bundlePathList;
     }
 
     public function execute(
@@ -102,7 +88,19 @@ class TaskManager
                 continue;
             }
 
-            $task->run($input, $output);
+            $environment = $input->getOption('env');
+            $verbosity = $output->getVerbosity();
+
+            $task->run(
+                function ($optionName) use ($input) {
+                    return $input->getOption($optionName);
+                },
+                function ($optionName) use ($output) {
+                    return $output->getOption($optionName);
+                },
+                $environment,
+                $verbosity
+            );
         }
     }
 }

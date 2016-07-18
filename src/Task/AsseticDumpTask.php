@@ -10,8 +10,17 @@ use Symfony\Component\Console\Command\Command;
 
 class AsseticDumpTask extends AbstractTask
 {
-    public function run()
+    public function getDescription()
     {
+        return 'Dump assetic assets';
+    }
+
+    public function run(
+        callable $input,
+        callable $output,
+        $environment,
+        $verbosity
+    ) {
         $command = $this->getApplication()->find('assetic:dump');
         return $command->run(
             new ArrayInput(array(
@@ -19,17 +28,6 @@ class AsseticDumpTask extends AbstractTask
                 '--env'    => $environment,
             )),
             $output
-        );
-    }
-
-    public function configureCommand(
-        Command $command
-    ) {
-        $command->addOption(
-            'asseticDump',
-            null,
-            InputOption::VALUE_NONE,
-            'Dump assetic assets'
         );
     }
 }
