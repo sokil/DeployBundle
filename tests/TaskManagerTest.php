@@ -22,6 +22,22 @@ class TaskManagerTest extends AbstractTestCase
         );
     }
 
+    /**
+     * @expectedException \Sokil\DeployBundle\Exception\TaskNotFoundException
+     * @expectedExceptionMessage Task with alias "someUnexistedTask" not found
+     */
+    public function testGetNotExistedTask()
+    {
+        $taskManager = new TaskManager();
+
+        $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
+
+        $command = new Command('SomeCommand');
+        $taskManager->configureCommand($command);
+
+        $taskManager->getTask('someUnexistedTask');
+    }
+
     public function testGetTasks()
     {
         $taskManager = new TaskManager();
