@@ -22,6 +22,23 @@ class TaskManagerTest extends AbstractTestCase
         );
     }
 
+    public function testGetTasks()
+    {
+        $taskManager = new TaskManager();
+
+        $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
+
+        $command = new Command('SomeCommand');
+        $taskManager->configureCommand($command);
+
+        $tasks = $taskManager->getTasks();
+
+        $this->assertEquals(
+            'myCustomTask',
+            $tasks['myCustomTask']->getAlias()
+        );
+    }
+
     public function testConfigureCommand_NoTasks()
     {
         $taskManager = new TaskManager();
@@ -114,8 +131,8 @@ class TaskManagerTest extends AbstractTestCase
             ->expects($this->once())
             ->method('run')
             ->with(
-                $this->anything(),
-                $this->anything(),
+                $this->isType('callable'),
+                $this->isType('callable'),
                 $this->equalTo('dev'),
                 $this->equalTo(OutputInterface::VERBOSITY_NORMAL)
             );
@@ -126,8 +143,8 @@ class TaskManagerTest extends AbstractTestCase
             ->expects($this->once())
             ->method('run')
             ->with(
-                $this->anything(),
-                $this->anything(),
+                $this->isType('callable'),
+                $this->isType('callable'),
                 $this->equalTo('dev'),
                 $this->equalTo(OutputInterface::VERBOSITY_NORMAL)
             );
