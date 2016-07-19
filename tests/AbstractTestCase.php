@@ -3,12 +3,14 @@
 namespace Sokil\DeployBundle;
 
 use Sokil\DeployBundle\TaskManager\AbstractTask;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @return ResourceLocator
+     * @return ResourceLocator|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createResourceLocator()
     {
@@ -100,7 +102,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $taskAlias name of task
-     * @return AbstractTask
+     * @return AbstractTask|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createSimpleTask($taskAlias = 'simpleTask')
     {
@@ -131,7 +133,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $taskAlias name of task
-     * @return AbstractTask
+     * @return AbstractTask|\PHPUnit_Framework_MockObject_MockObject
      */
     public function createSimpleTaskWithoutAdditionalCommandOptions($taskAlias = 'simpleTask')
     {
@@ -147,7 +149,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return AbstractTask
+     * @return AbstractTask|\PHPUnit_Framework_MockObject_MockObject
      */
     public function createSimpleTaskWithAdditionalCommandOptions($taskAlias = 'simpleTask')
     {
@@ -167,5 +169,21 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
             ]));
 
         return $task;
+    }
+
+    /**
+     * @return InputInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    public function createInput()
+    {
+        return $this->getMock('Symfony\Component\Console\Input\InputInterface');
+    }
+
+    /**
+     * @return OutputInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    public function createOutput()
+    {
+        return $this->getMock('Symfony\Component\Console\Output\OutputInterface');
     }
 }

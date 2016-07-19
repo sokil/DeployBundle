@@ -72,4 +72,53 @@ class TaskManagerTest extends AbstractTestCase
             $command->getDefinition()->getOption('myCustomTask-optionName2')->getName()
         );
     }
+
+    public function testExecute()
+    {
+        // mock input
+        $input = $this->createInput();
+
+        $input
+            ->expects($this->any())
+            ->method('getOptions')
+            ->will($this->returnValue([
+                'task1' => true,
+                'task2' => true,
+                'env' => 'dev',
+            ]));
+
+        $input
+            ->expects($this->any())
+            ->method('getOption')
+            ->will($this->returnValueMap([
+                ['task1', true],
+                ['task2', true],
+                ['env', 'dev'],
+            ]));
+
+        // mock output
+        $output = $this->createOutput();
+
+        // create task manager
+        $taskManager = new TaskManager();
+
+        // add tasks
+        $task1 = $this->createSimpleTaskWithoutAdditionalCommandOptions('task1');
+        $task1
+            ->expects($this->once())
+            ->method('run');
+        $taskManager->addTask($task1);
+
+        $task2 = $this->createSimpleTaskWithoutAdditionalCommandOptions('task2');
+        $task2
+            ->expects($this->once())
+            ->method('run');
+        $taskManager->addTask($task2);
+
+        // execute tasks
+        $taskManager->execute(
+            $input,
+            $output
+        );
+    }
 }
