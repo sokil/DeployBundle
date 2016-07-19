@@ -6,8 +6,9 @@ use Sokil\DeployBundle\TaskManager\AbstractTask;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use PHPUnit\Framework\TestCase;
 
-abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
+abstract class AbstractTestCase extends TestCase
 {
     /**
      * @return ResourceLocator|\PHPUnit_Framework_MockObject_MockObject
@@ -176,7 +177,9 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     public function createInput()
     {
-        return $this->getMock('Symfony\Component\Console\Input\InputInterface');
+        return $this
+            ->getMockBuilder('Symfony\Component\Console\Input\InputInterface')
+            ->getMock();
     }
 
     /**
@@ -184,6 +187,8 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     public function createOutput()
     {
-        return $this->getMock('Symfony\Component\Console\Output\OutputInterface');
+        return $this
+            ->getMockBuilder('Symfony\Component\Console\Output\OutputInterface')
+            ->getMock();
     }
 }

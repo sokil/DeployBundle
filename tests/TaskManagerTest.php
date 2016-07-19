@@ -3,6 +3,7 @@
 namespace Sokil\DeployBundle;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class TaskManagerTest extends AbstractTestCase
 {
@@ -99,6 +100,11 @@ class TaskManagerTest extends AbstractTestCase
         // mock output
         $output = $this->createOutput();
 
+        $output
+            ->expects($this->any())
+            ->method('getVerbosity')
+            ->will($this->returnValue(OutputInterface::VERBOSITY_NORMAL));
+
         // create task manager
         $taskManager = new TaskManager();
 
@@ -106,13 +112,25 @@ class TaskManagerTest extends AbstractTestCase
         $task1 = $this->createSimpleTaskWithoutAdditionalCommandOptions('task1');
         $task1
             ->expects($this->once())
-            ->method('run');
+            ->method('run')
+            ->with(
+                $this->anything(),
+                $this->anything(),
+                $this->equalTo('dev'),
+                $this->equalTo(OutputInterface::VERBOSITY_NORMAL)
+            );
         $taskManager->addTask($task1);
 
         $task2 = $this->createSimpleTaskWithoutAdditionalCommandOptions('task2');
         $task2
             ->expects($this->once())
-            ->method('run');
+            ->method('run')
+            ->with(
+                $this->anything(),
+                $this->anything(),
+                $this->equalTo('dev'),
+                $this->equalTo(OutputInterface::VERBOSITY_NORMAL)
+            );
         $taskManager->addTask($task2);
 
         // execute tasks
