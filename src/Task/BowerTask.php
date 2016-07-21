@@ -4,14 +4,14 @@ namespace Sokil\DeployBundle\Task;
 
 use Sokil\DeployBundle\Exception\InvalidTaskConfigurationException;
 use Sokil\DeployBundle\TaskManager\AbstractTask;
-use Sokil\DeployBundle\TaskManager\ResourceAwareInterface;
+use Sokil\DeployBundle\TaskManager\ResourceAwareTaskInterface;
 use Sokil\DeployBundle\TaskManager\ResourceLocator;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command;
 
-class BowerTask extends AbstractTask  implements ResourceAwareInterface
+class BowerTask extends AbstractTask  implements ResourceAwareTaskInterface
 {
     public function getDescription()
     {

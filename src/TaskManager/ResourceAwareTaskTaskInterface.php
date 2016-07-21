@@ -2,7 +2,7 @@
 
 namespace Sokil\DeployBundle\TaskManager;
 
-interface ResourceAwareInterface
+interface ResourceAwareTaskInterface extends TaskInterface
 {
     public function setResourceLocator(ResourceLocator $locator);
 }

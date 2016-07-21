@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-abstract class AbstractTask
+abstract class AbstractTask implements TaskInterface
 {
     const WAIT_PROCESS_EXIT_DELAY = 100000;
 

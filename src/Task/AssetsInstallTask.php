@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command;
 
-class AssetsInstallTask extends AbstractTask
+class AssetsInstallTask implements TaskInterface
 {
     public function getDescription()
     {
