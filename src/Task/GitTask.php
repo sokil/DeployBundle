@@ -3,6 +3,8 @@
 namespace Sokil\DeployBundle\Task;
 
 use Sokil\DeployBundle\Exception\InvalidTaskConfigurationException;
+use Sokil\DeployBundle\Exception\TaskConfigurationValidateException;
+use Sokil\DeployBundle\Exception\TaskExecuteException;
 use Sokil\DeployBundle\TaskManager\AbstractTask;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,23 +23,26 @@ class GitTask extends AbstractTask
     }
 
     public function run(
-        callable $input,
-        callable $output,
+        array $commandOptions,
         $environment,
-        $verbosity
+        $verbosity,
+        OutputInterface $output
     ) {
-        $this->output->writeln('<' . $this->h2Style . '>Updating source from Git repository</>');
+        $output->writeln('<' . $this->h2Style . '>Updating source from Git repository</>');
 
         foreach ($this->getReposConfig() as $repoName => $repoParams) {
             // pull
             $isSuccessfull = $this->runShellCommand(
                 'cd ' . $repoParams['path'] . '; git pull ' . $repoParams['remote'] . ' ' . $repoParams['branch'],
+                $environment,
+                $verbosity,
                 function($input, $output) {
                     $output->writeln('Source updated successfully');
                 },
                 function($input, $output) {
                     $output->writeln('<error>Error updating source</error>');
-                }
+                },
+                $output
             );
 
 
@@ -52,6 +57,8 @@ class GitTask extends AbstractTask
 
                 $isSuccessfull = $this->runShellCommand(
                     'git tag -a ' . $releaseTag . ' -m ' . $releaseMessage,
+                    $environment,
+                    $verbosity,
                     function() use ($output) {
                         $output->writeln('Release tagged');
                     },
@@ -68,7 +75,7 @@ class GitTask extends AbstractTask
         }
     }
 
-    private function buildReleaseTag($tagPattern)
+    protected function buildReleaseTag($tagPattern)
     {
         $date = date('Y-m-d.H.i.s');
 
@@ -95,11 +102,11 @@ class GitTask extends AbstractTask
      */
     private function getReposConfig()
     {
-        $defaultRemote = $this->getOptions('defaultRemote', self::DEFAULT_REMOTE_NAME);
-        $defaultBranch = $this->getOptions('defaultBranch', self::DEFAULT_BRANCH_NAME);
+        $defaultRemote = $this->getOption('defaultRemote', self::DEFAULT_REMOTE_NAME);
+        $defaultBranch = $this->getOption('defaultBranch', self::DEFAULT_BRANCH_NAME);
 
         // prepare repos config
-        $repoConfigList = $this->getOptions('repos');
+        $repoConfigList = $this->getOption('repos');
         if (!$repoConfigList) {
             throw new TaskConfigurationValidateException('No repos found in configuration');
         }

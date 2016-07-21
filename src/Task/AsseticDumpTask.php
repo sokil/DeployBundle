@@ -16,10 +16,10 @@ class AsseticDumpTask extends AbstractTask
     }
 
     public function run(
-        callable $input,
-        callable $output,
+        array $commandOptions,
         $environment,
-        $verbosity
+        $verbosity,
+        OutputInterface $output
     ) {
         $command = $this->getApplication()->find('assetic:dump');
         return $command->run(

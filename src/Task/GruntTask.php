@@ -24,10 +24,10 @@ class GruntTask extends AbstractTask implements ResourceAwareInterface
     }
 
     public function run(
-        callable $input,
-        callable $output,
+        array $commandOptions,
         $environment,
-        $verbosity
+        $verbosity,
+        OutputInterface $output
     ) {
         // get allowed tasks
         $tasks = $this->getOptions('tasks');

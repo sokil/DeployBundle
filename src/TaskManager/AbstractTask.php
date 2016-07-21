@@ -56,32 +56,38 @@ abstract class AbstractTask
         return [];
     }
 
+    /**
+     * @param array $commandOptions
+     * @param $environment
+     * @param $verbosity
+     * @param callable $outputWriter
+     * @return mixed
+     */
     abstract public function run(
-        callable $input,
-        callable $output,
+        array $commandOptions,
         $environment,
-        $verbosity
+        $verbosity,
+        OutputInterface $output
     );
 
     /**
-     * @param $command shell command to execute
+     * @param string $command shell command to execute
+     * @param string $environment
+     * @param string $verbosity
      * @param callable $doneCallback
      * @param callable $failCallback
-     * @param InputInterface $input
      * @param OutputInterface $output
      *
      * @return bool status of command execution
      */
     protected function runShellCommand(
         $command,
+        $environment,
+        $verbosity,
         callable $doneCallback,
         callable $failCallback,
-        InputInterface $input,
         OutputInterface $output
     ) {
-        $verbosity = $output->getVerbosity();
-        $environment = $input->getOption('env');
-
         // show command in debug mode
         if ($verbosity >= OutputInterface::VERBOSITY_VERBOSE) {
             $output->writeln('<info>Command: </info>' . $command);
@@ -122,7 +128,6 @@ abstract class AbstractTask
             // fail callback
             call_user_func(
                 $failCallback,
-                $input,
                 $output
             );
 
@@ -132,7 +137,6 @@ abstract class AbstractTask
         // done callback
         call_user_func(
             $doneCallback,
-            $input,
             $output
         );
 

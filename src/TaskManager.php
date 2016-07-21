@@ -34,11 +34,13 @@ class TaskManager
             // configure command other parameters
             foreach ($task->getCommandOptions() as $optionName => $optionParams) {
                 $description = !empty($optionParams['description']) ? $optionParams['description'] : null;
+                $defaultValue = !empty($optionParams['default']) ? $optionParams['default'] : null;
                 $command->addOption(
                     $alias . '-' . $optionName,
                     null,
                     InputOption::VALUE_OPTIONAL,
-                    $description
+                    $description,
+                    $defaultValue
                 );
             }
         }
@@ -91,15 +93,18 @@ class TaskManager
             $environment = $input->getOption('env');
             $verbosity = $output->getVerbosity();
 
+            // get additional options
+            $commandOptions = [];
+            foreach ($task->getCommandOptions() as $commandOptionName => $commandOption) {
+                $commandOptions[$commandOptionName] = $input->getOption($taskAlias . '-' . $commandOptionName);
+            }
+
+            // run task
             $task->run(
-                function ($optionName) use ($input) {
-                    return $input->getOption($optionName);
-                },
-                function ($optionName) use ($output) {
-                    return $output->getOption($optionName);
-                },
+                $commandOptions,
                 $environment,
-                $verbosity
+                $verbosity,
+                $output
             );
         }
     }

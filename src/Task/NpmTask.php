@@ -29,10 +29,10 @@ class NpmTask extends AbstractTask implements ResourceAwareInterface
     }
 
     public function run(
-        callable $input,
-        callable $output,
+        array $commandOptions,
         $environment,
-        $verbosity
+        $verbosity,
+        OutputInterface $output
     ) {
         $bundleList = $this->getOption('bundles');
         if (empty($bundleList) || !is_array($bundleList)) {

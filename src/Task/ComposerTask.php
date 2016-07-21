@@ -16,10 +16,10 @@ class ComposerTask extends AbstractTask
     }
 
     public function run(
-        callable $input,
-        callable $output,
+        array $commandOptions,
         $environment,
-        $verbosity
+        $verbosity,
+        OutputInterface $output
     ) {
         $output->writeln('<' . $this->h2Style . '>Updating composer dependencies</>');
 
