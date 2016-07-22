@@ -2,26 +2,62 @@
 
 namespace Sokil\DeployBundle;
 
+use Sokil\DeployBundle\Task\AbstractTask;
+use Sokil\DeployBundle\TaskManager\CommandLocator;
+use Sokil\DeployBundle\TaskManager\ProcessRunner;
+use Sokil\DeployBundle\TaskManager\ResourceLocator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Sokil\DeployBundle\TaskManager\AbstractTask;
 use Sokil\DeployBundle\Exception\TaskNotFoundException;
 
 class TaskManager
 {
     /**
+     * @var ProcessRunner
+     */
+    private $processRunner;
+
+    /**
+     * @var ResourceLocator
+     */
+    private $resourceLocator;
+
+    /**
      * @var array<AbstractTask>
      */
     private $tasks = [];
 
+    public function __construct(
+        ProcessRunner $processRunner,
+        ResourceLocator $resourceLocator
+    ) {
+        $this->resourceLocator = $resourceLocator;
+        $this->processRunner = $processRunner;
+    }
+
     public function configureCommand(Command $command)
     {
+        $commandLocator = new CommandLocator($command->getApplication());
+
         /* @var AbstractTask $task */
         foreach ($this->tasks as $task) {
 
             $alias = $task->getAlias();
+
+            // set dependencies
+            if ($task instanceof CommandAwareTaskInterface) {
+                $task->setCommandLocator($commandLocator);
+            }
+
+            if ($task instanceof ResourceAwareTaskInterface) {
+                $task->setResourceLocator($this->resourceLocator);
+            }
+
+            if ($task instanceof ProcessRunnerAwareTaskInterface) {
+                $task->setProcessRunner($this->processRunner);
+            }
 
             // configure command parameter to launch task
             $command->addOption(
@@ -75,6 +111,12 @@ class TaskManager
         return $this->tasks[$alias];
     }
 
+    /**
+     * Execute tasks
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
     public function execute(
         InputInterface $input,
         OutputInterface $output

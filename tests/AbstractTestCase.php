@@ -13,7 +13,7 @@ abstract class AbstractTestCase extends TestCase
     /**
      * @return ResourceLocator|\PHPUnit_Framework_MockObject_MockObject
      */
-    private function createResourceLocator()
+    public function createResourceLocator()
     {
         // add kernel dependency
         $locator = $this
@@ -29,6 +29,29 @@ abstract class AbstractTestCase extends TestCase
                 ['bundle2', '/path/to/bundle2'],
                 ['bundle3', '/path/to/bundle3'],
             ]));
+
+        return $locator;
+    }
+
+    /**
+     * @return ResourceLocator|\PHPUnit_Framework_MockObject_MockObject
+     */
+    public function createProcessRunner(
+        array $expectedCommands = [],
+        $expectedStatus = true
+    ) {
+        // add kernel dependency
+        $locator = $this
+            ->getMockBuilder('Sokil\DeployBundle\TaskManager\ProcessRunner')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $invocationMocker = $locator
+            ->expects($this->exactly(count($expectedCommands)))
+            ->method('run')
+            ->will($this->returnValue($expectedStatus));
+
+        call_user_func_array([$invocationMocker, 'withConsecutive'], $expectedCommands);
 
         return $locator;
     }

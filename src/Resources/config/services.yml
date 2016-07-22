@@ -6,9 +6,13 @@ services:
     arguments:
       - '@kernel'
 
+  deploy.task_manager.process_runner:
+    class: Sokil\DeployBundle\TaskManager\ProcessRunner
+
   deploy.task_manager:
     class: Sokil\DeployBundle\TaskManager
     arguments:
+      - '@deploy.task_manager.process_runner'
       - '@deploy.task_manager.resource_locator'
 
   deploy.task_manager.abstract_task.asseticdump:

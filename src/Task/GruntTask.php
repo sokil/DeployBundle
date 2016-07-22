@@ -2,24 +2,37 @@
 
 namespace Sokil\DeployBundle\Task;
 
-use Sokil\DeployBundle\TaskManager\AbstractTask;
-use Sokil\DeployBundle\TaskManager\ResourceAwareTaskInterface;
+use Sokil\DeployBundle\TaskManager\ProcessRunner;
 use Sokil\DeployBundle\TaskManager\ResourceLocator;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Command\Command;
 
-class GruntTask extends AbstractTask implements ResourceAwareTaskInterface
+class GruntTask extends AbstractTask implements
+    ResourceAwareTaskInterface,
+    ProcessRunnerAwareTaskInterface
 {
     /**
      * @var ResourceLocator
      */
     private $resourceLocator;
 
+    /**
+     * @var ProcessRunner
+     */
+    private $processRunner;
+
     public function setResourceLocator(ResourceLocator $locator)
     {
         $this->resourceLocator = $locator;
+        return $this;
+    }
+
+    /**
+     * @param ProcessRunner $runner
+     * @return BowerTask
+     */
+    public function setProcessRunner(ProcessRunner $runner)
+    {
+        $this->processRunner = $runner;
         return $this;
     }
 
@@ -53,7 +66,7 @@ class GruntTask extends AbstractTask implements ResourceAwareTaskInterface
                 $command .= ' ' . $taskList;
             }
 
-            $isSuccessfull = $this->runShellCommand(
+            $isSuccessfull = $this->processRunner->run(
                 $command,
                 function() use ($output) {
                     $output->writeln('Grunt tasks executed successfully');

@@ -2,14 +2,27 @@
 
 namespace Sokil\DeployBundle\Task;
 
-use Sokil\DeployBundle\TaskManager\AbstractTask;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
+use Sokil\DeployBundle\TaskManager\ProcessRunner;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Command\Command;
 
-class ComposerTask extends AbstractTask
+class ComposerTask extends AbstractTask implements
+    ProcessRunnerAwareTaskInterface
 {
+    /**
+     * @var ProcessRunner
+     */
+    private $processRunner;
+
+    /**
+     * @param ProcessRunner $runner
+     * @return BowerTask
+     */
+    public function setProcessRunner(ProcessRunner $runner)
+    {
+        $this->processRunner = $runner;
+        return $this;
+    }
+
     public function getDescription()
     {
         return 'Update composer dependencies';
@@ -42,7 +55,7 @@ class ComposerTask extends AbstractTask
                 break;
         }
 
-        return $this->runShellCommand(
+        return $this->processRunner->run(
             $command,
             function() use ($output) {
                 $output->writeln('Composer dependencies updated successfully');

@@ -9,7 +9,10 @@ class TaskManagerTest extends AbstractTestCase
 {
     public function testAddTask()
     {
-        $taskManager = new TaskManager();
+        $taskManager = new TaskManager(
+            $this->createProcessRunner(),
+            $this->createResourceLocator()
+        );
 
         $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
 
@@ -28,7 +31,10 @@ class TaskManagerTest extends AbstractTestCase
      */
     public function testGetNotExistedTask()
     {
-        $taskManager = new TaskManager();
+        $taskManager = new TaskManager(
+            $this->createProcessRunner(),
+            $this->createResourceLocator()
+        );
 
         $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
 
@@ -40,7 +46,10 @@ class TaskManagerTest extends AbstractTestCase
 
     public function testGetTasks()
     {
-        $taskManager = new TaskManager();
+        $taskManager = new TaskManager(
+            $this->createProcessRunner(),
+            $this->createResourceLocator()
+        );
 
         $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
 
@@ -57,7 +66,10 @@ class TaskManagerTest extends AbstractTestCase
 
     public function testConfigureCommand_NoTasks()
     {
-        $taskManager = new TaskManager();
+        $taskManager = new TaskManager(
+            $this->createProcessRunner(),
+            $this->createResourceLocator()
+        );
 
         $command = new Command('SomeCommand');
         $taskManager->configureCommand($command);
@@ -65,7 +77,10 @@ class TaskManagerTest extends AbstractTestCase
 
     public function testConfigureCommand_TaskWithoutAdditionalCommandOptions()
     {
-        $taskManager = new TaskManager();
+        $taskManager = new TaskManager(
+            $this->createProcessRunner(),
+            $this->createResourceLocator()
+        );
 
         $taskManager->addTask($this->createSimpleTaskWithoutAdditionalCommandOptions('myCustomTask'));
 
@@ -82,7 +97,10 @@ class TaskManagerTest extends AbstractTestCase
 
     public function testConfigureCommand_TaskWithAdditionalCommandOptions()
     {
-        $taskManager = new TaskManager();
+        $taskManager = new TaskManager(
+            $this->createProcessRunner(),
+            $this->createResourceLocator()
+        );
 
         $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
 

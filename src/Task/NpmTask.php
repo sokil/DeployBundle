@@ -2,30 +2,43 @@
 
 namespace Sokil\DeployBundle\Task;
 
-use Sokil\DeployBundle\TaskManager\AbstractTask;
-use Sokil\DeployBundle\TaskManager\ResourceAwareTaskInterface;
+use Sokil\DeployBundle\TaskManager\ProcessRunner;
 use Sokil\DeployBundle\TaskManager\ResourceLocator;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Command\Command;
 
-class NpmTask extends AbstractTask implements ResourceAwareTaskInterface
+class NpmTask extends AbstractTask implements
+    ResourceAwareTaskInterface,
+    ProcessRunnerAwareTaskInterface
 {
-    public function getDescription()
-    {
-        return 'Updating npm dependencies';
-    }
-
     /**
      * @var ResourceLocator
      */
     private $resourceLocator;
 
+    /**
+     * @var ProcessRunner
+     */
+    private $processRunner;
+
+    /**
+     * @param ProcessRunner $runner
+     * @return BowerTask
+     */
+    public function setProcessRunner(ProcessRunner $runner)
+    {
+        $this->processRunner = $runner;
+        return $this;
+    }
+
     public function setResourceLocator(ResourceLocator $locator)
     {
         $this->resourceLocator = $locator;
         return $this;
+    }
+
+    public function getDescription()
+    {
+        return 'Updating npm dependencies';
     }
 
     public function run(
@@ -54,7 +67,7 @@ class NpmTask extends AbstractTask implements ResourceAwareTaskInterface
 
             $productionFlag = $environment === 'prod' ? ' --production' : null;
 
-            $isSuccessfull = $this->runShellCommand(
+            $isSuccessfull = $this->processRunner->run(
                 'cd ' . $bundlePath . '; npm install' . $productionFlag,
                 function() use ($output) {
                     $output->writeln('Npm dependencies updated successfully');

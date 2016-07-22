@@ -12,7 +12,7 @@ class GitTaskTest extends AbstractTestCase
     {
         $taskMock = $this
             ->getMockBuilder('Sokil\DeployBundle\Task\GitTask')
-            ->setMethods(['runShellCommand', 'buildReleaseTag'])
+            ->setMethods(['buildReleaseTag'])
             ->setConstructorArgs([
                 'git',
                 [
@@ -35,10 +35,8 @@ class GitTaskTest extends AbstractTestCase
             ->method('buildReleaseTag')
             ->will($this->returnValue('tagPattern'));
 
-        $taskMock
-            ->expects($this->exactly(2))
-            ->method('runShellCommand')
-            ->withConsecutive(
+        $taskMock->setProcessRunner($this->createProcessRunner(
+            [
                 [
                     'cd /tmp; git pull origin master',
                     'dev',
@@ -55,8 +53,9 @@ class GitTaskTest extends AbstractTestCase
                     $this->isType('callable'),
                     $this->isInstanceOf('Symfony\Component\Console\Output\OutputInterface')
                 ]
-            )
-        ->will($this->returnValue(true));
+            ],
+            true
+        ));
 
         $taskMock->run(
             [],

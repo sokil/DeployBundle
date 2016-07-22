@@ -2,14 +2,26 @@
 
 namespace Sokil\DeployBundle\Task;
 
-use Sokil\DeployBundle\TaskManager\AbstractTask;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
+use Sokil\DeployBundle\Task\CommandAwareTaskInterface;
+use Sokil\DeployBundle\TaskManager\CommandLocator;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Command\Command;
 
-class AsseticDumpTask implements TaskInterface
+class AsseticDumpTask extends AbstractTask
+    implements CommandAwareTaskInterface
 {
+    /**
+     * @var CommandLocator
+     */
+    private $commandLocator;
+
+    /**
+     * @param CommandLocator $locator
+     */
+    public function setCommandLocator(CommandLocator $locator)
+    {
+        $this->commandLocator = $locator;
+    }
+
     public function getDescription()
     {
         return 'Dump assetic assets';
@@ -21,7 +33,7 @@ class AsseticDumpTask implements TaskInterface
         $verbosity,
         OutputInterface $output
     ) {
-        $command = $this->getApplication()->find('assetic:dump');
+        $command = $this->commandLocator->find('assetic:dump');
         return $command->run(
             new ArrayInput(array(
                 'command'  => 'assetic:dump',

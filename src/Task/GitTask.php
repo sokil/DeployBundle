@@ -5,17 +5,29 @@ namespace Sokil\DeployBundle\Task;
 use Sokil\DeployBundle\Exception\InvalidTaskConfigurationException;
 use Sokil\DeployBundle\Exception\TaskConfigurationValidateException;
 use Sokil\DeployBundle\Exception\TaskExecuteException;
-use Sokil\DeployBundle\TaskManager\AbstractTask;
-use Symfony\Component\Config\Definition\Builder\NodeDefinition;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
+use Sokil\DeployBundle\TaskManager\ProcessRunner;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Command\Command;
 
 class GitTask extends AbstractTask
+    implements ProcessRunnerAwareTaskInterface
 {
     const DEFAULT_REMOTE_NAME = 'origin';
     const DEFAULT_BRANCH_NAME = 'master';
+
+    /**
+     * @var ProcessRunner
+     */
+    private $processRunner;
+
+    /**
+     * @param ProcessRunner $runner
+     * @return BowerTask
+     */
+    public function setProcessRunner(ProcessRunner $runner)
+    {
+        $this->processRunner = $runner;
+        return $this;
+    }
 
     public function getDescription()
     {
@@ -32,14 +44,14 @@ class GitTask extends AbstractTask
 
         foreach ($this->getReposConfig() as $repoName => $repoParams) {
             // pull
-            $isSuccessfull = $this->runShellCommand(
+            $isSuccessfull = $this->processRunner->run(
                 'cd ' . $repoParams['path'] . '; git pull ' . $repoParams['remote'] . ' ' . $repoParams['branch'],
                 $environment,
                 $verbosity,
-                function($input, $output) {
+                function($output) {
                     $output->writeln('Source updated successfully');
                 },
-                function($input, $output) {
+                function($output) {
                     $output->writeln('<error>Error updating source</error>');
                 },
                 $output
@@ -55,7 +67,7 @@ class GitTask extends AbstractTask
                 $releaseTag = $this->buildReleaseTag($repoParams['tag']);
                 $releaseMessage = $releaseTag;
 
-                $isSuccessfull = $this->runShellCommand(
+                $isSuccessfull = $this->processRunner->run(
                     'git tag -a ' . $releaseTag . ' -m ' . $releaseMessage,
                     $environment,
                     $verbosity,

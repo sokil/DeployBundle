@@ -3,30 +3,43 @@
 namespace Sokil\DeployBundle\Task;
 
 use Sokil\DeployBundle\Exception\InvalidTaskConfigurationException;
-use Sokil\DeployBundle\TaskManager\AbstractTask;
-use Sokil\DeployBundle\TaskManager\ResourceAwareTaskInterface;
+use Sokil\DeployBundle\TaskManager\ProcessRunner;
 use Sokil\DeployBundle\TaskManager\ResourceLocator;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Command\Command;
 
-class BowerTask extends AbstractTask  implements ResourceAwareTaskInterface
+class BowerTask extends AbstractTask implements
+    ResourceAwareTaskInterface,
+    ProcessRunnerAwareTaskInterface
 {
-    public function getDescription()
-    {
-        return 'Updating bower dependencies';
-    }
-
     /**
      * @var ResourceLocator
      */
     private $resourceLocator;
 
+    /**
+     * @var
+     */
+    private $processRunner;
+
     public function setResourceLocator(ResourceLocator $locator)
     {
         $this->resourceLocator = $locator;
         return $this;
+    }
+
+    /**
+     * @param ProcessRunner $runner
+     * @return BowerTask
+     */
+    public function setProcessRunner(ProcessRunner $runner)
+    {
+        $this->$this->processRunner = $runner;
+        return $this;
+    }
+
+    public function getDescription()
+    {
+        return 'Updating bower dependencies';
     }
 
     public function run(
@@ -55,7 +68,7 @@ class BowerTask extends AbstractTask  implements ResourceAwareTaskInterface
 
             $productionFlag = $environment === 'prod' ? ' --production' : null;
 
-            $isSuccessfull = $this->runShellCommand(
+            $isSuccessfull = $this->processRunner->run(
                 'cd ' . $bundlePath . '; bower install' . $productionFlag,
                 function() use ($output) {
                     $output->writeln('Bower dependencies updated successfully');

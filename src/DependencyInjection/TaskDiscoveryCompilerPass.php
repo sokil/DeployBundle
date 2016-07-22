@@ -39,16 +39,6 @@ class TaskDiscoveryCompilerPass implements CompilerPassInterface
                     ->addArgument($taskAlias)
                     ->addArgument($tasksConfiguration[$taskAlias]);
 
-
-                if (!empty($taskServiceTagParameters['resourcesAware'])) {
-                    $taskDefinition->addMethodCall(
-                        'setResourceLocator',
-                        [
-                            new Resource('deploy.task_manager.resource_locator')
-                        ]
-                    );
-                }
-
                 // register definition
                 $container->setDefinition($taskServiceId, $taskDefinition);
 

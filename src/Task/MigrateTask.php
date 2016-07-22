@@ -2,14 +2,26 @@
 
 namespace Sokil\DeployBundle\Task;
 
-use Sokil\DeployBundle\TaskManager\AbstractTask;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
+use Sokil\DeployBundle\CommandAwareTaskInterface;
+use Sokil\DeployBundle\TaskManager\CommandLocator;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Command\Command;
 
 class MigrateTask extends AbstractTask
+    implements CommandAwareTaskInterface
 {
+    /**
+     * @var CommandLocator
+     */
+    private $commandLocator;
+
+    /**
+     * @param CommandLocator $locator
+     */
+    public function setCommandLocator(CommandLocator $locator)
+    {
+        $this->commandLocator = $locator;
+    }
+
     public function getDescription()
     {
         return 'Migrate datbase';
@@ -21,7 +33,7 @@ class MigrateTask extends AbstractTask
         $verbosity,
         OutputInterface $output
     ) {
-        $command = $this->getApplication()->find('doctrine:migrations:migrate');
+        $command = $this->commandLocator->find('doctrine:migrations:migrate');
 
         return $command->run(
             new ArrayInput(array(

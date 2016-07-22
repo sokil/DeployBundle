@@ -1,6 +1,6 @@
 <?php
 
-namespace Sokil\DeployBundle\TaskManager;
+namespace Sokil\DeployBundle\Task;
 
 use Symfony\Component\Console\Output\OutputInterface;
 

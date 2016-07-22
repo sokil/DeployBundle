@@ -2,14 +2,25 @@
 
 namespace Sokil\DeployBundle\Task;
 
-use Sokil\DeployBundle\TaskManager\AbstractTask;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
+use Sokil\DeployBundle\TaskManager\CommandLocator;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Command\Command;
 
-class AssetsInstallTask implements TaskInterface
+class AssetsInstallTask extends AbstractTask
+    implements CommandAwareTaskInterface
 {
+    /**
+     * @var CommandLocator
+     */
+    private $commandLocator;
+
+    /**
+     * @param CommandLocator $locator
+     */
+    public function setCommandLocator(CommandLocator $locator)
+    {
+        $this->commandLocator = $locator;
+    }
+
     public function getDescription()
     {
         return 'Install bundle assets';
@@ -21,7 +32,7 @@ class AssetsInstallTask implements TaskInterface
         $verbosity,
         OutputInterface $output
     ) {
-        $command = $this->getApplication()->find('assets:install');
+        $command = $this->commandLocator->find('assets:install');
         return $command->run(
             new ArrayInput(array(
                 'command'  => 'assets:install',
