@@ -132,7 +132,7 @@ abstract class AbstractTestCase extends TestCase
     {
         $task = $this
             ->getMockBuilder(
-                'Sokil\DeployBundle\TaskManager\AbstractTask'
+                'Sokil\DeployBundle\Task\AbstractTask'
             )
             ->disableOriginalConstructor()
             ->getMock();
