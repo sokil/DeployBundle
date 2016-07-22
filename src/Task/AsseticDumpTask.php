@@ -2,7 +2,6 @@
 
 namespace Sokil\DeployBundle\Task;
 
-use Sokil\DeployBundle\Task\CommandAwareTaskInterface;
 use Sokil\DeployBundle\TaskManager\CommandLocator;
 use Symfony\Component\Console\Output\OutputInterface;
 
