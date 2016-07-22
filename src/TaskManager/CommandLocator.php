@@ -13,7 +13,7 @@ class CommandLocator
      */
     private $application;
 
-    public function __construct(Application $application)
+    public function setApplication(Application $application)
     {
         $this->application = $application;
     }

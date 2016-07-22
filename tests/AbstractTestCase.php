@@ -3,6 +3,7 @@
 namespace Sokil\DeployBundle;
 
 use Sokil\DeployBundle\TaskManager\AbstractTask;
+use Sokil\DeployBundle\TaskManager\CommandLocator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -53,6 +54,15 @@ abstract class AbstractTestCase extends TestCase
                 ['bundle3', '/path/to/bundle3'],
             ]));
 
+        return $locator;
+    }
+
+    /**
+     * @return CommandLocator
+     */
+    public function createCommandLocator()
+    {
+        $locator = new CommandLocator();
         return $locator;
     }
 

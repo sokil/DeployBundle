@@ -1,8 +1,11 @@
 parameters:
 
 services:
+  deploy.task_manager.command_locator:
+    class: Sokil\DeployBundle\TaskManager\CommandLocator
+
   deploy.task_manager.resource_locator:
-    class: Sokil\DeployBundle\TaskManager\Resourcelocator
+    class: Sokil\DeployBundle\TaskManager\ResourceLocator
     arguments:
       - '@kernel'
 
@@ -14,6 +17,7 @@ services:
     arguments:
       - '@deploy.task_manager.process_runner'
       - '@deploy.task_manager.resource_locator'
+      - '@deploy.task_manager.command_locator'
 
   deploy.task_manager.abstract_task.asseticdump:
     class: Sokil\DeployBundle\Task\AsseticDumpTask

@@ -11,7 +11,8 @@ class TaskManagerTest extends AbstractTestCase
     {
         $taskManager = new TaskManager(
             $this->createProcessRunner(),
-            $this->createResourceLocator()
+            $this->createResourceLocator(),
+            $this->createCommandLocator()
         );
 
         $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
@@ -33,7 +34,8 @@ class TaskManagerTest extends AbstractTestCase
     {
         $taskManager = new TaskManager(
             $this->createProcessRunner(),
-            $this->createResourceLocator()
+            $this->createResourceLocator(),
+            $this->createCommandLocator()
         );
 
         $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
@@ -48,7 +50,8 @@ class TaskManagerTest extends AbstractTestCase
     {
         $taskManager = new TaskManager(
             $this->createProcessRunner(),
-            $this->createResourceLocator()
+            $this->createResourceLocator(),
+            $this->createCommandLocator()
         );
 
         $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
@@ -68,7 +71,8 @@ class TaskManagerTest extends AbstractTestCase
     {
         $taskManager = new TaskManager(
             $this->createProcessRunner(),
-            $this->createResourceLocator()
+            $this->createResourceLocator(),
+            $this->createCommandLocator()
         );
 
         $command = new Command('SomeCommand');
@@ -79,7 +83,8 @@ class TaskManagerTest extends AbstractTestCase
     {
         $taskManager = new TaskManager(
             $this->createProcessRunner(),
-            $this->createResourceLocator()
+            $this->createResourceLocator(),
+            $this->createCommandLocator()
         );
 
         $taskManager->addTask($this->createSimpleTaskWithoutAdditionalCommandOptions('myCustomTask'));
@@ -99,7 +104,8 @@ class TaskManagerTest extends AbstractTestCase
     {
         $taskManager = new TaskManager(
             $this->createProcessRunner(),
-            $this->createResourceLocator()
+            $this->createResourceLocator(),
+            $this->createCommandLocator()
         );
 
         $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
@@ -159,7 +165,8 @@ class TaskManagerTest extends AbstractTestCase
         // create task manager
         $taskManager = new TaskManager(
             $this->createProcessRunner(),
-            $this->createResourceLocator()
+            $this->createResourceLocator(),
+            $this->createCommandLocator()
         );
 
         // add tasks

@@ -41,27 +41,18 @@ class TaskManager
 
     public function __construct(
         ProcessRunner $processRunner,
-        ResourceLocator $resourceLocator
+        ResourceLocator $resourceLocator,
+        CommandLocator $consoleCommandLocator
     ) {
         $this->resourceLocator = $resourceLocator;
         $this->processRunner = $processRunner;
-    }
-
-    /**
-     * @return CommandLocator
-     */
-    public function getCommandLocator()
-    {
-        if (!$this->consoleCommandLocator) {
-            $this->consoleCommandLocator = new CommandLocator($this->consoleCommand->getApplication());
-        }
-
-        return $this->consoleCommandLocator;
+        $this->consoleCommandLocator = $consoleCommandLocator;
     }
 
     public function configureCommand(Command $command)
     {
         $this->consoleCommand = $command;
+        $this->consoleCommandLocator->setApplication($this->consoleCommand->getApplication());
 
         /* @var AbstractTask $task */
         foreach ($this->tasks as $task) {
@@ -70,7 +61,7 @@ class TaskManager
 
             // set dependencies
             if ($task instanceof CommandAwareTaskInterface) {
-                $task->setCommandLocator($this->getCommandLocator());
+                $task->setCommandLocator($this->consoleCommandLocator);
             }
 
             if ($task instanceof ResourceAwareTaskInterface) {
