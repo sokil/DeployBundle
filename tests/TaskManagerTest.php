@@ -157,7 +157,10 @@ class TaskManagerTest extends AbstractTestCase
             ->will($this->returnValue(OutputInterface::VERBOSITY_NORMAL));
 
         // create task manager
-        $taskManager = new TaskManager();
+        $taskManager = new TaskManager(
+            $this->createProcessRunner(),
+            $this->createResourceLocator()
+        );
 
         // add tasks
         $task1 = $this->createSimpleTaskWithoutAdditionalCommandOptions('task1');
@@ -165,10 +168,10 @@ class TaskManagerTest extends AbstractTestCase
             ->expects($this->once())
             ->method('run')
             ->with(
-                $this->isType('callable'),
-                $this->isType('callable'),
+                $this->isType('array'),
                 $this->equalTo('dev'),
-                $this->equalTo(OutputInterface::VERBOSITY_NORMAL)
+                $this->equalTo(OutputInterface::VERBOSITY_NORMAL),
+                $this->createOutput()
             );
         $taskManager->addTask($task1);
 
@@ -177,10 +180,10 @@ class TaskManagerTest extends AbstractTestCase
             ->expects($this->once())
             ->method('run')
             ->with(
-                $this->isType('callable'),
-                $this->isType('callable'),
+                $this->isType('array'),
                 $this->equalTo('dev'),
-                $this->equalTo(OutputInterface::VERBOSITY_NORMAL)
+                $this->equalTo(OutputInterface::VERBOSITY_NORMAL),
+                $this->createOutput()
             );
         $taskManager->addTask($task2);
 

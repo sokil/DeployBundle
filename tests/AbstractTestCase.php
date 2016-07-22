@@ -3,13 +3,36 @@
 namespace Sokil\DeployBundle;
 
 use Sokil\DeployBundle\TaskManager\AbstractTask;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Application;
 
 abstract class AbstractTestCase extends TestCase
 {
+    /**
+     * @param array $commandMap
+     * @return \PHPUnit_Framework_MockObject_MockObject|Application
+     */
+    public function createConsoleApplication(array $commandMap = [])
+    {
+        // add kernel dependency
+        $application = $this
+            ->getMockBuilder('Symfony\Component\Console\Application')
+            ->setMethods(['find'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $application
+            ->expects($this->any())
+            ->method('find')
+            ->will($this->returnValueMap($commandMap));
+
+        return $application;
+    }
+
     /**
      * @return ResourceLocator|\PHPUnit_Framework_MockObject_MockObject
      */
