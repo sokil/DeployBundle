@@ -135,7 +135,7 @@ class TaskManager
         OutputInterface $output
     ) {
         $isRunAllRequired = false;
-        if (count(array_intersect_key($input->getOptions(), $this->tasks)) === 0) {
+        if (count(array_intersect_key($this->tasks, $input->getOptions())) === 0) {
             $isRunAllRequired = true;
         }
 
