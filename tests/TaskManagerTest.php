@@ -17,7 +17,7 @@ class TaskManagerTest extends AbstractTestCase
 
         $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
 
-        $command = new Command('SomeCommand');
+        $command = $this->createCommand('SomeCommand');
         $taskManager->configureCommand($command);
 
         $this->assertEquals(
@@ -40,7 +40,7 @@ class TaskManagerTest extends AbstractTestCase
 
         $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
 
-        $command = new Command('SomeCommand');
+        $command = $this->createCommand('SomeCommand');
         $taskManager->configureCommand($command);
 
         $taskManager->getTask('someUnexistedTask');
@@ -56,7 +56,7 @@ class TaskManagerTest extends AbstractTestCase
 
         $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
 
-        $command = new Command('SomeCommand');
+        $command = $this->createCommand('SomeCommand');
         $taskManager->configureCommand($command);
 
         $tasks = $taskManager->getTasks();
@@ -75,7 +75,7 @@ class TaskManagerTest extends AbstractTestCase
             $this->createCommandLocator()
         );
 
-        $command = new Command('SomeCommand');
+        $command = $this->createCommand('SomeCommand');
         $taskManager->configureCommand($command);
     }
 
@@ -89,7 +89,7 @@ class TaskManagerTest extends AbstractTestCase
 
         $taskManager->addTask($this->createSimpleTaskWithoutAdditionalCommandOptions('myCustomTask'));
 
-        $command = new Command('SomeCommand');
+        $command = $this->createCommand('SomeCommand');
         $taskManager->configureCommand($command);
 
         $this->assertEquals(1, count($command->getDefinition()->getOptions()));
@@ -110,7 +110,7 @@ class TaskManagerTest extends AbstractTestCase
 
         $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
 
-        $command = new Command('SomeCommand');
+        $command = $this->createCommand('SomeCommand');
         $taskManager->configureCommand($command);
 
         $this->assertEquals(3, count($command->getDefinition()->getOptions()));

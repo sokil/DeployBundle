@@ -2,14 +2,15 @@
 
 namespace Sokil\DeployBundle;
 
+use PHPUnit\Framework\TestCase;
 use Sokil\DeployBundle\TaskManager\AbstractTask;
 use Sokil\DeployBundle\TaskManager\CommandLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Application;
 
 abstract class AbstractTestCase extends TestCase
 {
@@ -22,7 +23,7 @@ abstract class AbstractTestCase extends TestCase
         // add kernel dependency
         $application = $this
             ->getMockBuilder('Symfony\Component\Console\Application')
-            ->setMethods(['find'])
+            ->setMethods(['find', 'getHelperSet'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -30,6 +31,11 @@ abstract class AbstractTestCase extends TestCase
             ->expects($this->any())
             ->method('find')
             ->will($this->returnValueMap($commandMap));
+
+        $application
+            ->expects($this->any())
+            ->method('getHelperSet')
+            ->will($this->returnValue(new HelperSet()));
 
         return $application;
     }
@@ -64,6 +70,17 @@ abstract class AbstractTestCase extends TestCase
     {
         $locator = new CommandLocator();
         return $locator;
+    }
+
+    /**
+     * @param $name
+     * @return Command
+     */
+    public function createCommand($name)
+    {
+        $command = new Command($name);
+        $command->setApplication($this->createConsoleApplication());
+        return $command;
     }
 
     /**
