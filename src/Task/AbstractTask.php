@@ -2,6 +2,7 @@
 
 namespace Sokil\DeployBundle\Task;
 
+use Sokil\DeployBundle\Exception\TaskConfigurationValidateException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -34,8 +35,11 @@ abstract class AbstractTask implements TaskInterface
         $alias,
         array $options
     ) {
+        // set alias
         $this->alias = $alias;
-        $this->options = $options;
+
+        // set options
+        $this->options = $this->prepareOptions($options);
     }
 
     public function getDescription()
@@ -57,6 +61,18 @@ abstract class AbstractTask implements TaskInterface
     public function getAlias()
     {
         return $this->alias;
+    }
+
+    /**
+     * Prepare task options: check values and set default values
+     *
+     * @param array $options configuration
+     * @throws TaskConfigurationValidateException
+     * @return array validated options with default values on empty params
+     */
+    protected function prepareOptions(array $options)
+    {
+        return $options;
     }
 
     /**

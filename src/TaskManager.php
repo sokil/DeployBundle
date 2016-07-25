@@ -150,7 +150,7 @@ class TaskManager
 
             // get additional options
             $commandOptions = [];
-            foreach ($task->getCommandOptions() as $commandOptionName => $commandOption) {
+            foreach ($task->getCommandOptions() as $commandOptionName => $commandOptionParameters) {
                 $commandOptions[$commandOptionName] = $input->getOption($taskAlias . '-' . $commandOptionName);
             }
 

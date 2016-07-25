@@ -41,24 +41,29 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
+     * @param array map of resources
      * @return ResourceLocator|\PHPUnit_Framework_MockObject_MockObject
      */
-    public function createResourceLocator()
+    public function createResourceLocator(array $resources = null)
     {
+        if (!$resources) {
+            $resources = [
+                ['@bundle1', '/path/to/bundle1'],
+                ['@bundle2', '/path/to/bundle2'],
+                ['@bundle3', '/path/to/bundle3'],
+            ];
+        }
         // add kernel dependency
         $locator = $this
             ->getMockBuilder('Sokil\DeployBundle\TaskManager\ResourceLocator')
+            ->setMethods(['locateResource'])
             ->disableOriginalConstructor()
             ->getMock();
 
         $locator
             ->expects($this->any())
             ->method('locateResource')
-            ->will($this->returnValueMap([
-                ['bundle1', '/path/to/bundle1'],
-                ['bundle2', '/path/to/bundle2'],
-                ['bundle3', '/path/to/bundle3'],
-            ]));
+            ->will($this->returnValueMap($resources));
 
         return $locator;
     }
@@ -151,7 +156,7 @@ abstract class AbstractTestCase extends TestCase
                         ],
                     ],
                     'grunt' => [
-                        'tasks' => [
+                        'bundles' => [
                             'bundle1' => 'gruntTask1 gruntTask2',
                             'bundle2' => true,
                         ]

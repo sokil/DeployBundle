@@ -48,7 +48,7 @@ class DeployExtensionTest extends AbstractTestCase
 
         $this->assertEquals(
             [
-                'tasks' => [
+                'bundles' => [
                     'bundle1' => 'gruntTask1 gruntTask2',
                     'bundle2' => true,
                 ]

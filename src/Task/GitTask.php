@@ -42,7 +42,7 @@ class GitTask extends AbstractTask
     ) {
         $output->writeln('<' . $this->h2Style . '>Updating source from Git repository</>');
 
-        foreach ($this->getReposConfig() as $repoName => $repoParams) {
+        foreach ($this->getOption('repos') as $repoName => $repoParams) {
             // pull
             $isSuccessfull = $this->processRunner->run(
                 'cd ' . $repoParams['path'] . '; git pull ' . $repoParams['remote'] . ' ' . $repoParams['branch'],
@@ -108,22 +108,24 @@ class GitTask extends AbstractTask
 
     /**
      * Git config of repositories
-     *
-     * @return array
      * @throws InvalidTaskConfigurationException
      */
-    private function getReposConfig()
+    protected function prepareOptions(array $options)
     {
-        $defaultRemote = $this->getOption('defaultRemote', self::DEFAULT_REMOTE_NAME);
-        $defaultBranch = $this->getOption('defaultBranch', self::DEFAULT_BRANCH_NAME);
+        if (empty($options['defaultRemote'])) {
+            $options['defaultRemote'] = self::DEFAULT_REMOTE_NAME;
+        }
+
+        if (empty($options['defaultBranch'])) {
+            $options['defaultBranch'] = self::DEFAULT_BRANCH_NAME;
+        }
 
         // prepare repos config
-        $repoConfigList = $this->getOption('repos');
-        if (!$repoConfigList) {
+        if (empty($options['repos']) || !is_array($options['repos'])) {
             throw new TaskConfigurationValidateException('No repos found in configuration');
         }
 
-        foreach ($repoConfigList as $repoName => $repoParams) {
+        foreach ($options['repos'] as $repoName => &$repoParams) {
             if (empty($repoParams['path'])) {
                 throw new TaskConfigurationValidateException('Path not configured for git repo "' . $repoName . '"');
             }
@@ -133,11 +135,11 @@ class GitTask extends AbstractTask
             }
 
             if (empty($repoParams['remote'])) {
-                $repoParams['remote'] = $defaultRemote;
+                $repoParams['remote'] = $options['defaultRemote'];
             }
 
             if (empty($repoParams['branch'])) {
-                $repoParams['branch'] = $defaultBranch;
+                $repoParams['branch'] = $options['defaultBranch'];
             }
 
             if (empty($repoParams['tag'])) {
@@ -145,6 +147,6 @@ class GitTask extends AbstractTask
             }
         }
 
-        return $repoConfigList;
+        return $options;
     }
 }
