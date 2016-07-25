@@ -14,7 +14,6 @@ class DeployCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this->setName('deploy');
-        $this->getApplication();
         $this
             ->getContainer()
             ->get('deploy.task_manager')
