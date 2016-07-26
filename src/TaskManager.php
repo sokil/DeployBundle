@@ -3,6 +3,9 @@
 namespace Sokil\DeployBundle;
 
 use Sokil\DeployBundle\Task\AbstractTask;
+use Sokil\DeployBundle\Task\CommandAwareTaskInterface;
+use Sokil\DeployBundle\Task\ProcessRunnerAwareTaskInterface;
+use Sokil\DeployBundle\Task\ResourceAwareTaskInterface;
 use Sokil\DeployBundle\TaskManager\CommandLocator;
 use Sokil\DeployBundle\TaskManager\ProcessRunner;
 use Sokil\DeployBundle\TaskManager\ResourceLocator;
