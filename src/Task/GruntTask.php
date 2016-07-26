@@ -25,7 +25,6 @@ class GruntTask extends AbstractTask implements
     public function setResourceLocator(ResourceLocator $locator)
     {
         $this->resourceLocator = $locator;
-        return $this;
     }
 
     /**
@@ -35,7 +34,6 @@ class GruntTask extends AbstractTask implements
     public function setProcessRunner(ProcessRunner $runner)
     {
         $this->processRunner = $runner;
-        return $this;
     }
 
     /**

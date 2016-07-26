@@ -16,12 +16,10 @@ class ComposerTask extends AbstractTask implements
 
     /**
      * @param ProcessRunner $runner
-     * @return BowerTask
      */
     public function setProcessRunner(ProcessRunner $runner)
     {
         $this->processRunner = $runner;
-        return $this;
     }
 
     public function getDescription()

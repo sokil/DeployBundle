@@ -24,18 +24,15 @@ class NpmTask extends AbstractTask implements
 
     /**
      * @param ProcessRunner $runner
-     * @return BowerTask
      */
     public function setProcessRunner(ProcessRunner $runner)
     {
         $this->processRunner = $runner;
-        return $this;
     }
 
     public function setResourceLocator(ResourceLocator $locator)
     {
         $this->resourceLocator = $locator;
-        return $this;
     }
 
     public function getDescription()

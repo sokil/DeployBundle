@@ -33,7 +33,7 @@ class BowerTask extends AbstractTask implements
      */
     public function setProcessRunner(ProcessRunner $runner)
     {
-        $this->$this->processRunner = $runner;
+        $this->processRunner = $runner;
     }
 
     public function getDescription()
