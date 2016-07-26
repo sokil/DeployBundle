@@ -2,6 +2,7 @@
 
 namespace Sokil\DeployBundle\Task;
 
+use Sokil\DeployBundle\Exception\TaskExecuteException;
 use Sokil\DeployBundle\TaskManager\CommandLocator;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -34,12 +35,17 @@ class AsseticDumpTask extends AbstractTask
         OutputInterface $output
     ) {
         $command = $this->commandLocator->find('assetic:dump');
-        return $command->run(
+
+        $isSuccessful = $command->run(
             new ArrayInput(array(
                 'command'  => 'assetic:dump',
                 '--env'    => $environment,
             )),
             $output
         );
+
+        if (!$isSuccessful) {
+            throw new TaskExecuteException('Error updating bower dependencies for bundle ' . $bundleName);
+        }
     }
 }

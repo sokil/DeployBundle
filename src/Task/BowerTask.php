@@ -3,6 +3,7 @@
 namespace Sokil\DeployBundle\Task;
 
 use Sokil\DeployBundle\Exception\TaskConfigurationValidateException;
+use Sokil\DeployBundle\Exception\TaskExecuteException;
 use Sokil\DeployBundle\TaskManager\ProcessRunner;
 use Sokil\DeployBundle\TaskManager\ResourceLocator;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,7 +18,7 @@ class BowerTask extends AbstractTask implements
     private $resourceLocator;
 
     /**
-     * @var
+     * @var ProcessRunner
      */
     private $processRunner;
 
@@ -29,12 +30,10 @@ class BowerTask extends AbstractTask implements
 
     /**
      * @param ProcessRunner $runner
-     * @return BowerTask
      */
     public function setProcessRunner(ProcessRunner $runner)
     {
         $this->$this->processRunner = $runner;
-        return $this;
     }
 
     public function getDescription()
@@ -68,18 +67,20 @@ class BowerTask extends AbstractTask implements
 
             $productionFlag = $environment === 'prod' ? ' --production' : null;
 
-            $isSuccessfull = $this->processRunner->run(
+            $isSuccessful = $this->processRunner->run(
                 'cd ' . $bundlePath . '; bower install' . $productionFlag,
-                function() use ($output) {
+                $environment,
+                $verbosity,
+                function($output) {
                     $output->writeln('Bower dependencies updated successfully');
                 },
-                function() use ($output) {
+                function($output) {
                     $output->writeln('<error>Error while updating bower dependencies</error>');
                 },
                 $output
             );
 
-            if (!$isSuccessfull) {
+            if (!$isSuccessful) {
                 throw new TaskExecuteException('Error updating bower dependencies for bundle ' . $bundleName);
             }
         }

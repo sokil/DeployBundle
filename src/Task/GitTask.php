@@ -41,7 +41,7 @@ class GitTask extends AbstractTask
 
         foreach ($this->getOption('repos') as $repoName => $repoParams) {
             // pull
-            $isSuccessfull = $this->processRunner->run(
+            $isSuccessful = $this->processRunner->run(
                 'cd ' . $repoParams['path'] . '; git pull ' . $repoParams['remote'] . ' ' . $repoParams['branch'],
                 $environment,
                 $verbosity,
@@ -55,7 +55,7 @@ class GitTask extends AbstractTask
             );
 
 
-            if (!$isSuccessfull) {
+            if (!$isSuccessful) {
                 throw new TaskExecuteException('Error pulling repo ' . $repoName);
             }
 
@@ -64,20 +64,20 @@ class GitTask extends AbstractTask
                 $releaseTag = $this->buildReleaseTag($repoParams['tag']);
                 $releaseMessage = $releaseTag;
 
-                $isSuccessfull = $this->processRunner->run(
+                $isSuccessful = $this->processRunner->run(
                     'git tag -a ' . $releaseTag . ' -m ' . $releaseMessage,
                     $environment,
                     $verbosity,
-                    function() use ($output) {
+                    function($output) {
                         $output->writeln('Release tagged');
                     },
-                    function() use ($output) {
+                    function($output) {
                         $output->writeln('<error>Error updating source</error>');
                     },
                     $output
                 );
 
-                if (!$isSuccessfull) {
+                if (!$isSuccessful) {
                     throw new TaskExecuteException('Error pulling repo ' . $repoName);
                 }
             }

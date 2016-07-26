@@ -2,6 +2,7 @@
 
 namespace Sokil\DeployBundle\Task;
 
+use Sokil\DeployBundle\Exception\TaskExecuteException;
 use Sokil\DeployBundle\TaskManager\CommandLocator;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -35,12 +36,16 @@ class MigrateTask extends AbstractTask
     ) {
         $command = $this->commandLocator->find('doctrine:migrations:migrate');
 
-        return $command->run(
+        $isSuccessful = $command->run(
             new ArrayInput(array(
                 'command' => 'doctrine:migrations:migrate',
                 '--no-interaction' => true,
             )),
             $output
         );
+
+        if (!$isSuccessful) {
+            throw new TaskExecuteException('Error updating bower dependencies for bundle ' . $bundleName);
+        }
     }
 }

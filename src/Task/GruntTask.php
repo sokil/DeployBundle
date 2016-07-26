@@ -3,6 +3,7 @@
 namespace Sokil\DeployBundle\Task;
 
 use Sokil\DeployBundle\Exception\TaskConfigurationValidateException;
+use Sokil\DeployBundle\Exception\TaskExecuteException;
 use Sokil\DeployBundle\TaskManager\ProcessRunner;
 use Sokil\DeployBundle\TaskManager\ResourceLocator;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -92,20 +93,20 @@ class GruntTask extends AbstractTask implements
                 $command .= ' ' . $bundleTasksList[$bundleName];
             }
 
-            $isSuccessfull = $this->processRunner->run(
+            $isSuccessful = $this->processRunner->run(
                 $command,
                 $environment,
                 $verbosity,
-                function() use ($output) {
+                function($output) {
                     $output->writeln('Grunt tasks executed successfully');
                 },
-                function() use ($output) {
+                function($output) {
                     $output->writeln('<error>Error executing grunt tasks</error>');
                 },
                 $output
             );
 
-            if (!$isSuccessfull) {
+            if (!$isSuccessful) {
                 throw new TaskExecuteException('Error updating bower dependencies for bundle ' . $bundleName);
             }
         }

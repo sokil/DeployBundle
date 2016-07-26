@@ -2,6 +2,7 @@
 
 namespace Sokil\DeployBundle\Task;
 
+use Sokil\DeployBundle\Exception\TaskExecuteException;
 use Sokil\DeployBundle\TaskManager\ProcessRunner;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -55,15 +56,21 @@ class ComposerTask extends AbstractTask implements
                 break;
         }
 
-        return $this->processRunner->run(
+        $isSuccessful = $this->processRunner->run(
             $command,
-            function() use ($output) {
+            $environment,
+            $verbosity,
+            function($output) {
                 $output->writeln('Composer dependencies updated successfully');
             },
-            function() use ($output) {
+            function($output) {
                 $output->writeln('<error>Error updating composer dependencies</error>');
             },
             $output
         );
+
+        if (!$isSuccessful) {
+            throw new TaskExecuteException('Error updating bower dependencies for bundle ' . $bundleName);
+        }
     }
 }
