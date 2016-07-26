@@ -36,7 +36,7 @@ class AsseticDumpTask extends AbstractTask
     ) {
         $command = $this->commandLocator->find('assetic:dump');
 
-        $isSuccessful = $command->run(
+        $exitCode = $command->run(
             new ArrayInput(array(
                 'command'  => 'assetic:dump',
                 '--env'    => $environment,
@@ -44,7 +44,7 @@ class AsseticDumpTask extends AbstractTask
             $output
         );
 
-        if (!$isSuccessful) {
+        if (0 !== $exitCode) {
             throw new TaskExecuteException('Error dumping assetic');
         }
     }

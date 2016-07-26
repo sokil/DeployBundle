@@ -36,7 +36,7 @@ class MigrateTask extends AbstractTask
     ) {
         $command = $this->commandLocator->find('doctrine:migrations:migrate');
 
-        $isSuccessful = $command->run(
+        $exitCode = $command->run(
             new ArrayInput(array(
                 'command' => 'doctrine:migrations:migrate',
                 '--no-interaction' => true,
@@ -44,7 +44,7 @@ class MigrateTask extends AbstractTask
             $output
         );
 
-        if (!$isSuccessful) {
+        if (0 !== $exitCode) {
             throw new TaskExecuteException('Error migrating database');
         }
     }

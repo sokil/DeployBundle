@@ -36,7 +36,7 @@ class AssetsInstallTask extends AbstractTask
     ) {
         $command = $this->commandLocator->find('assets:install');
 
-        $isSuccessful = $command->run(
+        $exitCode = $command->run(
             new ArrayInput(array(
                 'command'  => 'assets:install',
                 '--env'    => $environment,
@@ -44,7 +44,7 @@ class AssetsInstallTask extends AbstractTask
             $output
         );
 
-        if (!$isSuccessful) {
+        if (0 !== $exitCode) {
             throw new TaskExecuteException('Error installing assets');
         }
     }

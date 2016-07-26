@@ -35,7 +35,8 @@ class ClearCacheTask extends AbstractTask
         OutputInterface $output
     ) {
         $command = $this->commandLocator->find('cache:clear');
-        $isSuccessful = $command->run(
+
+        $exitCode = $command->run(
             new ArrayInput(array(
                 'command'  => 'cache:clear',
                 '--env'    => $environment,
@@ -43,7 +44,7 @@ class ClearCacheTask extends AbstractTask
             $output
         );
 
-        if (!$isSuccessful) {
+        if (0 !== $exitCode) {
             throw new TaskExecuteException('Error clearing cache');
         }
     }
