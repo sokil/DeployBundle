@@ -1,6 +1,22 @@
 parameters:
 
 services:
+
+  deploy.console_command:
+    class: Sokil\DeployBundle\Command\DeployCommand
+    arguments:
+      - 'deploy'
+      - '@deploy.task_manager'
+    tags:
+      - {name: console.command}
+
+  deploy.task_manager:
+    class: Sokil\DeployBundle\TaskManager
+    arguments:
+      - '@deploy.task_manager.process_runner'
+      - '@deploy.task_manager.resource_locator'
+      - '@deploy.task_manager.command_locator'
+
   deploy.task_manager.command_locator:
     class: Sokil\DeployBundle\TaskManager\CommandLocator
 
@@ -11,13 +27,6 @@ services:
 
   deploy.task_manager.process_runner:
     class: Sokil\DeployBundle\TaskManager\ProcessRunner
-
-  deploy.task_manager:
-    class: Sokil\DeployBundle\TaskManager
-    arguments:
-      - '@deploy.task_manager.process_runner'
-      - '@deploy.task_manager.resource_locator'
-      - '@deploy.task_manager.command_locator'
 
   deploy.task_manager.abstract_task.asseticdump:
     class: Sokil\DeployBundle\Task\AsseticDumpTask

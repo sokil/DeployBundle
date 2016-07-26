@@ -52,25 +52,11 @@ class TaskManager
     public function configureCommand(Command $command)
     {
         $this->consoleCommand = $command;
-        $this->consoleCommandLocator->setApplication($this->consoleCommand->getApplication());
 
         /* @var AbstractTask $task */
         foreach ($this->tasks as $task) {
 
             $alias = $task->getAlias();
-
-            // set dependencies
-            if ($task instanceof CommandAwareTaskInterface) {
-                $task->setCommandLocator($this->consoleCommandLocator);
-            }
-
-            if ($task instanceof ResourceAwareTaskInterface) {
-                $task->setResourceLocator($this->resourceLocator);
-            }
-
-            if ($task instanceof ProcessRunnerAwareTaskInterface) {
-                $task->setProcessRunner($this->processRunner);
-            }
 
             // configure command parameter to launch task
             $command->addOption(
@@ -139,14 +125,27 @@ class TaskManager
             $isRunAllRequired = true;
         }
 
+        // define application
+        $this->consoleCommandLocator->setApplication($this->consoleCommand->getApplication());
+
         /* @var AbstractTask $task */
         foreach ($this->tasks as $taskAlias => $task) {
             if (!$isRunAllRequired && !$input->getOption($taskAlias)) {
                 continue;
             }
 
-            $environment = $input->getOption('env');
-            $verbosity = $output->getVerbosity();
+            // set dependencies
+            if ($task instanceof CommandAwareTaskInterface) {
+                $task->setCommandLocator($this->consoleCommandLocator);
+            }
+
+            if ($task instanceof ResourceAwareTaskInterface) {
+                $task->setResourceLocator($this->resourceLocator);
+            }
+
+            if ($task instanceof ProcessRunnerAwareTaskInterface) {
+                $task->setProcessRunner($this->processRunner);
+            }
 
             // get additional options
             $commandOptions = [];
@@ -155,6 +154,8 @@ class TaskManager
             }
 
             // run task
+            $environment = $input->getOption('env');
+            $verbosity = $output->getVerbosity();
             $task->run(
                 $commandOptions,
                 $environment,

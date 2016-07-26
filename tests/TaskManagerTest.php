@@ -9,16 +9,10 @@ class TaskManagerTest extends AbstractTestCase
 {
     public function testAddTask()
     {
-        $taskManager = new TaskManager(
-            $this->createProcessRunner(),
-            $this->createResourceLocator(),
-            $this->createCommandLocator()
-        );
+        $taskManager = $this->getContainer()->get('deploy.task_manager');
 
         $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
 
-        $command = $this->createCommand('SomeCommand');
-        $taskManager->configureCommand($command);
 
         $this->assertEquals(
             'myCustomTask',
@@ -32,32 +26,14 @@ class TaskManagerTest extends AbstractTestCase
      */
     public function testGetNotExistedTask()
     {
-        $taskManager = new TaskManager(
-            $this->createProcessRunner(),
-            $this->createResourceLocator(),
-            $this->createCommandLocator()
-        );
-
-        $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
-
-        $command = $this->createCommand('SomeCommand');
-        $taskManager->configureCommand($command);
-
+        $taskManager = $this->getContainer()->get('deploy.task_manager');
         $taskManager->getTask('someUnexistedTask');
     }
 
     public function testGetTasks()
     {
-        $taskManager = new TaskManager(
-            $this->createProcessRunner(),
-            $this->createResourceLocator(),
-            $this->createCommandLocator()
-        );
-
+        $taskManager = $this->getContainer()->get('deploy.task_manager');
         $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
-
-        $command = $this->createCommand('SomeCommand');
-        $taskManager->configureCommand($command);
 
         $tasks = $taskManager->getTasks();
 
@@ -69,30 +45,28 @@ class TaskManagerTest extends AbstractTestCase
 
     public function testConfigureCommand_NoTasks()
     {
-        $taskManager = new TaskManager(
-            $this->createProcessRunner(),
-            $this->createResourceLocator(),
-            $this->createCommandLocator()
+        $taskManager = $this->getContainer()->get('deploy.task_manager');
+        $taskManager->configureCommand(
+            $this->getContainer()->get('deploy.console_command')
         );
-
-        $command = $this->createCommand('SomeCommand');
-        $taskManager->configureCommand($command);
     }
 
     public function testConfigureCommand_TaskWithoutAdditionalCommandOptions()
     {
-        $taskManager = new TaskManager(
-            $this->createProcessRunner(),
-            $this->createResourceLocator(),
-            $this->createCommandLocator()
+        // create manager an add task
+        $taskManager = $this->getContainer()->get('deploy.task_manager');
+        $taskManager->addTask(
+            $this->createSimpleTaskWithoutAdditionalCommandOptions('myCustomTask')
         );
 
-        $taskManager->addTask($this->createSimpleTaskWithoutAdditionalCommandOptions('myCustomTask'));
-
-        $command = $this->createCommand('SomeCommand');
+        // configure command
+        $command = $this->getContainer()->get('deploy.console_command');
         $taskManager->configureCommand($command);
 
-        $this->assertEquals(1, count($command->getDefinition()->getOptions()));
+        $this->assertEquals(
+            count($this->getBundleConfiguration()['tasks']),
+            count($command->getDefinition()->getOptions())
+        );
 
         $this->assertEquals(
             'myCustomTask',
@@ -102,19 +76,22 @@ class TaskManagerTest extends AbstractTestCase
 
     public function testConfigureCommand_TaskWithAdditionalCommandOptions()
     {
-        $taskManager = new TaskManager(
-            $this->createProcessRunner(),
-            $this->createResourceLocator(),
-            $this->createCommandLocator()
-        );
+        // create manager
+        $taskManager = $this->getContainer()->get('deploy.task_manager');
 
-        $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
+        // add task
+        $myCustomTask = $this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask');
+        $taskManager->addTask($myCustomTask);
 
-        $command = $this->createCommand('SomeCommand');
+        // create command
+        $command = $this->getContainer()->get('deploy.console_command');
         $taskManager->configureCommand($command);
 
-        $this->assertEquals(3, count($command->getDefinition()->getOptions()));
-
+        // test
+        $this->assertEquals(
+            count($this->getBundleConfiguration()['tasks']) + count($myCustomTask->getCommandOptions()),
+            count($command->getDefinition()->getOptions())
+        );
         $this->assertEquals(
             'myCustomTask',
             $command->getDefinition()->getOption('myCustomTask')->getName()
@@ -133,41 +110,8 @@ class TaskManagerTest extends AbstractTestCase
 
     public function testExecute()
     {
-        // mock input
-        $input = $this->createInput();
-
-        $input
-            ->expects($this->any())
-            ->method('getOptions')
-            ->will($this->returnValue([
-                'task1' => true,
-                'task2' => true,
-                'env' => 'dev',
-            ]));
-
-        $input
-            ->expects($this->any())
-            ->method('getOption')
-            ->will($this->returnValueMap([
-                ['task1', true],
-                ['task2', true],
-                ['env', 'dev'],
-            ]));
-
-        // mock output
-        $output = $this->createOutput();
-
-        $output
-            ->expects($this->any())
-            ->method('getVerbosity')
-            ->will($this->returnValue(OutputInterface::VERBOSITY_NORMAL));
-
         // create task manager
-        $taskManager = new TaskManager(
-            $this->createProcessRunner(),
-            $this->createResourceLocator(),
-            $this->createCommandLocator()
-        );
+        $taskManager = $this->getContainer()->get('deploy.task_manager');
 
         // add tasks
         $task1 = $this->createSimpleTaskWithoutAdditionalCommandOptions('task1');
@@ -193,6 +137,37 @@ class TaskManagerTest extends AbstractTestCase
                 $this->createOutput()
             );
         $taskManager->addTask($task2);
+
+        // create command
+        $command = $this->getContainer()->get('deploy.console_command');
+        $taskManager->configureCommand($command);
+
+        // mock input
+        $input = $this->createInput();
+        $input
+            ->expects($this->any())
+            ->method('getOptions')
+            ->will($this->returnValue([
+                'task1' => true,
+                'task2' => true,
+                'env' => 'dev',
+            ]));
+
+        $input
+            ->expects($this->any())
+            ->method('getOption')
+            ->will($this->returnValueMap([
+                ['task1', true],
+                ['task2', true],
+                ['env', 'dev'],
+            ]));
+
+        // mock output
+        $output = $this->createOutput();
+        $output
+            ->expects($this->any())
+            ->method('getVerbosity')
+            ->will($this->returnValue(OutputInterface::VERBOSITY_NORMAL));
 
         // execute tasks
         $taskManager->execute(

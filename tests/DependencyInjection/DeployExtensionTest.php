@@ -3,24 +3,20 @@
 namespace Sokil\DeployBundle\DependencyInjection;
 
 use Sokil\DeployBundle\AbstractTestCase;
+use Sokil\DeployBundle\TaskManager;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class DeployExtensionTest extends AbstractTestCase
 {
-    /**
-     * @var ContainerBuilder
-     */
-    private $container;
-
-    public function setUp()
-    {
-        $this->container = $this->createContainer();
-    }
-
     public function testGetTaskManager()
     {
-        $taskManager = $this->container->get('deploy.task_manager');
+        $taskManager = $this->getContainer()->get('deploy.task_manager');
         $this->assertInstanceOf('\Sokil\DeployBundle\TaskManager', $taskManager);
+    }
+
+    public function testGetSimpleTask()
+    {
+        $taskManager = $this->getContainer()->get('deploy.task_manager');
 
         // simple task
         $gitTask = $taskManager->getTask('git');
@@ -32,7 +28,7 @@ class DeployExtensionTest extends AbstractTestCase
                 'defaultBranch' => 'master',
                 'repos' => [
                     'core' => [
-                        'path' => '/var/www/core',
+                        'path' => '/tmp',
                         'branch' => 'master',
                         'remote' => 'origin',
                         'tag' => true
@@ -41,6 +37,12 @@ class DeployExtensionTest extends AbstractTestCase
             ],
             $gitTask->getOptions()
         );
+
+    }
+
+    public function testGetResourceAwareTask()
+    {
+        $taskManager = $this->getContainer()->get('deploy.task_manager');
 
         // resource aware task
         $gitTask = $taskManager->getTask('grunt');
