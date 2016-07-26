@@ -44,7 +44,7 @@ class ClearCacheTask extends AbstractTask
         );
 
         if (!$isSuccessful) {
-            throw new TaskExecuteException('Error updating bower dependencies for bundle ' . $bundleName);
+            throw new TaskExecuteException('Error clearing cache');
         }
     }
 }

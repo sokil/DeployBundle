@@ -23,8 +23,6 @@ class ProcessRunner
         $command,
         $environment,
         $verbosity,
-        callable $doneCallback,
-        callable $failCallback,
         OutputInterface $output
     ) {
         // show command in debug mode
@@ -64,20 +62,8 @@ class ProcessRunner
             $output->writeln($process->getErrorOutput());
             // exit code
             $output->writeln($process->getExitCodeText());
-            // fail callback
-            call_user_func(
-                $failCallback,
-                $output
-            );
-
             return false;
         }
-
-        // done callback
-        call_user_func(
-            $doneCallback,
-            $output
-        );
 
         return true;
     }

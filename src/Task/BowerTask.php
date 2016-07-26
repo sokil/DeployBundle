@@ -71,18 +71,14 @@ class BowerTask extends AbstractTask implements
                 'cd ' . $bundlePath . '; bower install' . $productionFlag,
                 $environment,
                 $verbosity,
-                function($output) {
-                    $output->writeln('Bower dependencies updated successfully');
-                },
-                function($output) {
-                    $output->writeln('<error>Error while updating bower dependencies</error>');
-                },
                 $output
             );
 
             if (!$isSuccessful) {
                 throw new TaskExecuteException('Error updating bower dependencies for bundle ' . $bundleName);
             }
+
+            $output->writeln('Bower dependencies updated successfully for bundle ' . $bundleName);
         }
     }
 }

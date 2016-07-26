@@ -41,16 +41,12 @@ class GitTaskTest extends AbstractTestCase
                     'cd /tmp; git pull origin master',
                     'dev',
                     OutputInterface::VERBOSITY_NORMAL,
-                    $this->isType('callable'),
-                    $this->isType('callable'),
                     $this->isInstanceOf('Symfony\Component\Console\Output\OutputInterface')
                 ],
                 [
                     'git tag -a tagPattern -m tagPattern',
                     'dev',
                     OutputInterface::VERBOSITY_NORMAL,
-                    $this->isType('callable'),
-                    $this->isType('callable'),
                     $this->isInstanceOf('Symfony\Component\Console\Output\OutputInterface')
                 ]
             ],

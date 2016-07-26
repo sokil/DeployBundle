@@ -97,18 +97,14 @@ class GruntTask extends AbstractTask implements
                 $command,
                 $environment,
                 $verbosity,
-                function($output) {
-                    $output->writeln('Grunt tasks executed successfully');
-                },
-                function($output) {
-                    $output->writeln('<error>Error executing grunt tasks</error>');
-                },
                 $output
             );
 
             if (!$isSuccessful) {
-                throw new TaskExecuteException('Error updating bower dependencies for bundle ' . $bundleName);
+                throw new TaskExecuteException('Error running gruntt tasks for bundle ' . $bundleName);
             }
+
+            $output->writeln('Grunt tasks for bundle ' . $bundleName . ' executed successfully');
         }
     }
 }

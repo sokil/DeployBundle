@@ -73,18 +73,14 @@ class NpmTask extends AbstractTask implements
                 'cd ' . $bundlePath . '; npm install' . $productionFlag,
                 $environment,
                 $verbosity,
-                function($output) {
-                    $output->writeln('Npm dependencies updated successfully');
-                },
-                function($output) {
-                    $output->writeln('<error>Error while updating Npm dependencies</error>');
-                },
                 $output
             );
 
             if (!$isSuccessful) {
                 throw new TaskExecuteException('Error updating npm dependencies for bundle ' . $bundleName);
             }
+
+            $output->writeln('Npm dependencies updated successfully for bundle ' . $bundleName);
         }
     }
 }

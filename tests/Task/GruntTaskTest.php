@@ -38,16 +38,12 @@ class GruntTaskTest extends AbstractTestCase
                     'cd /tmp/bundle1; grunt --env=dev task1 task2',
                     'dev',
                     OutputInterface::VERBOSITY_NORMAL,
-                    $this->isType('callable'),
-                    $this->isType('callable'),
                     $this->isInstanceOf('Symfony\Component\Console\Output\OutputInterface')
                 ],
                 [
                     'cd /tmp/bundle2; grunt --env=dev',
                     'dev',
                     OutputInterface::VERBOSITY_NORMAL,
-                    $this->isType('callable'),
-                    $this->isType('callable'),
                     $this->isInstanceOf('Symfony\Component\Console\Output\OutputInterface')
                 ],
             ],

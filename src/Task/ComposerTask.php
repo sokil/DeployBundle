@@ -60,17 +60,13 @@ class ComposerTask extends AbstractTask implements
             $command,
             $environment,
             $verbosity,
-            function($output) {
-                $output->writeln('Composer dependencies updated successfully');
-            },
-            function($output) {
-                $output->writeln('<error>Error updating composer dependencies</error>');
-            },
             $output
         );
 
         if (!$isSuccessful) {
-            throw new TaskExecuteException('Error updating bower dependencies for bundle ' . $bundleName);
+            throw new TaskExecuteException('Error updating composer dependencies');
         }
+
+        $output->writeln('Composer dependencies updated successfully');
     }
 }

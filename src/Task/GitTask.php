@@ -45,19 +45,14 @@ class GitTask extends AbstractTask
                 'cd ' . $repoParams['path'] . '; git pull ' . $repoParams['remote'] . ' ' . $repoParams['branch'],
                 $environment,
                 $verbosity,
-                function($output) {
-                    $output->writeln('Source updated successfully');
-                },
-                function($output) {
-                    $output->writeln('<error>Error updating source</error>');
-                },
                 $output
             );
-
 
             if (!$isSuccessful) {
                 throw new TaskExecuteException('Error pulling repo ' . $repoName);
             }
+
+            $output->writeln('Repo ' . $repoName . ' updated successfully');
 
             // add tag
             if (!empty($repoParams['tag'])) {
@@ -68,18 +63,14 @@ class GitTask extends AbstractTask
                     'git tag -a ' . $releaseTag . ' -m ' . $releaseMessage,
                     $environment,
                     $verbosity,
-                    function($output) {
-                        $output->writeln('Release tagged');
-                    },
-                    function($output) {
-                        $output->writeln('<error>Error updating source</error>');
-                    },
                     $output
                 );
 
                 if (!$isSuccessful) {
-                    throw new TaskExecuteException('Error pulling repo ' . $repoName);
+                    throw new TaskExecuteException('Error tagging repo ' . $repoName);
                 }
+
+                $output->writeln('Release tagged in repo ' . $repoName);
             }
         }
     }
