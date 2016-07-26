@@ -2,7 +2,6 @@
 
 namespace Sokil\DeployBundle\Task;
 
-use Sokil\DeployBundle\Exception\InvalidTaskConfigurationException;
 use Sokil\DeployBundle\Exception\TaskConfigurationValidateException;
 use Sokil\DeployBundle\Exception\TaskExecuteException;
 use Sokil\DeployBundle\TaskManager\ProcessRunner;
@@ -21,12 +20,10 @@ class GitTask extends AbstractTask
 
     /**
      * @param ProcessRunner $runner
-     * @return BowerTask
      */
     public function setProcessRunner(ProcessRunner $runner)
     {
         $this->processRunner = $runner;
-        return $this;
     }
 
     public function getDescription()
@@ -108,7 +105,7 @@ class GitTask extends AbstractTask
 
     /**
      * Git config of repositories
-     * @throws InvalidTaskConfigurationException
+     * @throws TaskConfigurationValidateException
      */
     protected function prepareOptions(array $options)
     {

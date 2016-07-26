@@ -3,6 +3,7 @@
 namespace Sokil\DeployBundle\Task;
 
 use Sokil\DeployBundle\TaskManager\CommandLocator;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ClearCacheTask extends AbstractTask

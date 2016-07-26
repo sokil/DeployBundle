@@ -2,7 +2,7 @@
 
 namespace Sokil\DeployBundle\Task;
 
-use Sokil\DeployBundle\Exception\InvalidTaskConfigurationException;
+use Sokil\DeployBundle\Exception\TaskConfigurationValidateException;
 use Sokil\DeployBundle\TaskManager\ProcessRunner;
 use Sokil\DeployBundle\TaskManager\ResourceLocator;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -50,7 +50,7 @@ class BowerTask extends AbstractTask implements
     ) {
         $bundleList = $this->getOption('bundles');
         if (empty($bundleList) || !is_array($bundleList)) {
-            throw new InvalidTaskConfigurationException('Bundles not configured for bower');
+            throw new TaskConfigurationValidateException('Bundles not configured for bower');
         }
 
         foreach ($bundleList as $bundleName) {
