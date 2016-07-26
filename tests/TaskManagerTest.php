@@ -64,7 +64,7 @@ class TaskManagerTest extends AbstractTestCase
         $taskManager->configureCommand($command);
 
         $this->assertEquals(
-            count($this->getBundleConfiguration()['tasks']),
+            count($this->getBundleConfiguration()['tasks']) + 1, // basic tasks + myCustomTask
             count($command->getDefinition()->getOptions())
         );
 
@@ -89,7 +89,9 @@ class TaskManagerTest extends AbstractTestCase
 
         // test
         $this->assertEquals(
-            count($this->getBundleConfiguration()['tasks']) + count($myCustomTask->getCommandOptions()),
+            // basic tasks + myCustomTask + additional options of myCustomTask
+            count($this->getBundleConfiguration()['tasks']) + count($myCustomTask->getCommandOptions()) + 1,
+            //all configured options
             count($command->getDefinition()->getOptions())
         );
         $this->assertEquals(
@@ -174,5 +176,43 @@ class TaskManagerTest extends AbstractTestCase
             $input,
             $output
         );
+    }
+
+    public function testIsAllTasksRequired_OnlyGit()
+    {
+        // get task manager
+        $taskManager = $this->getContainer()->get('deploy.task_manager');
+
+        // get method
+        $taskManagerReflection = new \ReflectionClass($taskManager);
+        $isAllTasksRequiredMethod = $taskManagerReflection->getMethod('isAllTasksRequired');
+        $isAllTasksRequiredMethod->setAccessible(true);
+
+        $isAllTasksRequired = $isAllTasksRequiredMethod->invoke($taskManager, [
+            'git' => true,
+            'bower' => false,
+            'npm' => false,
+        ]);
+
+        $this->assertFalse($isAllTasksRequired);
+    }
+
+    public function testIsAllTasksRequired_AllRequired()
+    {
+        // get task manager
+        $taskManager = $this->getContainer()->get('deploy.task_manager');
+
+        // get method
+        $taskManagerReflection = new \ReflectionClass($taskManager);
+        $isAllTasksRequiredMethod = $taskManagerReflection->getMethod('isAllTasksRequired');
+        $isAllTasksRequiredMethod->setAccessible(true);
+
+        $isAllTasksRequired = $isAllTasksRequiredMethod->invoke($taskManager, [
+            'git' => false,
+            'bower' => false,
+            'npm' => false,
+        ]);
+
+        $this->assertTrue($isAllTasksRequired);
     }
 }

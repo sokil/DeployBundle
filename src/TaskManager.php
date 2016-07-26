@@ -111,6 +111,22 @@ class TaskManager
     }
 
     /**
+     * Check if all tasks configured to be run
+     *
+     * @param array $inputOptions
+     * @return bool
+     */
+    private function isAllTasksRequired(array $inputOptions)
+    {
+        $isRunAllRequired = false;
+        if (count(array_intersect_key($this->tasks, array_filter($inputOptions))) === 0) {
+            $isRunAllRequired = true;
+        }
+
+        return $isRunAllRequired;
+    }
+
+    /**
      * Execute tasks
      *
      * @param InputInterface $input
@@ -120,10 +136,7 @@ class TaskManager
         InputInterface $input,
         OutputInterface $output
     ) {
-        $isRunAllRequired = false;
-        if (count(array_intersect_key($this->tasks, $input->getOptions())) === 0) {
-            $isRunAllRequired = true;
-        }
+        $isRunAllRequired = $this->isAllTasksRequired($input->getOptions());
 
         // define application
         $this->consoleCommandLocator->setApplication($this->consoleCommand->getApplication());

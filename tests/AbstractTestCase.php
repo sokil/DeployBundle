@@ -37,7 +37,7 @@ abstract class AbstractTestCase extends TestCase
                     ],
                 ],
                 'composer' => [],
-                'migration' => [],
+                'migrate' => [],
                 'npm' => [
                     'bundles' => [
                         "bundle1",
@@ -261,22 +261,24 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
-     * @return InputInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return Input|\PHPUnit_Framework_MockObject_MockObject
      */
     public function createInput()
     {
         return $this
-            ->getMockBuilder('Symfony\Component\Console\Input\InputInterface')
+            ->getMockBuilder('Symfony\Component\Console\Input\Input')
+            ->disableOriginalConstructor()
             ->getMock();
     }
 
     /**
-     * @return OutputInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return Output|\PHPUnit_Framework_MockObject_MockObject
      */
     public function createOutput()
     {
         return $this
-            ->getMockBuilder('Symfony\Component\Console\Output\OutputInterface')
+            ->getMockBuilder('Symfony\Component\Console\Output\Output')
+            ->disableOriginalConstructor()
             ->getMock();
     }
 }
