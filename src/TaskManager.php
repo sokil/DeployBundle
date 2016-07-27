@@ -139,6 +139,14 @@ class TaskManager
         InputInterface $input,
         OutputInterface $output
     ) {
+        // get state variables
+        $environment = $input->getOption('env');
+        $verbosity = $output->getVerbosity();
+
+        // define env variables to run tasks
+        putenv('SYMFONY_ENV=' . $environment);
+
+        // check if all task configured to run
         $isRunAllRequired = $this->isAllTasksRequired($input->getOptions());
 
         // define application
@@ -170,8 +178,6 @@ class TaskManager
             }
 
             // run task
-            $environment = $input->getOption('env');
-            $verbosity = $output->getVerbosity();
             $task->run(
                 $commandOptions,
                 $environment,

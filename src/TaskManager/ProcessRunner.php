@@ -34,9 +34,7 @@ class ProcessRunner
         $process = new Process(
             $command,
             null, // cwd
-            [
-                'SYMFONY_ENV' => $environment,
-            ],
+            null, // env
             null, // input
             null  // timeout
         );
