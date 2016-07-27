@@ -99,7 +99,7 @@ class GruntTask extends AbstractTask implements
             );
 
             if (!$isSuccessful) {
-                throw new TaskExecuteException('Error running gruntt tasks for bundle ' . $bundleName);
+                throw new TaskExecuteException('Error running grunt tasks for bundle ' . $bundleName);
             }
 
             $output->writeln('Grunt tasks for bundle ' . $bundleName . ' executed successfully');
