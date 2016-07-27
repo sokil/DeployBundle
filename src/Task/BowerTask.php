@@ -41,18 +41,40 @@ class BowerTask extends AbstractTask implements
         return 'Updating bower dependencies';
     }
 
+    /**
+     * Prepare task options: check values and set default values
+     *
+     * @param array $options configuration
+     * @throws TaskConfigurationValidateException
+     * @return array validated options with default values on empty params
+     */
+    protected function prepareOptions(array $options)
+    {
+        // bundles list
+        if (empty($options['bundles']) || !is_array($options['bundles'])) {
+            throw new TaskConfigurationValidateException('Bundles not configured for bower');
+        }
+
+        $options['bundles'] = array_keys(array_filter($options['bundles']));
+
+        return $options;
+    }
+
+    /**
+     * @param array $commandOptions
+     * @param $environment
+     * @param $verbosity
+     * @param OutputInterface $output
+     * @return bool
+     * @throws TaskExecuteException
+     */
     public function run(
         array $commandOptions,
         $environment,
         $verbosity,
         OutputInterface $output
     ) {
-        $bundleList = $this->getOption('bundles');
-        if (empty($bundleList) || !is_array($bundleList)) {
-            throw new TaskConfigurationValidateException('Bundles not configured for bower');
-        }
-
-        foreach ($bundleList as $bundleName) {
+        foreach ($this->getOption('bundles') as $bundleName) {
             // get bundle path
             $bundlePath = $this->resourceLocator->locateResource('@' . $bundleName);
 
