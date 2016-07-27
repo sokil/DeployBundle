@@ -215,4 +215,11 @@ class TaskManagerTest extends AbstractTestCase
 
         $this->assertTrue($isAllTasksRequired);
     }
+
+    public function testTasksRunningOrder()
+    {
+        $actualTaskAliases = array_keys($this->getContainer()->get('deploy.task_manager')->getTasks());
+        $expectedTaskAliastes = array_keys($this->getBundleConfiguration()['tasks']);
+        $this->assertSame($expectedTaskAliastes, $actualTaskAliases);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace Sokil\DeployBundle\DependencyInjection;
 
+use Sokil\DeployBundle\Exception\TaskNotFoundException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -20,9 +21,11 @@ class TaskDiscoveryCompilerPass implements CompilerPassInterface
         // get deploy configuration
         $tasksConfiguration = $container->getParameter('deploy.tasksConfiguration');
 
+        // prepare tasks in pre-configured order
+        $taskServices = array_fill_keys(array_keys($tasksConfiguration), null);
+
         // find tasks
-        $taskDefinitionList = $container->findTaggedServiceIds('deploy.task');
-        foreach ($taskDefinitionList as $abstractTaskServiceId => $taskServiceTags) {
+        foreach ($container->findTaggedServiceIds('deploy.task') as $abstractTaskServiceId => $taskServiceTags) {
             foreach ($taskServiceTags as $taskServiceTagParameters) {
 
                 $taskAlias = $taskServiceTagParameters['alias'];
@@ -42,14 +45,23 @@ class TaskDiscoveryCompilerPass implements CompilerPassInterface
                 // register definition
                 $container->setDefinition($taskServiceId, $taskDefinition);
 
-                // add task to task manager
-                $taskManagerDefinition->addMethodCall(
-                    'addTask',
-                    [
-                        new Reference($taskServiceId),
-                    ]
-                );
+                // services to initialize
+                $taskServices[$taskAlias] = new Reference($taskServiceId);
             }
+        }
+
+        // add task to task manager
+        foreach ($taskServices as $taskAlias => $taskService) {
+            if (!($taskService instanceof Reference)) {
+                throw new TaskNotFoundException('Task ' . $taskAlias . ' has configuration but no tasks with this alias found');
+            }
+
+            $taskManagerDefinition->addMethodCall(
+                'addTask',
+                [
+                    $taskService,
+                ]
+            );
         }
     }
 }
