@@ -12,7 +12,7 @@ Task runner for Symfony project
 
 ## Git
 
-If repo is in private repository, password will be asked on pull:
+If repository is private, password will be asked on pull:
 
 ```
 Permission denied (publickey).
