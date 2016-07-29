@@ -29,12 +29,12 @@ class ProcessRunnerTest extends AbstractTestCase
         $processMock
             ->expects($this->once())
             ->method('getExitCode')
-            ->will($this->returnValue(0);
+            ->will($this->returnValue(0));
             
         $processMock
             ->expects($this->once())
             ->method('isSuccessful')
-            ->will($this->returnValue(true);
+            ->will($this->returnValue(true));
             
         return $processMock;
     }
