@@ -24,7 +24,7 @@ class ProcessRunnerTest extends AbstractTestCase
         $processMock
             ->expects($this->exactly(2))
             ->method('isRunning')
-            ->will($this->onConsecutiveCalls(true, false);
+            ->will($this->onConsecutiveCalls(true, false));
             
         $processMock
             ->expects($this->once())
