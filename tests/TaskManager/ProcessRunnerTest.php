@@ -15,6 +15,7 @@ class ProcessRunnerTest extends AbstractTestCase
     {
         $processMock = $this
             ->getMockBuilder('Symfony\Component\Process\Process')
+            ->disableOriginalConstructor()
             ->getMock();
         
         $processMock
