@@ -4,10 +4,42 @@ namespace Sokil\DeployBundle\TaskManager;
 
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\RuntimeException;
 
 class ProcessRunner
 {
     const WAIT_PROCESS_EXIT_DELAY = 100000;
+
+    /**
+     * Create instane of process
+     *
+     * @param string         $commandline The command line to run
+     * @param string|null    $cwd         The working directory or null to use the working dir of the current PHP process
+     * @param array|null     $env         The environment variables or null to use the same environment as the current PHP process
+     * @param mixed|null     $input       The input as stream resource, scalar or \Traversable, or null for no input
+     * @param int|float|null $timeout     The timeout in seconds or null to disable
+     * @param array          $options     An array of options for proc_open
+     *
+     * @throws RuntimeException When proc_open is not installed
+     * @return Process
+     */
+    protected function createProcess(
+        $commandline, 
+        $cwd = null, 
+        array $env = null, 
+        $input = null, 
+        $timeout = 60, 
+        array $options = array()
+    ) {
+        return new Process(
+            $commandline,
+            $cwd
+            $env
+            $input
+            $timeout,
+            $options
+        );
+    }
 
     /**
      * @param string $command shell command to execute
@@ -30,15 +62,12 @@ class ProcessRunner
             $output->writeln('<info>Command: </info>' . $command);
         }
 
-        // execute command
-        $process = new Process(
-            $command,
-            null, // cwd
-            null, // env
-            null, // input
-            null  // timeout
+        // create command
+        $process = $this->createProcess(
+            $command
         );
 
+        // execute command
         $process->start();
 
         // run standard output
