@@ -33,9 +33,9 @@ class ProcessRunner
     ) {
         return new Process(
             $commandline,
-            $cwd
-            $env
-            $input
+            $cwd,
+            $env,
+            $input,
             $timeout,
             $options
         );
