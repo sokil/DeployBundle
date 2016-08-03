@@ -60,6 +60,18 @@ class BowerTask extends AbstractTask implements
         return $options;
     }
 
+    protected function getBowerfilePath($bundleName)
+    {
+        // get bundle path
+        $bundlePath = $this->resourceLocator->locateResource('@' . $bundleName);
+        // find path to Gruntfile
+        $bowefilePath = $bundlePath . 'bower.json';
+        if (!file_exists($bowefilePath)) {
+            throw new TaskConfigurationValidateException('Bundle "' . $bundleName . '" configured for running bower task but bower.json not found at "' . $bundlePath . '"');
+        }
+        return $bowefilePath;
+    }
+
     /**
      * @param array $commandOptions
      * @param $environment
@@ -74,23 +86,23 @@ class BowerTask extends AbstractTask implements
         $verbosity,
         OutputInterface $output
     ) {
-        foreach ($this->getOption('bundles') as $bundleName) {
-            // get bundle path
-            $bundlePath = $this->resourceLocator->locateResource('@' . $bundleName);
+        $bundleTasksList = $this->getOption('bundles');
 
-            // check path to bower
-            $bowerPath = $bundlePath . 'bower.json';
-            if (!file_exists($bowerPath)) {
-                return true;
-            }
+        // get path list to Gruntfile
+        $bowerfilePathList = [];
+        foreach ($bundleTasksList as $bundleName => $tasks) {
+            // store bundle path
+            $bowerfilePathList[$bundleName] = $this->getGruntfilePath($bundleName);
+        }
 
+        foreach ($bowerfilePathList as $bowerPath) {
             // execute
             $output->writeln('<' . $this->h2Style . '>Install bower dependencies from ' . $bowerPath . '</>');
 
             $productionFlag = $environment === 'prod' ? ' --production' : null;
 
             $isSuccessful = $this->processRunner->run(
-                'cd ' . $bundlePath . '; bower install' . $productionFlag,
+                'cd ' . dirname($bowerPath) . '; bower install' . $productionFlag,
                 $environment,
                 $verbosity,
                 $output
