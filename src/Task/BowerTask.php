@@ -92,7 +92,7 @@ class BowerTask extends AbstractTask implements
         $bowerfilePathList = [];
         foreach ($bundleTasksList as $bundleName => $tasks) {
             // store bundle path
-            $bowerfilePathList[$bundleName] = $this->getGruntfilePath($bundleName);
+            $bowerfilePathList[$bundleName] = $this->getBowerfilePath($bundleName);
         }
 
         foreach ($bowerfilePathList as $bowerPath) {
