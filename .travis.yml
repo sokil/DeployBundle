@@ -10,6 +10,7 @@ before_script:
   - composer update --no-interaction
 
 script:
+  - mkdir -p build/logs
   - phpunit -c tests/phpunit.xml --coverage-clover build/logs/clover.xml tests
 
 after_script:
