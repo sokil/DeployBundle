@@ -16,8 +16,14 @@ class GruntTaskTest extends AbstractTestCase
                 'grunt',
                 [
                     'bundles' => [
-                        'bundle1' => 'task1 task2',
+                        'bundle1' => [
+                            'tasks' => [
+                                'task1',
+                                'task2',
+                            ],
+                        ],
                         'bundle2' => true,
+                        'bundle3' => false,
                     ]
                 ]
             ])

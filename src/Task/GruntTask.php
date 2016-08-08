@@ -73,7 +73,7 @@ class GruntTask extends AbstractTask implements
 
         // get path list to Gruntfile
         $gruntfilePathList = [];
-        foreach ($bundleTasksList as $bundleName => $tasks) {
+        foreach ($bundleTasksList as $bundleName => $bundleTaskConfiguration) {
             // store bundle path
             $gruntfilePathList[$bundleName] = $this->getGruntfilePath($bundleName);
         }
@@ -83,13 +83,27 @@ class GruntTask extends AbstractTask implements
 
             $output->writeln('<' . $this->h2Style . '>Execute grunt tasks from ' . $gruntfilePath . '</>');
 
-            // prepare command
-            $command = 'cd ' . dirname($gruntfilePath) . '; grunt --env=' . $environment;
-
             // configure grunt tasks
-            if (is_string($bundleTasksList[$bundleName])) {
-                $command .= ' ' . $bundleTasksList[$bundleName];
+            $bundleTaskConfiguration = $bundleTasksList[$bundleName];
+            $bundleGruntTasks = null;
+            if (is_array($bundleTaskConfiguration)) {
+                if (!empty($bundleTaskConfiguration['tasks']) && is_array($bundleTaskConfiguration['tasks'])) {
+                    $bundleGruntTasks = ' ' . implode(' ', $bundleTaskConfiguration['tasks']);
+                }
+            } elseif (is_bool($bundleTaskConfiguration)) {
+                if ($bundleTaskConfiguration === false) {
+                    continue;
+                }
             }
+
+            // prepare command
+            $commandPattern = 'cd %s; grunt --env=%s%s';
+            $command = sprintf(
+                $commandPattern,
+                dirname($gruntfilePath),
+                $environment,
+                $bundleGruntTasks
+            );
 
             $isSuccessful = $this->processRunner->run(
                 $command,
