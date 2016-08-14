@@ -64,11 +64,6 @@ class TaskManagerTest extends AbstractTestCase
         $taskManager->configureCommand($command);
 
         $this->assertEquals(
-            count($this->getBundleConfiguration()['tasks']) + 1, // basic tasks + myCustomTask
-            count($command->getDefinition()->getOptions())
-        );
-
-        $this->assertEquals(
             'myCustomTask',
             $command->getDefinition()->getOption('myCustomTask')->getName()
         );
@@ -87,13 +82,6 @@ class TaskManagerTest extends AbstractTestCase
         $command = $this->getContainer()->get('deploy.console_command');
         $taskManager->configureCommand($command);
 
-        // test
-        $this->assertEquals(
-            // basic tasks + myCustomTask + additional options of myCustomTask
-            count($this->getBundleConfiguration()['tasks']) + count($myCustomTask->getCommandOptions()) + 1,
-            //all configured options
-            count($command->getDefinition()->getOptions())
-        );
         $this->assertEquals(
             'myCustomTask',
             $command->getDefinition()->getOption('myCustomTask')->getName()

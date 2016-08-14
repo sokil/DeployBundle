@@ -63,4 +63,82 @@ class GruntTaskTest extends AbstractTestCase
             $this->createOutput()
         );
     }
+
+    public function testRun_CliConfiguration()
+    {
+        /* @var $taskMock \Sokil\DeployBundle\Task\GruntTask */
+        $taskMock = $this->getMockBuilder('\Sokil\DeployBundle\Task\GruntTask')
+            ->setMethods(['getGruntfilePath'])
+            ->setConstructorArgs([
+                'grunt',
+                [
+                    'bundles' => [
+                        'bundle1' => [
+                            'tasks' => [
+                                'task1',
+                                'task2',
+                            ],
+                        ],
+                        'bundle2' => true,
+                        'bundle3' => false,
+                    ]
+                ]
+            ])
+            ->getMock();
+
+        $taskMock
+            ->expects($this->any())
+            ->method('getGruntfilePath')
+            ->will($this->returnValueMap([
+                ['bundle1', '/tmp/bundle1/Gruntfile.js'],
+                ['bundle2', '/tmp/bundle2/Gruntfile.js'],
+                ['bundle3', '/tmp/bundle3/Gruntfile.js'],
+            ]));
+
+        $taskMock->setProcessRunner($this->createProcessRunner(
+            [
+                [
+                    'cd /tmp/bundle2; grunt --env=dev task3 task4',
+                    'dev',
+                    OutputInterface::VERBOSITY_NORMAL,
+                    $this->isInstanceOf('Symfony\Component\Console\Output\OutputInterface')
+                ],
+                [
+                    'cd /tmp/bundle3; grunt --env=dev',
+                    'dev',
+                    OutputInterface::VERBOSITY_NORMAL,
+                    $this->isInstanceOf('Symfony\Component\Console\Output\OutputInterface')
+                ],
+            ],
+            true
+        ));
+
+        $taskMock->run(
+            ['tasks' => 'bundle2:task3,task4;bundle3'],
+            'dev',
+            OutputInterface::VERBOSITY_NORMAL,
+            $this->createOutput()
+        );
+    }
+
+    public function testParseGruntTaskString()
+    {
+        $gruntTaskString = 'bundle1:task1,task2;bundle2;bundle3:task1';
+        $expectedTaskConfig = [
+            'bundle1' => ['tasks' => ['task1', 'task2']],
+            'bundle2' => true,
+            'bundle3' => ['tasks' => ['task1']]
+        ];
+
+        $task = new GruntTask('grunt', ['bundles' => ['bundle42' => true]]);
+
+        // allow call private method
+        $taskReflection = new \ReflectionClass($task);
+        $methodReflection = $taskReflection->getMethod('parseGruntTaskString');
+        $methodReflection->setAccessible(true);
+
+        // call method
+        $actualTaskConfig = $methodReflection->invoke($task, $gruntTaskString);
+        $this->assertSame($expectedTaskConfig, $actualTaskConfig);
+    }
 }

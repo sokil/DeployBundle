@@ -48,6 +48,11 @@ abstract class AbstractTask implements TaskInterface
     }
 
     /**
+     * Configuration of CLI options
+     * Allowed keys:
+     *  - description - help message of configured CLI option
+     *  - default - default vlue of CLI option
+     *
      * @return array command options with parameters
      */
     public function getCommandOptions()

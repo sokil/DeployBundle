@@ -70,11 +70,11 @@ class TaskManager
             );
 
             // configure command other parameters
-            foreach ($task->getCommandOptions() as $optionName => $optionParams) {
-                $description = !empty($optionParams['description']) ? $optionParams['description'] : null;
-                $defaultValue = !empty($optionParams['default']) ? $optionParams['default'] : null;
+            foreach ($task->getCommandOptions() as $commandOptionName => $commandOptionParameters) {
+                $description = !empty($commandOptionParameters['description']) ? $commandOptionParameters['description'] : null;
+                $defaultValue = !empty($commandOptionParameters['default']) ? $commandOptionParameters['default'] : null;
                 $command->addOption(
-                    $alias . '-' . $optionName,
+                    $alias . '-' . $commandOptionName,
                     null,
                     InputOption::VALUE_OPTIONAL,
                     $description,

@@ -63,13 +63,46 @@ class GruntTask extends AbstractTask implements
         return $gruntPath;
     }
 
+    public function getCommandOptions()
+    {
+        return [
+            'tasks' => [
+                'description' => 'list of bundles with specified grunt tasks',
+            ]
+        ];
+    }
+
+    /**
+     * Format of task string is: "bundle1Name:task1Name,task2Name;bundle2Name;"...
+     * @param $taskString
+     * @return array
+     */
+    protected function parseGruntTaskString($taskString)
+    {
+        $gruntTaskConfig = [];
+        foreach (explode(';', $taskString) as $bundleTaskString) {
+            if (false === strpos($bundleTaskString, ':')) {
+                $gruntTaskConfig[$bundleTaskString] = true;
+            } else {
+                list ($bundleTame, $commaDelimitedGruntTasks) = explode(':', $bundleTaskString);
+                $gruntTaskConfig[$bundleTame] = ['tasks' => explode(',', $commaDelimitedGruntTasks)];
+            }
+        }
+
+        return $gruntTaskConfig;
+    }
+
     public function run(
         array $commandOptions,
         $environment,
         $verbosity,
         OutputInterface $output
     ) {
-        $bundleTasksList = $this->getOption('bundles');
+        if (empty($commandOptions['tasks'])) {
+            $bundleTasksList = $this->getOption('bundles');
+        } else {
+            $bundleTasksList = $this->parseGruntTaskString($commandOptions['tasks']);
+        }
 
         // get path list to Gruntfile
         $gruntfilePathList = [];
