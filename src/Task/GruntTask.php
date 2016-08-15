@@ -80,11 +80,11 @@ class GruntTask extends AbstractTask implements
     protected function parseGruntTaskString($taskString)
     {
         $gruntTaskConfig = [];
-        foreach (explode(';', $taskString) as $bundleTaskString) {
-            if (false === strpos($bundleTaskString, ':')) {
+        foreach (explode('&', $taskString) as $bundleTaskString) {
+            if (false === strpos($bundleTaskString, '=')) {
                 $gruntTaskConfig[$bundleTaskString] = true;
             } else {
-                list ($bundleTame, $commaDelimitedGruntTasks) = explode(':', $bundleTaskString);
+                list ($bundleTame, $commaDelimitedGruntTasks) = explode('=', $bundleTaskString);
                 $gruntTaskConfig[$bundleTame] = ['tasks' => explode(',', $commaDelimitedGruntTasks)];
             }
         }

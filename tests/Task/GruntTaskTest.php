@@ -121,15 +121,51 @@ class GruntTaskTest extends AbstractTestCase
         );
     }
 
-    public function testParseGruntTaskString()
+    public function parseGruntTaskStringDataProvider()
     {
-        $gruntTaskString = 'bundle1:task1,task2;bundle2;bundle3:task1';
-        $expectedTaskConfig = [
-            'bundle1' => ['tasks' => ['task1', 'task2']],
-            'bundle2' => true,
-            'bundle3' => ['tasks' => ['task1']]
+        return [
+            [
+                'bundle1',
+                [
+                    'bundle1' => true,
+                ],
+            ],
+            [
+                'bundle1=task1',
+                [
+                    'bundle1' => ['tasks' => ['task1']],
+                ],
+            ],
+            [
+                'bundle1=task1,task2',
+                [
+                    'bundle1' => ['tasks' => ['task1', 'task2']],
+                ],
+            ],
+            [
+                'bundle1=newer:task1,newer:task2',
+                [
+                    'bundle1' => ['tasks' => ['newer:task1', 'newer:task2']],
+                ],
+            ],
+            [
+                'bundle1=task1,task2&bundle2&bundle3=task1',
+                [
+                    'bundle1' => ['tasks' => ['task1', 'task2']],
+                    'bundle2' => true,
+                    'bundle3' => ['tasks' => ['task1']]
+                ],
+            ],
         ];
+    }
 
+    /**
+     * @dataProvider parseGruntTaskStringDataProvider
+     * @param $gruntTaskString
+     * @param $expectedTaskConfig
+     */
+    public function testParseGruntTaskString($gruntTaskString, $expectedTaskConfig)
+    {
         $task = new GruntTask('grunt', ['bundles' => ['bundle42' => true]]);
 
         // allow call private method
