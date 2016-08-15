@@ -98,6 +98,7 @@ class GruntTask extends AbstractTask implements
         $verbosity,
         OutputInterface $output
     ) {
+        // get task list
         if (empty($commandOptions['tasks'])) {
             $bundleTasksList = $this->getOption('bundles');
         } else {

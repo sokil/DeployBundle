@@ -69,7 +69,7 @@ abstract class AbstractTask implements TaskInterface
     }
 
     /**
-     * Prepare task options: check values and set default values
+     * Prepare task options configured in bundle`s config: check values and set default values
      *
      * @param array $options configuration
      * @throws TaskConfigurationValidateException
