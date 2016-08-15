@@ -30,8 +30,10 @@ class ComposerTask extends AbstractTask implements
     protected function prepareOptions(array $options)
     {
         // disable composer scripts by default
-        if (empty($options['scripts'])) {
+        if (!isset($options['scripts'])) {
             $options['scripts'] = true;
+        } else {
+            $options['scripts'] = (bool)$options['scripts'];
         }
 
         return $options;
