@@ -2,6 +2,7 @@
 
 namespace Sokil\DeployBundle\Task;
 
+use Sokil\DeployBundle\Exception\DeployException;
 use Sokil\DeployBundle\Exception\TaskConfigurationValidateException;
 use Sokil\DeployBundle\Exception\TaskExecuteException;
 use Sokil\DeployBundle\TaskManager\ProcessRunner;
@@ -46,6 +47,11 @@ class GruntTask extends AbstractTask implements
         // check if bundles passed
         if (empty($options['bundles']) || !is_array($options['bundles'])) {
             throw new TaskConfigurationValidateException('Bundles not specified for grunt task "' . $this->getAlias() . '"');
+        }
+
+        // allow fork tasks
+        if (!isset($options['parallel'])) {
+            $options['parallel'] = false;
         }
 
         return $options;
@@ -112,6 +118,9 @@ class GruntTask extends AbstractTask implements
             $gruntfilePathList[$bundleName] = $this->getGruntfilePath($bundleName);
         }
 
+        // is run of process in parallel required
+        $isParallelRun = $this->getOption('parallel', false);
+
         // run task
         foreach ($gruntfilePathList as $bundleName => $gruntfilePath) {
 
@@ -139,18 +148,36 @@ class GruntTask extends AbstractTask implements
                 $bundleGruntTasks
             );
 
-            $isSuccessful = $this->processRunner->run(
-                $command,
+            if ($isParallelRun) {
+                $commands[] = $command;
+            } else {
+                $isSuccessful = $this->processRunner->run(
+                    $command,
+                    $environment,
+                    $verbosity,
+                    $output
+                );
+
+                if (!$isSuccessful) {
+                    throw new TaskExecuteException('Error running grunt tasks for bundle ' . $bundleName);
+                }
+
+                $output->writeln('Grunt tasks for bundle ' . $bundleName . ' executed successfully');
+            }
+        }
+
+        // start parallel run
+        if ($isParallelRun) {
+            if (empty($commands)) {
+                throw new DeployException('Parallel commands not configured');
+            }
+
+            $this->processRunner->parallelRun(
+                $commands,
                 $environment,
                 $verbosity,
                 $output
             );
-
-            if (!$isSuccessful) {
-                throw new TaskExecuteException('Error running grunt tasks for bundle ' . $bundleName);
-            }
-
-            $output->writeln('Grunt tasks for bundle ' . $bundleName . ' executed successfully');
         }
     }
 }

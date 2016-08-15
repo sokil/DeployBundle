@@ -9,6 +9,7 @@ use Symfony\Component\Process\Exception\RuntimeException;
 class ProcessRunner
 {
     const WAIT_PROCESS_EXIT_DELAY = 100000;
+    const WAIT_PROCESS_CHECKSTATUS_DELAY = 300000;
 
     /**
      * Create instane of process
@@ -93,5 +94,69 @@ class ProcessRunner
         }
 
         return true;
+    }
+
+    public function parallelRun(
+        array $commandList,
+        $environment,
+        $verbosity,
+        OutputInterface $output
+    ) {
+
+        // create processes
+        $processList = [];
+        foreach ($commandList as $command) {
+            // create process
+            $process = $this->createProcess(
+                $command
+            );
+            // execute command
+            $process->start();
+            $pid = $process->getPid();
+            // add to process pool
+            $processList[$pid] = $process;
+            // show command in debug mode
+            if ($verbosity >= OutputInterface::VERBOSITY_VERBOSE) {
+                $output->writeln('<info>Command # ' . $pid . ': </info>' . $command);
+            }
+        }
+
+        // wait status
+        $isSuccessful = true;
+
+        while (count($processList) > 0) {
+            foreach ($processList as $pid => $process) {
+                // if process still running - check next process
+                if ($process->isRunning()) {
+                    usleep(self::WAIT_PROCESS_CHECKSTATUS_DELAY);
+                    continue;
+                }
+
+                // wait exit code
+                while($process->getExitCode() === null) {
+                    usleep(self::WAIT_PROCESS_EXIT_DELAY);
+                }
+
+                // show exit status
+                if ($process->isSuccessful()) {
+                    // show success message
+                    $output->writeln('Process with pid ' . $pid . ' executed successfully');
+                    // status
+                    $isSuccessful &= true;
+                } else {
+                    // exit code
+                    $output->writeln('Process ' . $pid . ' exited with error #' . $process->getExitCode() . ' ' . $process->getExitCodeText());
+                    // render error output
+                    $output->writeln($process->getErrorOutput());
+                    // status
+                    $isSuccessful &= false;
+                }
+
+                // remove finished tasks
+                unset($processList[$pid]);
+            }
+        }
+
+        return $isSuccessful;
     }
 }

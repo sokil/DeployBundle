@@ -11,7 +11,7 @@ class ProcessRunnerTest extends AbstractTestCase
     /**
      * @return Process
      */
-    private function createProcessMock()
+    private function createProcessMock($pid = 0)
     {
         $processMock = $this
             ->getMockBuilder('Symfony\Component\Process\Process')
@@ -31,6 +31,11 @@ class ProcessRunnerTest extends AbstractTestCase
             ->expects($this->once())
             ->method('getExitCode')
             ->will($this->returnValue(0));
+
+        $processMock
+            ->expects($this->any())
+            ->method('getPid')
+            ->will($this->returnValue($pid));
             
         $processMock
             ->expects($this->once())
@@ -42,7 +47,7 @@ class ProcessRunnerTest extends AbstractTestCase
     
     public function testRun()
     {
-        
+        // create tunner
         $runner = $this
             ->getMockBuilder('Sokil\DeployBundle\TaskManager\ProcessRunner')
             ->setMethods(['createProcess'])
@@ -52,14 +57,47 @@ class ProcessRunnerTest extends AbstractTestCase
             ->expects($this->once())
             ->method('createProcess')
             ->will($this->returnValue($this->createProcessMock()));
-            
+
+        // run task
         $runner->run(
             'ls -lah',
             'dev',
             OutputInterface::VERBOSITY_VERBOSE,
             $this->createOutput()
         );
-            
-            
+    }
+
+    public function testParallelRun()
+    {
+        $commands = [
+            'ls -lah',
+            'id'
+        ];
+
+        // create tunner
+        $runner = $this
+            ->getMockBuilder('Sokil\DeployBundle\TaskManager\ProcessRunner')
+            ->setMethods(['createProcess'])
+            ->getMock();
+
+        $runner
+            ->expects($this->exactly(2))
+            ->method('createProcess')
+            ->withConsecutive(
+                [$this->equalTo($commands[0])],
+                [$this->equalTo($commands[1])]
+            )
+            ->will($this->onConsecutiveCalls(
+                $this->createProcessMock(42),
+                $this->createProcessMock(43)
+            ));
+
+        // run task
+        $runner->parallelRun(
+            $commands,
+            'dev',
+            OutputInterface::VERBOSITY_VERBOSE,
+            $this->createOutput()
+        );
     }
 }
