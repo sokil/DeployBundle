@@ -27,6 +27,16 @@ class ComposerTask extends AbstractTask implements
         return 'Update composer dependencies';
     }
 
+    protected function prepareOptions(array $options)
+    {
+        // disable composer scripts by default
+        if (empty($options['scripts'])) {
+            $options['scripts'] = false;
+        }
+
+        return $options;
+    }
+
     public function run(
         array $commandOptions,
         $environment,
@@ -37,8 +47,14 @@ class ComposerTask extends AbstractTask implements
 
         $command = 'composer.phar update --optimize-autoloader --no-interaction';
 
+        // env
         if ($environment !== 'dev') {
             $command .= ' --no-dev';
+        }
+
+        // scripts
+        if (false === $this->getOption(['scripts'])) {
+            $command .= ' --no-scripts';
         }
 
         // verbosity
