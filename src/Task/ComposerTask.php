@@ -31,7 +31,7 @@ class ComposerTask extends AbstractTask implements
     {
         // disable composer scripts by default
         if (empty($options['scripts'])) {
-            $options['scripts'] = false;
+            $options['scripts'] = true;
         }
 
         return $options;
@@ -53,7 +53,7 @@ class ComposerTask extends AbstractTask implements
         }
 
         // scripts
-        if (false === $this->getOption(['scripts'])) {
+        if (false === $this->getOption('scripts')) {
             $command .= ' --no-scripts';
         }
 
