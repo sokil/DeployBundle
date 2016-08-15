@@ -114,7 +114,7 @@ class GruntTaskTest extends AbstractTestCase
         ));
 
         $taskMock->run(
-            ['tasks' => 'bundle2:task3,task4;bundle3'],
+            ['tasks' => 'bundle2=task3,task4&bundle3'],
             'dev',
             OutputInterface::VERBOSITY_NORMAL,
             $this->createOutput()
