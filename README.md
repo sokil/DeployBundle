@@ -11,7 +11,7 @@ Task runner for Symfony project
 # Tasks
 
 * [Git](#git)
-* Writing own tasks
+* [Writing own tasks](#writting-own-tasks)
 
 ## Git
 
