@@ -30,7 +30,8 @@ add ssh keys to `/home/$USER/.ssh` directory, using ssh key generation tool.
 
 1) Generate keys: 
 
-```$ sudo -u www-data ssh-keygen -t rsa
+```
+$ sudo -u www-data ssh-keygen -t rsa
 Generating public/private rsa key pair.
 Enter file in which to save the key (/home/www-data/.ssh/id_rsa): 
 Enter passphrase (empty for no passphrase): 
