@@ -30,8 +30,7 @@ add ssh keys to `/home/$USER/.ssh` directory, using ssh key generation tool.
 
 1) Generate keys: 
 
-```
-$ sudo -u www-data ssh-keygen -t rsa
+```$ sudo -u www-data ssh-keygen -t rsa
 Generating public/private rsa key pair.
 Enter file in which to save the key (/home/www-data/.ssh/id_rsa): 
 Enter passphrase (empty for no passphrase): 
@@ -42,7 +41,8 @@ The key fingerprint is:
 ...
 ```
 
-2) Add public cey to your repository to fetch changes without password prompt.
+2) Add public key to your repository to fetch changes without password prompt.
+
 3) Test your connection:
 ```
 $ sudo -H -u www-data git pull origin master
