@@ -10,6 +10,9 @@ Task runner for Symfony project
 
 # Tasks
 
+* [Git](#git)
+* Writing own tasks
+
 ## Git
 
 If repository is private, password will be asked on pull:
@@ -43,4 +46,34 @@ The key fingerprint is:
 3) Test your connection:
 ```
 $ sudo -H -u www-data git pull origin master
+```
+
+## Writting own tasks
+
+First, create task class which extends `Sokil\DeployBundle\Task\AbstractTask`. Then add Symfony's service definition:
+
+```yaml
+acme.deploy.my_task:
+    class: Acme\Deploy\Task\MyTask
+    abstract: true
+    public: false
+    tags:
+      - {name: "deploy.task", alias: "myTask"}
+```
+
+This service must containb tag with name `deploy.task` and alias, which will be used as CLI command's option name and configuration section name.
+
+Then, you must add it to bundle's configuration in `app/config.yaml` to `deploy` section in proper place of order:
+
+```yaml
+deploy:
+  git: {}
+  grunt: {}
+  myTask: {}
+```
+
+Now, you can call your task from console:
+
+```
+$ ./app/console deploy --myTask
 ```
