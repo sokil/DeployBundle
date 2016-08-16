@@ -72,7 +72,7 @@ deploy:
   myTask: {}
 ```
 
-Now, you can call your task from console:
+Now, your task will be calld third after `git` and `grunt` by calling `deploy` command without arguments, or you can call your task directly from console:
 
 ```
 $ ./app/console deploy --myTask
