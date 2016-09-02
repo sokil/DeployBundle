@@ -47,7 +47,7 @@ class ComposerTask extends AbstractTask implements
     ) {
         $output->writeln('<' . $this->h2Style . '>Updating composer dependencies</>');
 
-        $command = 'composer.phar update --optimize-autoloader --no-interaction';
+        $command = 'composer.phar install --optimize-autoloader --no-interaction';
 
         // env
         if ($environment !== 'dev') {
