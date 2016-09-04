@@ -1,17 +1,56 @@
 <?php
 
+/**
+ * This file is part of the DeployBundle package.
+ *
+ * (c) Dmytro Sokil <dmytro.sokil@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Sokil\DeployBundle\Task;
 
+use Sokil\DeployBundle\Event\AfterTasksEvent;
 use Sokil\DeployBundle\Exception\TaskConfigurationValidateException;
 use Sokil\DeployBundle\Exception\TaskExecuteException;
 use Sokil\DeployBundle\TaskManager\ProcessRunner;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class GitTask extends AbstractTask
-    implements ProcessRunnerAwareTaskInterface
+/**
+ * Task pull changes from remote branch and tag new release.
+ * Remote branch must be stable, because you can's specify concrete relase tag to checkout in.
+ *
+ * Sample configuration:
+ *
+ *  tasks:
+ *      git:
+ *          defaultRemote: origin                   # default remote to pull (optional; default: origin)
+ *          defaultBranch: master                   # default branch to pull (optional; default: master)
+ *          repos:                                  # list of repos to pull and tag
+ *              core:                               # name of repo
+ *                  path: "%kernel.root_dir%/../"   # path to repo
+ *                  branch: master                  # remote to pull (optional; default: origin, or configured in defaultRemote)
+ *                  remote: origin                  # branch to pull (optional; default: master, or configured in defaultBranch)
+ *                  tag: true                       # allow tag release
+ *
+ * If 'tag' key is true, rag release will be in format '%date%-release', also you can pass your own pattern:
+ *
+ *          repos:
+ *              core:
+ *                  tag: 'release-%date%'
+ *
+ * Currently supported only %date% and %datetime% placeholder for release tag.
+ */
+class GitTask extends AbstractTask implements
+    ProcessRunnerAwareTaskInterface,
+    EventSubscriberInterface
 {
     const DEFAULT_REMOTE_NAME = 'origin';
     const DEFAULT_BRANCH_NAME = 'master';
+
+    const DEFAULT_TAG_PATTERN = '%date%-release';
 
     /**
      * @var ProcessRunner
@@ -53,42 +92,19 @@ class GitTask extends AbstractTask
             }
 
             $output->writeln('Repo ' . $repoName . ' updated successfully');
-
-            // add tag
-            if (!empty($repoParams['tag'])) {
-                $releaseTag = $this->buildReleaseTag($repoParams['tag']);
-                $releaseMessage = $releaseTag;
-
-                $isSuccessful = $this->processRunner->run(
-                    'git tag -a ' . $releaseTag . ' -m ' . $releaseMessage,
-                    $environment,
-                    $verbosity,
-                    $output
-                );
-
-                if (!$isSuccessful) {
-                    throw new TaskExecuteException('Error tagging repo ' . $repoName);
-                }
-
-                $output->writeln('Release tagged in repo ' . $repoName);
-            }
         }
     }
 
     protected function buildReleaseTag($tagPattern)
     {
-        $date = date('Y-m-d.H.i.s');
-
-        if (true === $tagPattern) {
-            return $date . '-release';
-        }
-
         return str_replace(
             [
-                '%date%'
+                '%date%',
+                '%datetime%',
             ],
             [
-                $date
+                date('Y-m-d'),
+                date('Y-m-d.H.i.s')
             ],
             $tagPattern
         );
@@ -132,9 +148,45 @@ class GitTask extends AbstractTask
 
             if (empty($repoParams['tag'])) {
                 $repoParams['tag'] = false;
+            } elseif (true === $repoParams['tag']) {
+                $repoParams['tag'] = self::DEFAULT_TAG_PATTERN;
             }
         }
 
         return $options;
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            AfterTasksEvent::name => [
+                'onAfterTasksFinishedTagRelease'
+            ]
+        ];
+    }
+
+    public function onAfterTasksFinishedTagRelease(AfterTasksEvent $event)
+    {
+        foreach ($this->getOption('repos') as $repoName => $repoParams) {
+            if (empty($repoParams['tag'])) {
+                continue;
+            }
+
+            $releaseTag = $this->buildReleaseTag($repoParams['tag']);
+            $releaseMessage = $releaseTag;
+
+            $isSuccessful = $this->processRunner->run(
+                'git tag -a ' . $releaseTag . ' -m ' . $releaseMessage,
+                $event->getEnvironment(),
+                $event->getVerbosity(),
+                $event->getOutput()
+            );
+
+            if (!$isSuccessful) {
+                throw new TaskExecuteException('Error tagging repo ' . $repoName);
+            }
+
+            $event->getOutput()->writeln('Release tagged in repo ' . $repoName);
+        }
     }
 }

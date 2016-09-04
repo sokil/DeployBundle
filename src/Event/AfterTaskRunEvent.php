@@ -3,6 +3,7 @@
 namespace Sokil\DeployBundle\Event;
 
 use Sokil\DeployBundle\Task\TaskInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 class AfterTaskRunEvent extends Event
@@ -15,13 +16,33 @@ class AfterTaskRunEvent extends Event
     private $task;
 
     /**
-     * TaskRunErrorEvent constructor.
-     * @param TaskInterface $task
-     * @param \Exception $exception
+     * @var string
      */
-    public function __construct(TaskInterface $task)
+    private $environment;
+
+    /**
+     * @var int
+     */
+    private $verbosity;
+
+    /**
+     * @var OutputInterface
+     */
+    private $output;
+
+    /**
+     * AfterTaskRunEvent constructor.
+     * @param TaskInterface $task
+     * @param string $environment
+     * @param int $verbosity
+     * @param OutputInterface $output
+     */
+    public function __construct(TaskInterface $task, $environment, $verbosity, OutputInterface $output)
     {
         $this->task = $task;
+        $this->environment = $environment;
+        $this->verbosity = $verbosity;
+        $this->output = $output;
     }
 
     /**
@@ -30,5 +51,29 @@ class AfterTaskRunEvent extends Event
     public function getTask()
     {
         return $this->task;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEnvironment()
+    {
+        return $this->environment;
+    }
+
+    /**
+     * @return int
+     */
+    public function getVerbosity()
+    {
+        return $this->verbosity;
+    }
+
+    /**
+     * @return OutputInterface
+     */
+    public function getOutput()
+    {
+        return $this->output;
     }
 }

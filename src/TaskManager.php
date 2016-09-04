@@ -108,6 +108,19 @@ class TaskManager
             $this->eventDispatcher->addSubscriber($task);
         }
 
+        // set dependencies
+        if ($task instanceof CommandAwareTaskInterface) {
+            $task->setCommandLocator($this->consoleCommandLocator);
+        }
+
+        if ($task instanceof ResourceAwareTaskInterface) {
+            $task->setResourceLocator($this->resourceLocator);
+        }
+
+        if ($task instanceof ProcessRunnerAwareTaskInterface) {
+            $task->setProcessRunner($this->processRunner);
+        }
+
         return $this;
     }
 
@@ -173,25 +186,15 @@ class TaskManager
         $this->consoleCommandLocator->setApplication($this->consoleCommand->getApplication());
 
         // before all tasks event
-        $this->eventDispatcher->dispatch(BeforeTasksEvent::name, new BeforeTasksEvent());
+        $this->eventDispatcher->dispatch(
+            BeforeTasksEvent::name,
+            new BeforeTasksEvent($environment, $verbosity, $output)
+        );
 
         /* @var AbstractTask $task */
         foreach ($this->tasks as $taskAlias => $task) {
             if (!$isRunAllRequired && !$input->getOption($taskAlias)) {
                 continue;
-            }
-
-            // set dependencies
-            if ($task instanceof CommandAwareTaskInterface) {
-                $task->setCommandLocator($this->consoleCommandLocator);
-            }
-
-            if ($task instanceof ResourceAwareTaskInterface) {
-                $task->setResourceLocator($this->resourceLocator);
-            }
-
-            if ($task instanceof ProcessRunnerAwareTaskInterface) {
-                $task->setProcessRunner($this->processRunner);
             }
 
             // get additional options
@@ -201,7 +204,10 @@ class TaskManager
             }
 
             // before run task
-            $this->eventDispatcher->dispatch(BeforeTaskRunEvent::name, new BeforeTaskRunEvent($task));
+            $this->eventDispatcher->dispatch(
+                BeforeTaskRunEvent::name,
+                new BeforeTaskRunEvent($task, $environment, $verbosity, $output)
+            );
 
             // run task
             try {
@@ -211,16 +217,24 @@ class TaskManager
                     $verbosity,
                     $output
                 );
-            } catch (\Exception $e) {
-                $this->eventDispatcher->dispatch(TaskRunErrorEvent::name, new TaskRunErrorEvent($task, $e));
+            } catch (\Exception $exception) {
+                $this->eventDispatcher->dispatch(
+                    TaskRunErrorEvent::name,
+                    new TaskRunErrorEvent($task, $exception, $environment, $verbosity, $output));
                 throw $e;
             }
 
             // after run task
-            $this->eventDispatcher->dispatch(AfterTaskRunEvent::name, new AfterTaskRunEvent($task));
+            $this->eventDispatcher->dispatch(
+                AfterTaskRunEvent::name,
+                new AfterTaskRunEvent($task, $environment, $verbosity, $output)
+            );
         }
 
         // after all tasks event
-        $this->eventDispatcher->dispatch(AfterTasksEvent::name, new AfterTasksEvent());
+        $this->eventDispatcher->dispatch(
+            AfterTasksEvent::name,
+            new AfterTasksEvent($environment, $verbosity, $output)
+        );
     }
 }

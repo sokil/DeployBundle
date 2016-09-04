@@ -31,7 +31,7 @@ class DeployExtensionTest extends AbstractTestCase
                         'path' => '/tmp',
                         'branch' => 'master',
                         'remote' => 'origin',
-                        'tag' => true
+                        'tag' => false
                     ],
                 ],
             ],

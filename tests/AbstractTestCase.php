@@ -32,7 +32,7 @@ abstract class AbstractTestCase extends TestCase
                             'path' => '/tmp',
                             'branch' => 'master',
                             'remote' => 'origin',
-                            'tag' => true
+                            'tag' => false,
                         ]
                     ],
                 ],

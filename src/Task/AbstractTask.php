@@ -100,8 +100,8 @@ abstract class AbstractTask implements TaskInterface
 
     /**
      * @param array $commandOptions
-     * @param $environment
-     * @param $verbosity
+     * @param string $environment
+     * @param int $verbosity
      * @param callable $outputWriter
      * @return mixed
      */

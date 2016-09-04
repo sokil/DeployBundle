@@ -2,40 +2,70 @@
 
 namespace Sokil\DeployBundle\Task;
 
-use PHPUnit\Framework\TestCase;
 use Sokil\DeployBundle\AbstractTestCase;
+use Sokil\DeployBundle\Event\AfterTasksEvent;
 use Symfony\Component\Console\Output\OutputInterface;
+use Sokil\DeployBundle\Task\GitTask;
 
 class GitTaskTest extends AbstractTestCase
 {
-    public function testRun()
+    public function testRun_NoTagRelease()
     {
-        $taskMock = $this
-            ->getMockBuilder('Sokil\DeployBundle\Task\GitTask')
-            ->setMethods(['buildReleaseTag'])
-            ->setConstructorArgs([
-                'git',
+        $task = new  GitTask(
+            'git',
+            [
+                'defaultRemote' => 'origin',
+                'defaultBranch' => 'master',
+                'repos' => [
+                    'core' => [
+                        'path' => sys_get_temp_dir(),
+                        'branch' => 'master',
+                        'remote' => 'origin',
+                        'tag' => false
+                    ]
+                ],
+            ]
+        );
+
+        $task->setProcessRunner($this->createProcessRunner(
+            [
                 [
-                    'defaultRemote' => 'origin',
-                    'defaultBranch' => 'master',
-                    'repos' => [
-                        'core' => [
-                            'path' => sys_get_temp_dir(),
-                            'branch' => 'master',
-                            'remote' => 'origin',
-                            'tag' => true
-                        ]
-                    ],
-                ]
-            ])
-            ->getMock();
+                    'cd /tmp; git pull origin master',
+                    'dev',
+                    OutputInterface::VERBOSITY_NORMAL,
+                    $this->isInstanceOf('Symfony\Component\Console\Output\OutputInterface')
+                ],
+            ],
+            true
+        ));
 
-        $taskMock
-            ->expects($this->any())
-            ->method('buildReleaseTag')
-            ->will($this->returnValue('tagPattern'));
+        $task->run(
+            [],
+            'dev',
+            OutputInterface::VERBOSITY_NORMAL,
+            $this->createOutput()
+        );
+    }
 
-        $taskMock->setProcessRunner($this->createProcessRunner(
+    public function testRun_TagRelease()
+    {
+        $task = new  GitTask(
+            'git',
+            [
+                'defaultRemote' => 'origin',
+                'defaultBranch' => 'master',
+                'repos' => [
+                    'core' => [
+                        'path' => sys_get_temp_dir(),
+                        'branch' => 'master',
+                        'remote' => 'origin',
+                        'tag' => 'someTagPattern'
+                    ]
+                ],
+            ]
+        );
+
+        $task->setProcessRunner($this->createProcessRunner(
             [
                 [
                     'cd /tmp; git pull origin master',
@@ -44,7 +74,7 @@ class GitTaskTest extends AbstractTestCase
                     $this->isInstanceOf('Symfony\Component\Console\Output\OutputInterface')
                 ],
                 [
-                    'git tag -a tagPattern -m tagPattern',
+                    'git tag -a someTagPattern -m someTagPattern',
                     'dev',
                     OutputInterface::VERBOSITY_NORMAL,
                     $this->isInstanceOf('Symfony\Component\Console\Output\OutputInterface')
@@ -53,11 +83,21 @@ class GitTaskTest extends AbstractTestCase
             true
         ));
 
-        $taskMock->run(
+        $output = $this->createOutput();
+
+        $task->run(
             [],
             'dev',
             OutputInterface::VERBOSITY_NORMAL,
-            $this->createOutput()
+            $output
         );
+
+        // trigger post run event
+        $task->onAfterTasksFinishedTagRelease(new AfterTasksEvent(
+            'dev',
+            OutputInterface::VERBOSITY_NORMAL,
+            $output
+        ));
+
     }
 }

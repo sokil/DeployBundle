@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of the DeployBundle package.
+ *
+ * (c) Dmytro Sokil <dmytro.sokil@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Sokil\DeployBundle\Task;
 
 use Sokil\DeployBundle\Exception\DeployException;
@@ -9,6 +18,22 @@ use Sokil\DeployBundle\TaskManager\ProcessRunner;
 use Sokil\DeployBundle\TaskManager\ResourceLocator;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Run grunt tasks in configured bundles
+ *
+ * Sample configuration:
+ *
+ *  grunt:
+ *      parallel: true                  # run tasks in parallel or serially
+ *      bundles:                        # list of bundles to run grunt tasks
+ *          Bundle1Name: true           # allow bundle to run tasks
+ *          Bundle2Name: false          # skip bundle (may be omitted)
+ *          Bundle3Name: 'less jade'    # list of tasks to run
+ *
+ * Also tasks may be configured through cli parameter:
+ * $ ./app/console deploy --grunt --grunt-tasks="bundle1Name:task1Name,task2Name;bundle2Name;"
+ *
+ */
 class GruntTask extends AbstractTask implements
     ResourceAwareTaskInterface,
     ProcessRunnerAwareTaskInterface
@@ -80,6 +105,7 @@ class GruntTask extends AbstractTask implements
 
     /**
      * Format of task string is: "bundle1Name:task1Name,task2Name;bundle2Name;"...
+     *
      * @param $taskString
      * @return array
      */
