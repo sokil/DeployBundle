@@ -58,6 +58,12 @@ class GitTask extends AbstractTask implements
     private $processRunner;
 
     /**
+     * Mark if task was run
+     * @var bool
+     */
+    private $wasRun = false;
+
+    /**
      * @param ProcessRunner $runner
      */
     public function setProcessRunner(ProcessRunner $runner)
@@ -93,6 +99,8 @@ class GitTask extends AbstractTask implements
 
             $output->writeln('Repo ' . $repoName . ' updated successfully');
         }
+
+        $this->wasRun = true;
     }
 
     protected function buildReleaseTag($tagPattern)
@@ -167,6 +175,10 @@ class GitTask extends AbstractTask implements
 
     public function onAfterTasksFinishedTagRelease(AfterTasksEvent $event)
     {
+        if (!$this->wasRun) {
+            return;
+        }
+
         foreach ($this->getOption('repos') as $repoName => $repoParams) {
             if (empty($repoParams['tag'])) {
                 continue;
