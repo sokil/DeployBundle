@@ -45,7 +45,7 @@ class ComposerTask extends AbstractTask implements
         $verbosity,
         OutputInterface $output
     ) {
-        $output->writeln('<' . $this->h2Style . '>Updating composer dependencies</>');
+        $output->writeln('<' . self::STYLE_H2 . '>Updating composer dependencies</>');
 
         $command = 'composer.phar install --optimize-autoloader --no-interaction';
 

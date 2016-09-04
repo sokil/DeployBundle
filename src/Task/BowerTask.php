@@ -97,7 +97,7 @@ class BowerTask extends AbstractTask implements
 
         foreach ($bowerfilePathList as $bowerPath) {
             // execute
-            $output->writeln('<' . $this->h2Style . '>Install bower dependencies from ' . $bowerPath . '</>');
+            $output->writeln('<' . self::STYLE_H2 . '>Install bower dependencies from ' . $bowerPath . '</>');
 
             $productionFlag = $environment === 'prod' ? ' --production' : null;
 

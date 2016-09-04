@@ -8,8 +8,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractTask implements TaskInterface
 {
-    protected $h1Style = 'fg=black;bg=cyan';
-    protected $h2Style = 'fg=black;bg=yellow';
+    const STYLE_H1 = 'fg=black;bg=cyan';
+    const STYLE_H2 = 'fg=black;bg=yellow';
 
     /**
      * @var InputInterface

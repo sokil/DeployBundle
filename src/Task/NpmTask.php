@@ -85,7 +85,7 @@ class NpmTask extends AbstractTask implements
             }
 
             // run task
-            $output->writeln('<' . $this->h2Style . '>Install npm dependencies from ' . $npmPath . '</>');
+            $output->writeln('<' . self::STYLE_H2 . '>Install npm dependencies from ' . $npmPath . '</>');
 
             $productionFlag = $environment === 'prod' ? ' --production' : null;
 

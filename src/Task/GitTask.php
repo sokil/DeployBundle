@@ -82,7 +82,7 @@ class GitTask extends AbstractTask implements
         $verbosity,
         OutputInterface $output
     ) {
-        $output->writeln('<' . $this->h2Style . '>Updating source from Git repository</>');
+        $output->writeln('<' . self::STYLE_H2 . '>Updating source from Git repository</>');
 
         foreach ($this->getOption('repos') as $repoName => $repoParams) {
             // pull
