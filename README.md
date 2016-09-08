@@ -94,9 +94,9 @@ acme.deploy.my_task:
       - {name: "deploy.task", alias: "myTask"}
 ```
 
-This service must containb tag with name `deploy.task` and alias, which will be used as CLI command's option name and configuration section name.
+This service must contain tag with name `deploy.task` and alias, which will be used as CLI command's option name and configuration section name.
 
-Then, you must add it to bundle's configuration in `app/config/config.yml` to `deploy` section in proper place of order:
+Then, you may add it to bundle's configuration in `app/config/config.yml` to `deploy` section in proper place of order, if you want it to be run automatically:
 
 ```yaml
 deploy:
@@ -105,7 +105,12 @@ deploy:
   myTask: {}
 ```
 
-Now, your task will be calld third after `git` and `grunt` by calling `deploy` command without arguments, or you can call your task directly from console:
+Now, your task will be calld third after `git` and `grunt` by calling `deploy` command without arguments:
+```
+$ ./app/console deploy --env=prod
+```
+
+You also may call your task directly from console:
 
 ```
 $ ./app/console deploy --myTask
