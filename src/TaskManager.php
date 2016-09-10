@@ -11,6 +11,7 @@ use Sokil\DeployBundle\Task\AbstractTask;
 use Sokil\DeployBundle\Task\CommandAwareTaskInterface;
 use Sokil\DeployBundle\Task\ProcessRunnerAwareTaskInterface;
 use Sokil\DeployBundle\Task\ResourceAwareTaskInterface;
+use Sokil\DeployBundle\Task\TaskInterface;
 use Sokil\DeployBundle\TaskManager\CommandLocator;
 use Sokil\DeployBundle\TaskManager\ProcessRunner;
 use Sokil\DeployBundle\TaskManager\ResourceLocator;
@@ -19,12 +20,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Sokil\DeployBundle\Exception\TaskNotFoundException;
-use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class TaskManager
 {
+    const DEFAULT_TASK_BUNDLE_NAME = 'default';
+
     /**
      * @var ProcessRunner
      */
@@ -160,19 +162,44 @@ class TaskManager
     }
 
     /**
-     * Check if all tasks configured to be run
+     * Get task aliases, required to run, from cli options
      *
-     * @param array $inputOptions
-     * @return bool
+     * @param InputInterface $input
+     * @return TaskInterface[]
      */
-    private function isAllTasksRequired(array $inputOptions)
+    private function getTasksFromCliOptions(InputInterface $input)
     {
-        $isRunAllRequired = false;
-        if (count(array_intersect_key($this->tasks, array_filter($inputOptions))) === 0) {
-            $isRunAllRequired = true;
+        // check if concrete tasks configured to run
+        $tasksInCliOptions = array_intersect_key(
+            $this->tasks,
+            array_filter($input->getOptions())
+        );
+
+        if (count($tasksInCliOptions) > 0) {
+            return $tasksInCliOptions;
         }
 
-        return $isRunAllRequired;
+        // no concrete tasks to run - find task bundles
+        $taskBundlesInCliOptions = array_intersect_key(
+            $this->taskBundles,
+            array_filter($input->getOptions())
+        );
+
+        if (count($taskBundlesInCliOptions) === 0) {
+            // no task bundles specified in cli - run default bundle
+            $taskBundlesInCliOptions = [
+                TaskManager::DEFAULT_TASK_BUNDLE_NAME => $this->taskBundles[TaskManager::DEFAULT_TASK_BUNDLE_NAME],
+            ];
+        }
+
+        $taskAliasesToRun = array_unique(call_user_func_array('array_merge', $taskBundlesInCliOptions));
+
+        $tasksInCliOptions = array_intersect_key(
+            $this->tasks,
+            array_flip($taskAliasesToRun)
+        );
+
+        return $tasksInCliOptions;
     }
 
     /**
@@ -192,8 +219,8 @@ class TaskManager
         // define env variables to run tasks
         putenv('SYMFONY_ENV=' . $environment);
 
-        // check if all task configured to run
-        $isRunAllRequired = $this->isAllTasksRequired($input->getOptions());
+        // get list of task aliases to run, specified in cli options
+        $taskAliasesToRun = $this->getTasksFromCliOptions($input);
 
         // define application
         $this->consoleCommandLocator->setApplication($this->consoleCommand->getApplication());
@@ -205,11 +232,7 @@ class TaskManager
         );
 
         /* @var AbstractTask $task */
-        foreach ($this->tasks as $taskAlias => $task) {
-            if (!$isRunAllRequired && !$input->getOption($taskAlias)) {
-                continue;
-            }
-
+        foreach ($taskAliasesToRun as $taskAlias => $task) {
             // get additional options
             $commandOptions = [];
             foreach ($task->getCommandOptions() as $commandOptionName => $commandOptionParameters) {

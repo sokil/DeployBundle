@@ -267,12 +267,30 @@ abstract class AbstractTestCase extends TestCase
     /**
      * @return Input|\PHPUnit_Framework_MockObject_MockObject
      */
-    public function createInput()
+    public function createInput(array $options = [])
     {
-        return $this
+        $mock = $this
             ->getMockBuilder('Symfony\Component\Console\Input\Input')
+            ->setMethods(['getOption', 'getOptions', 'parse', 'getFirstArgument', 'hasParameterOption', 'getParameterOption'])
             ->disableOriginalConstructor()
             ->getMock();
+
+        $mock
+            ->expects($this->any())
+            ->method('getOptions')
+            ->will($this->returnValue($options));
+
+        $valueMap = [];
+        foreach ($options as $optionName => $optionValue) {
+            $valueMap[] = [$optionName, $optionValue];
+        }
+
+        $mock
+            ->expects($this->any())
+            ->method('getOption')
+            ->will($this->returnValueMap($valueMap));
+
+        return $mock;
     }
 
     /**

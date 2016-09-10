@@ -3,6 +3,7 @@
 namespace Sokil\DeployBundle\DependencyInjection;
 
 use Sokil\DeployBundle\Exception\TaskNotFoundException;
+use Sokil\DeployBundle\TaskManager;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -25,7 +26,7 @@ class TaskDiscoveryCompilerPass implements CompilerPassInterface
         // get task bundles
         $taskBundleList = $container->getParameter('deploy.taskBundles');
         if (empty($taskBundleList['default'])) {
-            $taskBundleList['default'] = $allTaskNames;
+            $taskBundleList[TaskManager::DEFAULT_TASK_BUNDLE_NAME] = $allTaskNames;
         }
 
         // prepare tasks in pre-configured order
