@@ -34,9 +34,18 @@ class TaskManagerTest extends AbstractTestCase
     {
         $taskManager = $this->getContainer()->get('deploy.task_manager');
         $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
-
         $tasks = $taskManager->getTasks();
 
+        $registeredTasks = $this->getBundleConfiguration()['config'];
+        $registeredTasks['myCustomTask'] = [];
+
+        // test list
+        $this->assertSame(
+            array_keys($registeredTasks),
+            array_keys($tasks)
+        );
+
+        // test task
         $this->assertEquals(
             'myCustomTask',
             $tasks['myCustomTask']->getAlias()
@@ -202,12 +211,5 @@ class TaskManagerTest extends AbstractTestCase
         ]);
 
         $this->assertTrue($isAllTasksRequired);
-    }
-
-    public function testTasksRunningOrder()
-    {
-        $actualTaskAliases = array_keys($this->getContainer()->get('deploy.task_manager')->getTasks());
-        $expectedTaskAliastes = array_keys($this->getBundleConfiguration()['tasks']);
-        $this->assertSame($expectedTaskAliastes, $actualTaskAliases);
     }
 }

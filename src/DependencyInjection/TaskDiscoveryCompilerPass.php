@@ -20,11 +20,18 @@ class TaskDiscoveryCompilerPass implements CompilerPassInterface
 
         // get deploy configuration
         $tasksConfiguration = $container->getParameter('deploy.tasksConfiguration');
+        $allTaskNames = array_keys($tasksConfiguration);
+
+        // get task bundles
+        $taskBundleList = $container->getParameter('deploy.taskBundles');
+        if (empty($taskBundleList['default'])) {
+            $taskBundleList['default'] = $allTaskNames;
+        }
 
         // prepare tasks in pre-configured order
-        $taskServices = array_fill_keys(array_keys($tasksConfiguration), null);
+        $taskServices = array_fill_keys($allTaskNames, null);
 
-        // find tasks
+        // build task references
         foreach ($container->findTaggedServiceIds('deploy.task') as $abstractTaskServiceId => $taskServiceTags) {
             foreach ($taskServiceTags as $taskServiceTagParameters) {
 
@@ -50,16 +57,27 @@ class TaskDiscoveryCompilerPass implements CompilerPassInterface
             }
         }
 
-        // add task to task manager
+        // add tasks to task manager
         foreach ($taskServices as $taskAlias => $taskService) {
             if (!($taskService instanceof Reference)) {
-                throw new TaskNotFoundException('Task ' . $taskAlias . ' has configuration but no tasks with this alias found');
+                throw new TaskNotFoundException('Task "' . $taskAlias . '" has configuration but no tasks with this alias found');
             }
 
             $taskManagerDefinition->addMethodCall(
                 'addTask',
                 [
                     $taskService,
+                ]
+            );
+        }
+
+        // add task bundles to task manager
+        foreach ($taskBundleList as $taskBundleName => $taskNameList) {
+            $taskManagerDefinition->addMethodCall(
+                'addTaskBundle',
+                [
+                    $taskBundleName,
+                    $taskNameList,
                 ]
             );
         }

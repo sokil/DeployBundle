@@ -12,14 +12,19 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('deploy');
 
-        $tasksNode = $rootNode
+        $rootNode
             ->children()
+                ->arrayNode('config')
+                    ->isRequired()
+                    ->cannotBeEmpty()
+                    ->requiresAtLeastOneElement()
+                    ->useAttributeAsKey('taskName')
+                    ->prototype('variable')->end()
+                ->end()
                 ->arrayNode('tasks')
-                ->isRequired()
-                ->cannotBeEmpty()
-                ->requiresAtLeastOneElement()
-                ->useAttributeAsKey('taskName')
-                ->prototype('variable');
+                    ->useAttributeAsKey('taskName')
+                    ->prototype('variable')
+                ->end();
 
         return $treeBuilder;
     }

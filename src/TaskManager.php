@@ -41,6 +41,13 @@ class TaskManager
     private $tasks = [];
 
     /**
+     * List of task bundles, where jey is bundle name and value is list of task names in bundle
+     *
+     * @var array
+     */
+    private $taskBundles;
+
+    /**
      * @var Command
      */
     private $consoleCommand;
@@ -121,6 +128,12 @@ class TaskManager
             $task->setProcessRunner($this->processRunner);
         }
 
+        return $this;
+    }
+
+    public function addTaskBundle($bundleName, array $taskNameList)
+    {
+        $this->taskBundles[$bundleName] = $taskNameList;
         return $this;
     }
 
@@ -221,7 +234,7 @@ class TaskManager
                 $this->eventDispatcher->dispatch(
                     TaskRunErrorEvent::name,
                     new TaskRunErrorEvent($task, $exception, $environment, $verbosity, $output));
-                throw $e;
+                throw $exception;
             }
 
             // after run task

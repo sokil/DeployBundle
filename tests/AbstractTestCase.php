@@ -22,8 +22,8 @@ abstract class AbstractTestCase extends TestCase
 
     public function getBundleConfiguration()
     {
-        return [
-            'tasks' => [
+        $config = [
+            'config' => [
                 'git' => [
                     'defaultRemote' => 'origin',
                     'defaultBranch' => 'master',
@@ -61,8 +61,12 @@ abstract class AbstractTestCase extends TestCase
                 'asseticDump' => [],
                 'assetsInstall' => [],
                 'clearCache' => [],
-            ]
+            ],
         ];
+
+        $config['tasks']['default'] = array_keys($config['config']);
+
+        return $config;
     }
 
     /**
