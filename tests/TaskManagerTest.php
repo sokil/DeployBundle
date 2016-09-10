@@ -235,4 +235,30 @@ class TaskManagerTest extends AbstractTestCase
             'clearCache',
         ], array_keys($tasks));
     }
+
+    public function testGetTasksFromCliOptions_NoTasksSpecified_UseCustomBundle()
+    {
+        // get task manager
+        $taskManager = $this->getContainer()->get('deploy.task_manager');
+
+        // mock input
+        $input = $this->createInput([
+            'assets' => true,
+        ]);
+
+        // get method
+        $taskManagerReflection = new \ReflectionClass($taskManager);
+        $isAllTasksRequiredMethod = $taskManagerReflection->getMethod('getTasksFromCliOptions');
+        $isAllTasksRequiredMethod->setAccessible(true);
+
+        $tasks = $isAllTasksRequiredMethod->invoke($taskManager, $input);
+
+        $this->assertEquals([
+            'npm',
+            'bower',
+            'grunt',
+            'asseticDump',
+            'assetsInstall',
+        ], array_keys($tasks));
+    }
 }
