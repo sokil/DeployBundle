@@ -8,6 +8,9 @@ Task runner for Symfony project
 [![Build Status](https://travis-ci.org/sokil/DeployBundle.png?branch=master&1)](https://travis-ci.org/sokil/DeployBundle)
 [![Coverage Status](https://coveralls.io/repos/github/sokil/DeployBundle/badge.svg?branch=master)](https://coveralls.io/github/sokil/DeployBundle?branch=master)
 
+[![knpbundles.com](http://knpbundles.com/sokil/DeployBundle/badge-short)](http://knpbundles.com/sokil/DeployBundle)
+
+
 # Installation
 
 Add Composer dependency:
@@ -94,9 +97,9 @@ acme.deploy.my_task:
       - {name: "deploy.task", alias: "myTask"}
 ```
 
-This service must containb tag with name `deploy.task` and alias, which will be used as CLI command's option name and configuration section name.
+This service must contain tag with name `deploy.task` and alias, which will be used as CLI command's option name and configuration section name.
 
-Then, you must add it to bundle's configuration in `app/config/config.yml` to `deploy` section in proper place of order:
+Then, you may add it to bundle's configuration in `app/config/config.yml` to `deploy` section in proper place of order, if you want it to be run automatically:
 
 ```yaml
 deploy:
@@ -105,7 +108,12 @@ deploy:
   myTask: {}
 ```
 
-Now, your task will be calld third after `git` and `grunt` by calling `deploy` command without arguments, or you can call your task directly from console:
+Now, your task will be calld third after `git` and `grunt` by calling `deploy` command without arguments:
+```
+$ ./app/console deploy --env=prod
+```
+
+You also may call your task directly from console:
 
 ```
 $ ./app/console deploy --myTask
