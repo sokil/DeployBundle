@@ -96,10 +96,11 @@ class TaskManager
             foreach ($task->getCommandOptions() as $commandOptionName => $commandOptionParameters) {
                 $description = !empty($commandOptionParameters['description']) ? $commandOptionParameters['description'] : null;
                 $defaultValue = !empty($commandOptionParameters['default']) ? $commandOptionParameters['default'] : null;
+                $mode = !empty($commandOptionParameters['mode']) ? $commandOptionParameters['mode'] : InputOption::VALUE_OPTIONAL;
                 $command->addOption(
                     $alias . '-' . $commandOptionName,
                     null,
-                    InputOption::VALUE_OPTIONAL,
+                    $mode,
                     $description,
                     $defaultValue
                 );

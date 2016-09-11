@@ -5,6 +5,7 @@ namespace Sokil\DeployBundle\Task;
 use Sokil\DeployBundle\Exception\TaskConfigurationValidateException;
 use Sokil\DeployBundle\Exception\TaskExecuteException;
 use Sokil\DeployBundle\TaskManager\ProcessRunner;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ComposerTask extends AbstractTask implements
@@ -52,6 +53,7 @@ class ComposerTask extends AbstractTask implements
         return [
             'update' => [
                 'description' => 'Update dependencies instead of install it',
+                'mode' => InputOption::VALUE_NONE,
             ]
         ];
     }
