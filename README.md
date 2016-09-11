@@ -40,8 +40,31 @@ Configure tasks required to run in your app in `app/config/config.yml`:
 
 ```yaml
 deploy:
-    git: {}
+    config:
+        git: {}
+        composer: {}
+        npm: {}
+        bower: {}
+        grunt: {}
+    tasks:
+        up: [git, composer]
+        assets: [npm, bower, grunt]
 ```
+
+Section `config` declared options of every task, able to run. Section `tasks` declered bundles of tasks, runs sequentially.
+Tasks may be run by definining task alias in cli command:
+
+```
+$ ./app.console deploy --git --npm
+```
+
+Also tasks bundles may be defined:
+```
+$ ./app.console deploy --up
+```
+
+If no task specified then `default` task bundle will be run. This task bundle may be defined in configuration, but if it omitted, then default task consists of all tasks in order of `config` section.
+
 
 # Tasks
 
@@ -103,9 +126,10 @@ Then, you may add it to bundle's configuration in `app/config/config.yml` to `de
 
 ```yaml
 deploy:
-  git: {}
-  grunt: {}
-  myTask: {}
+  config:
+    git: {}
+    grunt: {}
+    myTask: {}
 ```
 
 Now, your task will be calld third after `git` and `grunt` by calling `deploy` command without arguments:
