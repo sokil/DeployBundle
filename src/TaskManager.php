@@ -105,6 +105,15 @@ class TaskManager
                 );
             }
         }
+
+        foreach ($this->taskBundles as $taskBundleName => $taskNames) {
+            $command->addOption(
+                $taskBundleName,
+                null,
+                InputOption::VALUE_NONE,
+                'Task bundle for tasks "' . implode('","', $taskNames) . '"'
+            );
+        }
     }
 
     public function addTask(AbstractTask $task)
