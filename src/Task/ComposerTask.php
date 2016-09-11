@@ -2,6 +2,7 @@
 
 namespace Sokil\DeployBundle\Task;
 
+use Sokil\DeployBundle\Exception\TaskConfigurationValidateException;
 use Sokil\DeployBundle\Exception\TaskExecuteException;
 use Sokil\DeployBundle\TaskManager\ProcessRunner;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -36,7 +37,30 @@ class ComposerTask extends AbstractTask implements
             $options['scripts'] = (bool)$options['scripts'];
         }
 
+        // setup install method
+        if (!isset($options['installMethod'])) {
+            $options['installMethod'] = 'install';
+        } else {
+            $availableInstallMethods = ['install', 'update'];
+            if (!in_array($options['installMethod'], $availableInstallMethods)) {
+                throw new TaskConfigurationValidateException(
+                    sprintf('Composer\'s install method is wrong. Available are %s', implode(',', $availableInstallMethods))
+                );
+            }
+
+            $options['installMethod'] = $options['installMethod'];
+        }
+
         return $options;
+    }
+
+    public function getCommandOptions()
+    {
+        return [
+            'installMethod' => [
+                'description' => 'Method of dependency installation: "install" or "update"',
+            ]
+        ];
     }
 
     public function run(
@@ -47,7 +71,12 @@ class ComposerTask extends AbstractTask implements
     ) {
         $output->writeln('<' . self::STYLE_H2 . '>Updating composer dependencies</>');
 
-        $command = 'composer.phar install --optimize-autoloader --no-interaction';
+        // get install method
+        if (empty($commandOptions['installMethod'])) {
+            $installMethod = $this->getOption('installMethod');
+        }
+
+        $command = 'composer.phar ' . $installMethod . ' --optimize-autoloader --no-interaction';
 
         // env
         if ($environment !== 'dev') {
