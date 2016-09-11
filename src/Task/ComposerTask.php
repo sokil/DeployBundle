@@ -37,18 +37,11 @@ class ComposerTask extends AbstractTask implements
             $options['scripts'] = (bool)$options['scripts'];
         }
 
-        // setup install method
-        if (!isset($options['installMethod'])) {
-            $options['installMethod'] = 'install';
+        // configure install method
+        if (!isset($options['update'])) {
+            $options['update'] = false;
         } else {
-            $availableInstallMethods = ['install', 'update'];
-            if (!in_array($options['installMethod'], $availableInstallMethods)) {
-                throw new TaskConfigurationValidateException(
-                    sprintf('Composer\'s install method is wrong. Available are %s', implode(',', $availableInstallMethods))
-                );
-            }
-
-            $options['installMethod'] = $options['installMethod'];
+            $options['update'] = (bool)$options['update'];
         }
 
         return $options;
@@ -57,8 +50,8 @@ class ComposerTask extends AbstractTask implements
     public function getCommandOptions()
     {
         return [
-            'installMethod' => [
-                'description' => 'Method of dependency installation: "install" or "update"',
+            'update' => [
+                'description' => 'Update dependencies instead of install it',
             ]
         ];
     }
@@ -72,8 +65,10 @@ class ComposerTask extends AbstractTask implements
         $output->writeln('<' . self::STYLE_H2 . '>Updating composer dependencies</>');
 
         // get install method
-        if (empty($commandOptions['installMethod'])) {
-            $installMethod = $this->getOption('installMethod');
+        if (!empty($commandOptions['update']) || $this->getOption('update')) {
+            $installMethod = 'update';
+        } else {
+            $installMethod = 'install';
         }
 
         $command = 'composer.phar ' . $installMethod . ' --optimize-autoloader --no-interaction';
