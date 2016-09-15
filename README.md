@@ -55,12 +55,12 @@ Section `config` declared options of every task, able to run. Section `tasks` de
 Tasks may be run by definining task alias in cli command:
 
 ```
-$ ./app.console deploy --git --npm
+$ ./app/console deploy --git --npm
 ```
 
 Also tasks bundles may be defined:
 ```
-$ ./app.console deploy --up
+$ ./app/console deploy --up
 ```
 
 If no task specified then `default` task bundle will be run. This task bundle may be defined in configuration, but if it omitted, then default task consists of all tasks in order of `config` section.
