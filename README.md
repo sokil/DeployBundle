@@ -107,6 +107,33 @@ The key fingerprint is:
 $ sudo -H -u www-data git pull origin master
 ```
 
+## Npm
+
+```yaml
+npm:
+    bundles:
+        SomeBundle: true
+        SomeOtherBundle: true
+```
+## Bower
+
+```yaml
+bower:
+    bundles:
+        SomeBundle: true
+        SomeOtherBundle: true
+```
+
+## Grunt
+
+```yaml
+grunt:
+    bundles:
+        SomeBundle: true
+        SomeOtherBundle: true
+    parallel: true
+```
+
 ## Writting own tasks
 
 First, create task class which extends `Sokil\DeployBundle\Task\AbstractTask`. Then add Symfony's service definition:
