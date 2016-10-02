@@ -69,6 +69,9 @@ If no task specified then `default` task bundle will be run. This task bundle ma
 # Tasks
 
 * [Git](#git)
+* [Npm](#npm)
+* [Bower](#bower)
+* [Grunt](#grunt)
 * [Writing own tasks](#writting-own-tasks)
 
 ## Git
