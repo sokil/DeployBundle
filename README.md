@@ -110,6 +110,12 @@ The key fingerprint is:
 $ sudo -H -u www-data git pull origin master
 ```
 
+Find out who use this key already:
+```
+ssh -T git@github.com
+ssh -T git@bitbucket.com
+```
+
 ## Npm
 
 ```yaml
