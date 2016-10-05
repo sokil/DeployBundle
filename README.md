@@ -52,7 +52,7 @@ deploy:
 ```
 
 Section `config` declared options of every task, able to run. Section `tasks` declered bundles of tasks, runs sequentially.
-Tasks may be run by definining task alias in cli command:
+Tasks may be run by defining task aliases in cli command:
 
 ```
 $ ./app/console deploy --git --npm
@@ -64,6 +64,8 @@ $ ./app/console deploy --up
 ```
 
 If no task specified then `default` task bundle will be run. This task bundle may be defined in configuration, but if it omitted, then default task consists of all tasks in order of `config` section.
+Tasks and task bundles both may be specified in cli options, then tasks will be run in order of first occurrence.
+Task bundle also may contain other bundles.
 
 
 # Tasks
