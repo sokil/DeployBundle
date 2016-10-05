@@ -46,9 +46,13 @@ deploy:
         npm: {}
         bower: {}
         grunt: {}
+        asseticDump: {}
+        assetsInstall: {}
     tasks:
-        up: [git, composer]
-        assets: [npm, bower, grunt]
+        updateBack: [git, composer]
+        updateFront: [npm, bower]
+        compileAssets: [grunt, asseticDump, assetsInstall]
+        release: [updateBack, updateFront, compileAssets]
 ```
 
 Section `config` declared options of every task, able to run. Section `tasks` declered bundles of tasks, runs sequentially.
