@@ -236,14 +236,14 @@ class TaskManagerTest extends AbstractTestCase
         ], array_keys($tasks));
     }
 
-    public function testGetTasksFromCliOptions_NoTasksSpecified_UseCustomBundle()
+    public function testGetTasksFromCliOptions_NoTasksSpecified_CustomBundleWithTasksSpecified()
     {
         // get task manager
         $taskManager = $this->getContainer()->get('deploy.task_manager');
 
         // mock input
         $input = $this->createInput([
-            'assets' => true,
+            'compile' => true,
         ]);
 
         // get method
@@ -254,6 +254,58 @@ class TaskManagerTest extends AbstractTestCase
         $tasks = $isAllTasksRequiredMethod->invoke($taskManager, $input);
 
         $this->assertEquals([
+            'grunt',
+            'asseticDump',
+            'assetsInstall',
+        ], array_keys($tasks));
+    }
+
+    public function testGetTasksFromCliOptions_NoTasksSpecified_CustomBundleWithBundlesSpecified()
+    {
+        // get task manager
+        $taskManager = $this->getContainer()->get('deploy.task_manager');
+
+        // mock input
+        $input = $this->createInput([
+            'build' => true,
+        ]);
+
+        // get method
+        $taskManagerReflection = new \ReflectionClass($taskManager);
+        $isAllTasksRequiredMethod = $taskManagerReflection->getMethod('getTasksFromCliOptions');
+        $isAllTasksRequiredMethod->setAccessible(true);
+
+        $tasks = $isAllTasksRequiredMethod->invoke($taskManager, $input);
+
+        $this->assertEquals([
+            'npm',
+            'bower',
+            'grunt',
+            'asseticDump',
+            'assetsInstall',
+        ], array_keys($tasks));
+    }
+
+    public function testGetTasksFromCliOptions_TaskSpecified_CustomBundleWithBundlesSpecified()
+    {
+        // get task manager
+        $taskManager = $this->getContainer()->get('deploy.task_manager');
+
+        // mock input
+        $input = $this->createInput([
+            'git' => true,
+            'build' => true,
+        ]);
+
+        // get method
+        $taskManagerReflection = new \ReflectionClass($taskManager);
+        $isAllTasksRequiredMethod = $taskManagerReflection->getMethod('getTasksFromCliOptions');
+        $isAllTasksRequiredMethod->setAccessible(true);
+
+        $tasks = $isAllTasksRequiredMethod->invoke($taskManager, $input);
+
+        $this->assertEquals([
+            'git',
             'npm',
             'bower',
             'grunt',

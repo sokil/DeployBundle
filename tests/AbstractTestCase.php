@@ -66,13 +66,19 @@ abstract class AbstractTestCase extends TestCase
 
         $config['tasks'] = [
             'default' => array_keys($config['config']),
-            'assets' => [
+            'update' => [
                 'npm',
                 'bower',
+            ],
+            'compile' => [
                 'grunt',
                 'asseticDump',
                 'assetsInstall',
             ],
+            'build' => [
+                'update',
+                'compile',
+            ]
         ];
 
         return $config;

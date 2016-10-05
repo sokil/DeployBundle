@@ -172,6 +172,33 @@ class TaskManager
     }
 
     /**
+     * Bundle is an array of tasks and other task bundles
+     * Convert it to plain task list
+     *
+     * @param array $taskNameList
+     * @return array
+     */
+    private function normalizeTaskList(array $taskNameList)
+    {
+        $normalizedTaskNames = [];
+
+        foreach ($taskNameList as $taskName) {
+            if (isset($this->taskBundles[$taskName])) {
+                // taskName belongs to bundle
+                $normalizedTaskNames = array_merge(
+                    $normalizedTaskNames,
+                    $this->normalizeTaskList($this->taskBundles[$taskName])
+                );
+            } else {
+                // taskName belongs to task
+                $normalizedTaskNames[] = $taskName;
+            }
+        }
+
+        return $normalizedTaskNames;
+    }
+
+    /**
      * Get task aliases, required to run, from cli options
      *
      * @param InputInterface $input
@@ -179,37 +206,37 @@ class TaskManager
      */
     private function getTasksFromCliOptions(InputInterface $input)
     {
-        // check if concrete tasks configured to run
-        $tasksInCliOptions = array_intersect_key(
-            $this->tasks,
-            array_filter($input->getOptions())
+        $inputOptionNames = array_keys(array_filter($input->getOptions()));
+
+        // get task names from cli
+        $taskNames = array_merge(
+            // tasks
+            array_intersect(
+                array_keys($this->tasks),
+                $inputOptionNames
+            ),
+            // tasks in bundles
+            $this->normalizeTaskList(
+                array_intersect(
+                    array_keys($this->taskBundles),
+                    $inputOptionNames
+                )
+            )
         );
 
-        if (count($tasksInCliOptions) > 0) {
-            return $tasksInCliOptions;
+        // no tasks specified in cli - run default bundle
+        // in always contain only tasks
+        if (empty ($taskNames)) {
+            $taskNames = $this->taskBundles[self::DEFAULT_TASK_BUNDLE_NAME];
         }
 
-        // no concrete tasks to run - find task bundles
-        $taskBundlesInCliOptions = array_intersect_key(
-            $this->taskBundles,
-            array_filter($input->getOptions())
-        );
-
-        if (count($taskBundlesInCliOptions) === 0) {
-            // no task bundles specified in cli - run default bundle
-            $taskBundlesInCliOptions = [
-                TaskManager::DEFAULT_TASK_BUNDLE_NAME => $this->taskBundles[TaskManager::DEFAULT_TASK_BUNDLE_NAME],
-            ];
-        }
-
-        $taskAliasesToRun = array_unique(call_user_func_array('array_merge', $taskBundlesInCliOptions));
-
-        $tasksInCliOptions = array_intersect_key(
+        // find tasks
+        $tasks = array_intersect_key(
             $this->tasks,
-            array_flip($taskAliasesToRun)
+            array_fill_keys($taskNames, true)
         );
 
-        return $tasksInCliOptions;
+        return $tasks;
     }
 
     /**
