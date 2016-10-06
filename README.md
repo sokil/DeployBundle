@@ -94,7 +94,7 @@ deploy:
         defaultBranch: master       # Optional. Default: master. Set default branch for all repos
         repos:                      # List of repos
           core:                     # Alias of repo
-            path: /var/www/project  # path to repo
+            path: /var/www/project  # Path to repo
             remote: origin          # Optional. Default: origin. Set remote for this repo
             branch: master          # Optional. Default: master. Set branch for this repo
             tag: false              # Tag release after pull
