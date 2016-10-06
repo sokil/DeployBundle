@@ -82,6 +82,26 @@ Task bundle also may contain other bundles.
 
 ## Git
 
+### Configuration
+
+Add configuration to your `./app/config/config.yml`:
+
+```yaml
+deploy:
+    config:
+        git:
+            defaultRemote: origin       # Optional. Default: origin. Set default remote for all repos
+            defaultBranch: master       # Optional. Default: master. Set default branch for all repos
+            repos:                      # List of repos
+                core:                   # Alias of repo
+                    path: /var/www/proj # path to repo
+                    remote: origin      # Optional. Default: origin. Set remote for this repo
+                    branch: master      # Optional. Default: master. Set branch for this repo
+                    tag: false          # Tag release after pull
+```
+
+### Private repositories
+
 If repository is private, password will be asked on pull:
 
 ```
