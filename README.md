@@ -40,19 +40,19 @@ Configure tasks required to run in your app in `app/config/config.yml`:
 
 ```yaml
 deploy:
-    config:
-        git: {}
-        composer: {}
-        npm: {}
-        bower: {}
-        grunt: {}
-        asseticDump: {}
-        assetsInstall: {}
-    tasks:
-        updateBack: [git, composer]
-        updateFront: [npm, bower]
-        compileAssets: [grunt, asseticDump, assetsInstall]
-        release: [updateBack, updateFront, compileAssets]
+  config:
+    git: {}
+    composer: {}
+    npm: {}
+    bower: {}
+    grunt: {}
+    asseticDump: {}
+    assetsInstall: {}
+  tasks:
+    updateBack: [git, composer]
+    updateFront: [npm, bower]
+    compileAssets: [grunt, asseticDump, assetsInstall]
+    release: [updateBack, updateFront, compileAssets]
 ```
 
 Section `config` declared options of every task, able to run. Section `tasks` declered bundles of tasks, runs sequentially.
@@ -88,16 +88,16 @@ Add configuration to your `./app/config/config.yml`:
 
 ```yaml
 deploy:
-    config:
-        git:
-            defaultRemote: origin       # Optional. Default: origin. Set default remote for all repos
-            defaultBranch: master       # Optional. Default: master. Set default branch for all repos
-            repos:                      # List of repos
-                core:                   # Alias of repo
-                    path: /var/www/proj # path to repo
-                    remote: origin      # Optional. Default: origin. Set remote for this repo
-                    branch: master      # Optional. Default: master. Set branch for this repo
-                    tag: false          # Tag release after pull
+  config:
+    git:
+        defaultRemote: origin       # Optional. Default: origin. Set default remote for all repos
+        defaultBranch: master       # Optional. Default: master. Set default branch for all repos
+        repos:                      # List of repos
+          core:                     # Alias of repo
+            path: /var/www/project  # path to repo
+            remote: origin          # Optional. Default: origin. Set remote for this repo
+            branch: master          # Optional. Default: master. Set branch for this repo
+            tag: false              # Tag release after pull
 ```
 
 ### Private repositories
@@ -145,16 +145,20 @@ ssh -T git@bitbucket.com
 ## Npm
 
 ```yaml
-npm:
-    bundles:
+deploy:
+  config:
+    npm:
+      bundles:
         SomeBundle: true
         SomeOtherBundle: true
 ```
 ## Bower
 
 ```yaml
-bower:
-    bundles:
+deploy:
+  config:
+    bower:
+      bundles:
         SomeBundle: true
         SomeOtherBundle: true
 ```
@@ -162,11 +166,13 @@ bower:
 ## Grunt
 
 ```yaml
-grunt:
-    bundles:
+deploy:
+  config:
+    grunt:
+      bundles:
         SomeBundle: true
         SomeOtherBundle: true
-    parallel: true
+      parallel: true
 ```
 
 ## Writting own tasks
@@ -175,11 +181,11 @@ First, create task class which extends `Sokil\DeployBundle\Task\AbstractTask`. T
 
 ```yaml
 acme.deploy.my_task:
-    class: Acme\Deploy\Task\MyTask
-    abstract: true
-    public: false
-    tags:
-      - {name: "deploy.task", alias: "myTask"}
+  class: Acme\Deploy\Task\MyTask
+  abstract: true
+  public: false
+  tags:
+    - {name: "deploy.task", alias: "myTask"}
 ```
 
 This service must contain tag with name `deploy.task` and alias, which will be used as CLI command's option name and configuration section name.
