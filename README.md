@@ -10,6 +10,17 @@ Task runner for Symfony project
 
 [![knpbundles.com](http://knpbundles.com/sokil/DeployBundle/badge-short)](http://knpbundles.com/sokil/DeployBundle)
 
+* [Installation](#installation)
+* [Configuration](#configuration)
+* [Tasks](#tasks)
+  * [Git](#git)
+    * [Configuring git task](#configuring-git-task)
+    * [Private repositories](#private-repositories)
+  * [Npm](#npm)
+  * [Bower](#bower)
+  * [Grunt](#grunt)
+  * [Writting own tasks](#writting-own-tasks)
+
 
 # Installation
 
@@ -82,7 +93,7 @@ Task bundle also may contain other bundles.
 
 ## Git
 
-### Configuration
+### Configuring git task
 
 Add configuration to your `./app/config/config.yml`:
 
