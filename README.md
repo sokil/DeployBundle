@@ -8,8 +8,6 @@ Task runner for Symfony project
 [![Build Status](https://travis-ci.org/sokil/DeployBundle.png?branch=master&1)](https://travis-ci.org/sokil/DeployBundle)
 [![Coverage Status](https://coveralls.io/repos/github/sokil/DeployBundle/badge.svg?branch=master)](https://coveralls.io/github/sokil/DeployBundle?branch=master)
 
-[![knpbundles.com](http://knpbundles.com/sokil/DeployBundle/badge-short)](http://knpbundles.com/sokil/DeployBundle)
-
 * [Installation](#installation)
 * [Configuration](#configuration)
 * [Tasks](#tasks)
