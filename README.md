@@ -18,6 +18,7 @@ Task runner for Symfony project
   * [Bower](#bower)
   * [Grunt](#grunt)
   * [Migrations](#migrations)
+  * [Composer](#composer)
   * [Writting own tasks](#writting-own-tasks)
 
 
@@ -198,7 +199,7 @@ Register bundler in `AppKerner`:
 new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
 ```
 
-First, configure migrations in `./app/config/config.yaml`:
+First, configure migrations in `./app/config/config.yml`:
 
 ```yaml
 doctrine_migrations:
@@ -208,13 +209,25 @@ doctrine_migrations:
     name: Application Migrations
 ```
 
-Tten add task to deploy config in `./app/config/config.yaml`:
+Tten add task to deploy config in `./app/config/config.yml`:
 
 ```yaml
 deploy:
   config:
     migrate: {}
 ```
+
+## Composer
+
+Add task config to `./app/config/config.yml`:
+
+```yaml
+deploy:
+  config:
+    composer:
+      scripts: true # set true if you want to execute scripts. Default: true
+```
+
 ## Writting own tasks
 
 First, create task class which extends `Sokil\DeployBundle\Task\AbstractTask`. Then add Symfony's service definition:
