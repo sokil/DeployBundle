@@ -17,6 +17,7 @@ Task runner for Symfony project
   * [Npm](#npm)
   * [Bower](#bower)
   * [Grunt](#grunt)
+  * [Migrations](#migrations)
   * [Writting own tasks](#writting-own-tasks)
 
 
@@ -184,6 +185,35 @@ deploy:
       parallel: true
 ```
 
+## Migrations
+
+Add dependency:
+```
+composer.phar require doctrine/migrations
+```
+
+Register bundler in `AppKerner`:
+```php
+new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
+```
+
+First, configure migrations in `./app/config/config.yaml`:
+
+```yaml
+doctrine_migrations:
+    dir_name: %kernel.root_dir%/migrations
+    namespace: Migrations
+    table_name: migrations
+    name: Application Migrations
+```
+
+Tten add task to deploy config in `./app/config/config.yaml`:
+
+```yaml
+deploy:
+  config:
+    migrate: {}
+```
 ## Writting own tasks
 
 First, create task class which extends `Sokil\DeployBundle\Task\AbstractTask`. Then add Symfony's service definition:
