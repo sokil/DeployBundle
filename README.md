@@ -190,6 +190,7 @@ deploy:
 Add dependency:
 ```
 composer.phar require doctrine/migrations
+composer.phar require doctrine/doctrine-migrations-bundle
 ```
 
 Register bundler in `AppKerner`:
