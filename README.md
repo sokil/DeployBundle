@@ -176,14 +176,39 @@ deploy:
 
 ## Grunt
 
+Add task configuration to your deploy config:
+
+```yaml
+deploy:
+  config:
+    grunt:
+      bundles: # bundles where grunt need to be run
+        SomeBundle: true
+        SomeOtherBundle: true
+      parallel: true # run grunts from all bundles in parallel. Default: false
+```
+
+Grunt may have few tasks, and you can select which tasks to run.
+
+In config:
+
+
 ```yaml
 deploy:
   config:
     grunt:
       bundles:
-        SomeBundle: true
+        SomeBundle:
+          tasks:
+            - newer:less 
+            - newer:jade
         SomeOtherBundle: true
       parallel: true
+```
+
+As CLI parameter:
+```
+./app/console deploy --grunt --grunt-tasks="SomeBundle=newer:less,newer:jade&SomeOtherBundle"
 ```
 
 ## Migrations
