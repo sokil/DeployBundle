@@ -44,6 +44,13 @@ class ComposerTask extends AbstractTask implements
         } else {
             $options['update'] = (bool)$options['update'];
         }
+        
+        // configure path to composer
+        if (!isset($options['path'])) {
+            $options['path'] = 'composer.phar';
+        } else {
+            $options['path'] = $options['path'];
+        }
 
         return $options;
     }
@@ -72,8 +79,12 @@ class ComposerTask extends AbstractTask implements
         } else {
             $installMethod = 'install';
         }
-
-        $command = 'composer.phar ' . $installMethod . ' --optimize-autoloader --no-interaction';
+        
+        // composer path
+        $composerPath = $this->getOption('path');
+        
+        // command
+        $command = $composerPath . ' ' . $installMethod . ' --optimize-autoloader --no-interaction';
 
         // env
         if ($environment !== 'dev') {
