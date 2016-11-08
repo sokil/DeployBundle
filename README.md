@@ -258,6 +258,8 @@ deploy:
   config:
     composer:
       scripts: true # set true if you want to execute scripts. Default: true
+      update: true # Optional. If passed, update dependencied instead on install
+      path: composer.phar # Optiona. Default: composer.phar, specify path to composer
 ```
 
 ## Writting own tasks
