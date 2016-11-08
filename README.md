@@ -249,7 +249,7 @@ This task will run composer command:
 composer.phar install --optimize-autoloader --no-interaction
 ```
 
-File `composer.phar` must be in path.
+File `composer.phar` must be in path, or you can redefine path to composer by param `path`.
 
 Add task config to `./app/config/config.yml`:
 
