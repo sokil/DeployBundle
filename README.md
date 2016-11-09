@@ -236,7 +236,7 @@ doctrine_migrations:
     name: Application Migrations
 ```
 
-Tten add task to deploy config in `./app/config/config.yml`:
+Then add task to deploy config in `./app/config/config.yml`:
 
 ```yaml
 deploy:
