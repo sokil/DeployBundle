@@ -89,6 +89,8 @@ Task bundle also may contain other bundles.
 * [Npm](#npm)
 * [Bower](#bower)
 * [Grunt](#grunt)
+* [Migrations](#migrations)
+* [Composer](#composer)
 * [Writing own tasks](#writting-own-tasks)
 
 ## Git
