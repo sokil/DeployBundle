@@ -102,7 +102,7 @@ class BowerTask extends AbstractTask implements
             $productionFlag = $environment === 'prod' ? ' --production' : null;
 
             $isSuccessful = $this->processRunner->run(
-                'cd ' . dirname($bowerPath) . '; bower install' . $productionFlag,
+                'cd ' . dirname($bowerPath) . '; bower install --allow-root' . $productionFlag,
                 $environment,
                 $verbosity,
                 $output
