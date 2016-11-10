@@ -36,11 +36,14 @@ class MigrateTask extends AbstractTask
     ) {
         $command = $this->commandLocator->find('doctrine:migrations:migrate');
 
+        $input = new ArrayInput(array(
+            'command' => 'doctrine:migrations:migrate',
+        ));
+
+        $input->setInteractive(false);
+
         $exitCode = $command->run(
-            new ArrayInput(array(
-                'command' => 'doctrine:migrations:migrate',
-                '--no-interaction' => true,
-            )),
+            $input,
             $output
         );
 
