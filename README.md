@@ -19,6 +19,7 @@ Task runner for Symfony project
   * [Grunt](#grunt)
   * [Migrations](#migrations)
   * [Composer](#composer)
+  * [Clear cache](#clearcache)
   * [Writting own tasks](#writting-own-tasks)
 
 
@@ -262,6 +263,14 @@ deploy:
       scripts: true # set true if you want to execute scripts. Default: true
       update: true # Optional. If passed, update dependencied instead on install
       path: composer.phar # Optiona. Default: composer.phar, specify path to composer
+```
+
+## Clear cache
+
+```yaml
+deploy:
+  config:
+    clearCache: {}
 ```
 
 ## Writting own tasks
