@@ -19,7 +19,7 @@ Task runner for Symfony project
   * [Grunt](#grunt)
   * [Migrations](#migrations)
   * [Composer](#composer)
-  * [Clear cache](#clearcache)
+  * [Clear cache](#clear-cache)
   * [Writting own tasks](#writting-own-tasks)
 
 
