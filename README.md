@@ -18,6 +18,8 @@ Task runner for Symfony project
   * [Bower](#bower)
   * [Grunt](#grunt)
   * [Migrations](#migrations)
+  * [Install Assets](#install assets)
+  * [Dump Assetic](#dump-assetic)
   * [Composer](#composer)
   * [Clear cache](#clear-cache)
   * [Writting own tasks](#writting-own-tasks)
@@ -91,6 +93,8 @@ Task bundle also may contain other bundles.
 * [Bower](#bower)
 * [Grunt](#grunt)
 * [Migrations](#migrations)
+* [Install Assets](#install assets)
+* [Dump Assetic](#dump-assetic)
 * [Composer](#composer)
 * [Writing own tasks](#writting-own-tasks)
 
@@ -243,6 +247,26 @@ Then add task to deploy config in `./app/config/config.yml`:
 deploy:
   config:
     migrate: {}
+```
+
+## Install Assets
+
+Then add task to deploy config in `./app/config/config.yml`:
+
+```yaml
+deploy:
+  config:
+    assetsInstall: {}
+```
+
+## Dump Assetic
+
+Then add task to deploy config in `./app/config/config.yml`:
+
+```yaml
+deploy:
+  config:
+    asseticDump: {}
 ```
 
 ## Composer
