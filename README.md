@@ -269,6 +269,14 @@ deploy:
     asseticDump: {}
 ```
 
+Bundles with Assetic assets must be defined in `./app/config/config.yml`
+
+```yanl
+assetic:
+  bundles:
+    - AcmeBundle
+```
+
 ## Composer
 
 This task will run composer command:
