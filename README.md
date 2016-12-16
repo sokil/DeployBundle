@@ -269,9 +269,9 @@ deploy:
     asseticDump: {}
 ```
 
-Bundles with Assetic assets must be defined in `./app/config/config.yml`
+Bundles with Assetic assets must be defined in `./app/config/config.yml`:
 
-```yanl
+```yaml
 assetic:
   bundles:
     - AcmeBundle
