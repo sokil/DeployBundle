@@ -48,6 +48,11 @@ class GruntTask extends AbstractTask implements
      */
     private $processRunner;
 
+    public function getDescription()
+    {
+        return 'Run grunt tasks in bundles';
+    }
+
     public function setResourceLocator(ResourceLocator $locator)
     {
         $this->resourceLocator = $locator;
@@ -98,7 +103,7 @@ class GruntTask extends AbstractTask implements
     {
         return [
             'tasks' => [
-                'description' => 'list of bundles with specified grunt tasks',
+                'description' => 'List of bundles with specified grunt tasks, e.g. "bundle1Name:task1Name,task2Name;bundle2Name;"',
             ]
         ];
     }
