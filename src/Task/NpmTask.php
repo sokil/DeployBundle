@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of the DeployBundle package.
+ *
+ * (c) Dmytro Sokil <dmytro.sokil@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Sokil\DeployBundle\Task;
 
 use Sokil\DeployBundle\Exception\TaskConfigurationValidateException;
@@ -77,7 +86,7 @@ class NpmTask extends AbstractTask implements
         $verbosity,
         OutputInterface $output
     ) {
-        foreach ($this->getOption('bundles') as $bundleName) {
+        foreach ($this->bundles as $bundleName) {
             // get bundle path
             $bundlePath = $this->resourceLocator->locateResource('@' . $bundleName);
 

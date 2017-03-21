@@ -13,25 +13,16 @@ namespace Sokil\DeployBundle\Task;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
-interface TaskInterface
+class SyncTask extends AbstractTask
 {
-    /**
-     * Get console command alias
-     * @return mixed
-     */
-    public function getAlias();
-
     /**
      * Get console command description
      * @return mixed
      */
-    public function getDescription();
-
-    /**
-     * Configure console command options
-     * @return mixed
-     */
-    public function getCommandOptionDefinitions();
+    public function getDescription()
+    {
+        return 'Sync files between servers';
+    }
 
     /**
      * Run task
@@ -46,5 +37,7 @@ interface TaskInterface
         $environment,
         $verbosity,
         OutputInterface $output
-    );
+    ) {
+
+    }
 }

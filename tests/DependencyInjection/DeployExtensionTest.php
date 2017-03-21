@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of the DeployBundle package.
+ *
+ * (c) Dmytro Sokil <dmytro.sokil@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Sokil\DeployBundle\DependencyInjection;
 
 use Sokil\DeployBundle\AbstractTestCase;
@@ -64,14 +73,14 @@ class DeployExtensionTest extends AbstractTestCase
 
         $reflectionClass = new \ReflectionClass($gitTask);
 
-        $bundlesProperty = $reflectionClass->getProperty('bundles');
-        $bundlesProperty->setAccessible(true);
+        $bundleTaskListProperty = $reflectionClass->getProperty('bundleTaskList');
+        $bundleTaskListProperty->setAccessible(true);
         $this->assertSame(
             [
                 'bundle1' => 'gruntTask1 gruntTask2',
                 'bundle2' => true,
             ],
-            $bundlesProperty->getValue($gitTask)
+            $bundleTaskListProperty->getValue($gitTask)
         );
 
         $parallelProperty = $reflectionClass->getProperty('parallel');

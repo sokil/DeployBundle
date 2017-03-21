@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of the DeployBundle package.
+ *
+ * (c) Dmytro Sokil <dmytro.sokil@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Sokil\DeployBundle\Task;
 
 use Sokil\DeployBundle\Exception\TaskConfigurationValidateException;
@@ -41,10 +50,10 @@ abstract class AbstractTask implements TaskInterface
         $this->configure($options);
     }
 
-    public function getDescription()
-    {
-        return 'Description not specified';
-    }
+    /**
+     * @return string
+     */
+    abstract public function getDescription();
 
     /**
      * Configuration of CLI options
@@ -74,13 +83,13 @@ abstract class AbstractTask implements TaskInterface
      *
      * @throws TaskConfigurationValidateException
      */
-    abstract protected function configure(array $options);
+    protected function configure(array $options) {}
 
     /**
      * @param array $commandOptions
      * @param string $environment
      * @param int $verbosity
-     * @param callable $outputWriter
+     * @param OutputInterface $output
      */
     abstract public function run(
         array $commandOptions,
