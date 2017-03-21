@@ -250,7 +250,7 @@ abstract class AbstractTestCase extends TestCase
         // add command options
         $task
             ->expects($this->any())
-            ->method('getCommandOptions')
+            ->method('getCommandOptionDefinitions')
             ->will($this->returnValue([]));
 
         return $task;
@@ -266,7 +266,7 @@ abstract class AbstractTestCase extends TestCase
         // add command options
         $task
             ->expects($this->any())
-            ->method('getCommandOptions')
+            ->method('getCommandOptionDefinitions')
             ->will($this->returnValue([
                 'optionName1' => [
                     'description' => 'Description of optionName1',

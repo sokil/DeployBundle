@@ -40,7 +40,7 @@ interface TaskInterface
      * Configure console command options
      * @return mixed
      */
-    public function getCommandOptions();
+    public function getCommandOptionDefinitions();
 
     /**
      * Run task

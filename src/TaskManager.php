@@ -93,10 +93,19 @@ class TaskManager
             );
 
             // configure command other parameters
-            foreach ($task->getCommandOptions() as $commandOptionName => $commandOptionParameters) {
-                $description = !empty($commandOptionParameters['description']) ? $commandOptionParameters['description'] : null;
-                $defaultValue = !empty($commandOptionParameters['default']) ? $commandOptionParameters['default'] : null;
-                $mode = !empty($commandOptionParameters['mode']) ? $commandOptionParameters['mode'] : InputOption::VALUE_OPTIONAL;
+            foreach ($task->getCommandOptionDefinitions() as $commandOptionName => $commandOptionDefinition) {
+                $description = !empty($commandOptionDefinition['description'])
+                    ? $commandOptionDefinition['description']
+                    : null;
+
+                $defaultValue = !empty($commandOptionDefinition['default'])
+                    ? $commandOptionDefinition['default']
+                    : null;
+
+                $mode = !empty($commandOptionDefinition['mode'])
+                    ? $commandOptionDefinition['mode']
+                    : InputOption::VALUE_OPTIONAL;
+
                 $command->addOption(
                     $alias . '-' . $commandOptionName,
                     null,
@@ -107,6 +116,7 @@ class TaskManager
             }
         }
 
+        // configure bundles of tasks
         foreach ($this->taskBundles as $taskBundleName => $taskNames) {
             $command->addOption(
                 $taskBundleName,
@@ -272,7 +282,7 @@ class TaskManager
         foreach ($taskAliasesToRun as $taskAlias => $task) {
             // get additional options
             $commandOptions = [];
-            foreach ($task->getCommandOptions() as $commandOptionName => $commandOptionParameters) {
+            foreach ($task->getCommandOptionDefinitions() as $commandOptionName => $commandOptionDefinition) {
                 $commandOptions[$commandOptionName] = $input->getOption($taskAlias . '-' . $commandOptionName);
             }
 

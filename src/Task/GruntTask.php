@@ -99,7 +99,7 @@ class GruntTask extends AbstractTask implements
         return $gruntPath;
     }
 
-    public function getCommandOptions()
+    public function getCommandOptionDefinitions()
     {
         return [
             'tasks' => [

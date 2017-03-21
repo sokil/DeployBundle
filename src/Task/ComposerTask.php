@@ -55,7 +55,7 @@ class ComposerTask extends AbstractTask implements
         return $options;
     }
 
-    public function getCommandOptions()
+    public function getCommandOptionDefinitions()
     {
         return [
             'update' => [

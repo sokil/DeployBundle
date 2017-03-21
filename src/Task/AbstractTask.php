@@ -55,7 +55,7 @@ abstract class AbstractTask implements TaskInterface
      *
      * @return array command options with parameters
      */
-    public function getCommandOptions()
+    public function getCommandOptionDefinitions()
     {
         return [];
     }
