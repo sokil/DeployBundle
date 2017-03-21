@@ -83,11 +83,11 @@ class DeployExtensionTest extends AbstractTestCase
             $bundleTaskListProperty->getValue($gitTask)
         );
 
-        $parallelProperty = $reflectionClass->getProperty('parallel');
-        $parallelProperty->setAccessible(true);
+        $isParallelRunAllowedProperty = $reflectionClass->getProperty('isParallelRunAllowed');
+        $isParallelRunAllowedProperty->setAccessible(true);
         $this->assertSame(
             false,
-            $parallelProperty->getValue($gitTask)
+            $isParallelRunAllowedProperty->getValue($gitTask)
         );
     }
 }
