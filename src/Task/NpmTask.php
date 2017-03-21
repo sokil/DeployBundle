@@ -23,6 +23,11 @@ class NpmTask extends AbstractTask implements
     private $processRunner;
 
     /**
+     * @var array
+     */
+    private $bundles;
+
+    /**
      * @param ProcessRunner $runner
      */
     public function setProcessRunner(ProcessRunner $runner)
@@ -44,19 +49,17 @@ class NpmTask extends AbstractTask implements
      * Prepare task options: check values and set default values
      *
      * @param array $options configuration
+     *
      * @throws TaskConfigurationValidateException
-     * @return array validated options with default values on empty params
      */
-    protected function prepareOptions(array $options)
+    protected function configure(array $options)
     {
         // bundles list
         if (empty($options['bundles']) || !is_array($options['bundles'])) {
             throw new TaskConfigurationValidateException('Bundles not configured for npm');
         }
 
-        $options['bundles'] = array_keys(array_filter($options['bundles']));
-
-        return $options;
+        $this->bundles = array_keys(array_filter($options['bundles']));
     }
 
     /**

@@ -28,6 +28,8 @@ class AsseticDumpTask extends AbstractTask
         return 'Dump assetic assets';
     }
 
+    protected function configure(array $options) {}
+
     public function run(
         array $commandOptions,
         $environment,

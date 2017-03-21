@@ -227,15 +227,6 @@ abstract class AbstractTestCase extends TestCase
             ->method('getAlias')
             ->will($this->returnValue($taskAlias));
 
-        // task options
-        $task
-            ->expects($this->any())
-            ->method('getOptions')
-            ->will($this->returnValue([
-                'option1' => 'value1',
-                'option2' => 'value2',
-            ]));
-
         return $task;
     }
 

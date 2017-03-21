@@ -305,7 +305,7 @@ deploy:
     clearCache: {}
 ```
 
-## Writting own tasks
+## Writing own tasks
 
 First, create task class which extends `Sokil\DeployBundle\Task\AbstractTask`. Then add Symfony's service definition:
 

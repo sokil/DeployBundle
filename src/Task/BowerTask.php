@@ -22,6 +22,11 @@ class BowerTask extends AbstractTask implements
      */
     private $processRunner;
 
+    /**
+     * @var array
+     */
+    private $bundleList;
+
     public function setResourceLocator(ResourceLocator $locator)
     {
         $this->resourceLocator = $locator;
@@ -45,31 +50,36 @@ class BowerTask extends AbstractTask implements
      * Prepare task options: check values and set default values
      *
      * @param array $options configuration
+     *
      * @throws TaskConfigurationValidateException
-     * @return array validated options with default values on empty params
      */
-    protected function prepareOptions(array $options)
+    protected function configure(array $options)
     {
         // bundles list
         if (empty($options['bundles']) || !is_array($options['bundles'])) {
             throw new TaskConfigurationValidateException('Bundles not configured for bower');
         }
 
-        $options['bundles'] = array_keys(array_filter($options['bundles']));
-
-        return $options;
+        $this->bundleList = array_keys(array_filter($options['bundles']));
     }
 
+    /**
+     * @param string $bundleName
+     *
+     * @return string
+     *
+     * @throws TaskConfigurationValidateException
+     */
     protected function getBowerfilePath($bundleName)
     {
         // get bundle path
         $bundlePath = $this->resourceLocator->locateResource('@' . $bundleName);
         // find path to Gruntfile
-        $bowefilePath = $bundlePath . 'bower.json';
-        if (!file_exists($bowefilePath)) {
+        $bowerfilePath = $bundlePath . 'bower.json';
+        if (!file_exists($bowerfilePath)) {
             throw new TaskConfigurationValidateException('Bundle "' . $bundleName . '" configured for running bower task but bower.json not found at "' . $bundlePath . '"');
         }
-        return $bowefilePath;
+        return $bowerfilePath;
     }
 
     /**
@@ -86,16 +96,14 @@ class BowerTask extends AbstractTask implements
         $verbosity,
         OutputInterface $output
     ) {
-        $bundleTasksList = $this->getOption('bundles');
-
         // get path list to Gruntfile
-        $bowerfilePathList = [];
-        foreach ($bundleTasksList as $bundleName) {
+        $bowerFilePathList = [];
+        foreach ($this->bundleList as $bundleName) {
             // store bundle path
-            $bowerfilePathList[$bundleName] = $this->getBowerfilePath($bundleName);
+            $bowerFilePathList[$bundleName] = $this->getBowerfilePath($bundleName);
         }
 
-        foreach ($bowerfilePathList as $bowerPath) {
+        foreach ($bowerFilePathList as $bundleName => $bowerPath) {
             // execute
             $output->writeln('<' . self::STYLE_H2 . '>Install bower dependencies from ' . $bowerPath . '</>');
 

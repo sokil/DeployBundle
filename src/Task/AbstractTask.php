@@ -27,10 +27,9 @@ abstract class AbstractTask implements TaskInterface
     private $alias;
 
     /**
-     * @var array
+     * @param string $alias
+     * @param array $options
      */
-    private $options;
-
     public function __construct(
         $alias,
         array $options
@@ -39,7 +38,7 @@ abstract class AbstractTask implements TaskInterface
         $this->alias = $alias;
 
         // set options
-        $this->options = $this->prepareOptions($options);
+        $this->configure($options);
     }
 
     public function getDescription()
@@ -72,38 +71,16 @@ abstract class AbstractTask implements TaskInterface
      * Prepare task options configured in bundle`s config: check values and set default values
      *
      * @param array $options configuration
+     *
      * @throws TaskConfigurationValidateException
-     * @return array validated options with default values on empty params
      */
-    protected function prepareOptions(array $options)
-    {
-        return $options;
-    }
-
-    /**
-     * @return array
-     */
-    public function getOptions()
-    {
-        return $this->options;
-    }
-
-    /**
-     * @param string $name
-     * @param mixed|null $default
-     * @return mixed|null
-     */
-    public function getOption($name, $default = null)
-    {
-        return isset($this->options[$name]) ? $this->options[$name] : $default;
-    }
+    abstract protected function configure(array $options);
 
     /**
      * @param array $commandOptions
      * @param string $environment
      * @param int $verbosity
      * @param callable $outputWriter
-     * @return mixed
      */
     abstract public function run(
         array $commandOptions,

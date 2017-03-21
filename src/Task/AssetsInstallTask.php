@@ -28,6 +28,8 @@ class AssetsInstallTask extends AbstractTask
         return 'Install bundle assets';
     }
 
+    protected function configure(array $options) {}
+
     public function run(
         array $commandOptions,
         $environment,

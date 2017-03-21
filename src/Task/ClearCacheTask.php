@@ -28,6 +28,8 @@ class ClearCacheTask extends AbstractTask
         return 'Clear cache';
     }
 
+    protected function configure(array $options) {}
+
     public function run(
         array $commandOptions,
         $environment,

@@ -3,6 +3,7 @@
 namespace Sokil\DeployBundle\DependencyInjection;
 
 use Sokil\DeployBundle\AbstractTestCase;
+use Sokil\DeployBundle\Task\GitTask;
 use Sokil\DeployBundle\TaskManager;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -22,22 +23,35 @@ class DeployExtensionTest extends AbstractTestCase
         $gitTask = $taskManager->getTask('git');
         $this->assertInstanceOf('\Sokil\DeployBundle\Task\GitTask', $gitTask);
 
-        $this->assertEquals(
-            [
-                'defaultRemote' => 'origin',
-                'defaultBranch' => 'master',
-                'repos' => [
-                    'core' => [
-                        'path' => '/tmp',
-                        'branch' => 'master',
-                        'remote' => 'origin',
-                        'tag' => false
-                    ],
-                ],
-            ],
-            $gitTask->getOptions()
+        $reflectionClass = new \ReflectionClass($gitTask);
+
+        $defaultRemoteProperty = $reflectionClass->getProperty('defaultRemote');
+        $defaultRemoteProperty->setAccessible(true);
+        $this->assertSame(
+            GitTask::DEFAULT_REMOTE_NAME,
+            $defaultRemoteProperty->getValue($gitTask)
         );
 
+        $defaultBranchProperty = $reflectionClass->getProperty('defaultBranch');
+        $defaultBranchProperty->setAccessible(true);
+        $this->assertSame(
+            GitTask::DEFAULT_BRANCH_NAME,
+            $defaultBranchProperty->getValue($gitTask)
+        );
+
+        $reposProperty = $reflectionClass->getProperty('repos');
+        $reposProperty->setAccessible(true);
+        $this->assertSame(
+            [
+                'core' => [
+                    'path' => '/tmp',
+                    'branch' => 'master',
+                    'remote' => 'origin',
+                    'tag' => false
+                ],
+            ],
+            $reposProperty->getValue($gitTask)
+        );
     }
 
     public function testGetResourceAwareTask()
@@ -48,15 +62,23 @@ class DeployExtensionTest extends AbstractTestCase
         $gitTask = $taskManager->getTask('grunt');
         $this->assertInstanceOf('\Sokil\DeployBundle\Task\GruntTask', $gitTask);
 
-        $this->assertEquals(
+        $reflectionClass = new \ReflectionClass($gitTask);
+
+        $bundlesProperty = $reflectionClass->getProperty('bundles');
+        $bundlesProperty->setAccessible(true);
+        $this->assertSame(
             [
-                'bundles' => [
-                    'bundle1' => 'gruntTask1 gruntTask2',
-                    'bundle2' => true,
-                ],
-                'parallel' => false,
+                'bundle1' => 'gruntTask1 gruntTask2',
+                'bundle2' => true,
             ],
-            $gitTask->getOptions()
+            $bundlesProperty->getValue($gitTask)
+        );
+
+        $parallelProperty = $reflectionClass->getProperty('parallel');
+        $parallelProperty->setAccessible(true);
+        $this->assertSame(
+            false,
+            $parallelProperty->getValue($gitTask)
         );
     }
 }

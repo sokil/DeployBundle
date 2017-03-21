@@ -48,6 +48,16 @@ class GruntTask extends AbstractTask implements
      */
     private $processRunner;
 
+    /**
+     * @var array
+     */
+    private $bundleTaskList;
+
+    /**
+     * @var bool
+     */
+    private $isParallelRunAllowed = false;
+
     public function getDescription()
     {
         return 'Run grunt tasks in bundles';
@@ -69,22 +79,22 @@ class GruntTask extends AbstractTask implements
 
     /**
      * @param array $options
-     * @return array
+     *
      * @throws TaskConfigurationValidateException
      */
-    public function prepareOptions(array $options)
+    protected function configure(array $options)
     {
-        // check if bundles passed
+        // configure bundle list
         if (empty($options['bundles']) || !is_array($options['bundles'])) {
             throw new TaskConfigurationValidateException('Bundles not specified for grunt task "' . $this->getAlias() . '"');
         }
 
-        // allow fork tasks
-        if (!isset($options['parallel'])) {
-            $options['parallel'] = false;
-        }
+        $this->bundleTaskList = $options['bundles'];
 
-        return $options;
+        // allow fork tasks
+        if (!empty($options['parallel'])) {
+            $this->isParallelRunAllowed = true;
+        }
     }
 
     protected function getGruntfilePath($bundleName)
@@ -137,7 +147,7 @@ class GruntTask extends AbstractTask implements
     ) {
         // get task list
         if (empty($commandOptions['tasks'])) {
-            $bundleTasksList = $this->getOption('bundles');
+            $bundleTasksList = $this->bundleTaskList;
         } else {
             $bundleTasksList = $this->parseGruntTaskString($commandOptions['tasks']);
         }
@@ -148,9 +158,6 @@ class GruntTask extends AbstractTask implements
             // store bundle path
             $gruntfilePathList[$bundleName] = $this->getGruntfilePath($bundleName);
         }
-
-        // is run of process in parallel required
-        $isParallelRun = $this->getOption('parallel', false);
 
         // run task
         foreach ($gruntfilePathList as $bundleName => $gruntfilePath) {
@@ -179,7 +186,7 @@ class GruntTask extends AbstractTask implements
                 $bundleGruntTasks
             );
 
-            if ($isParallelRun) {
+            if (true === $this->isParallelRunAllowed) {
                 $commands[] = $command;
             } else {
                 $isSuccessful = $this->processRunner->run(
@@ -198,7 +205,7 @@ class GruntTask extends AbstractTask implements
         }
 
         // start parallel run
-        if ($isParallelRun) {
+        if (true === $this->isParallelRunAllowed) {
             if (empty($commands)) {
                 throw new DeployException('Parallel commands not configured');
             }

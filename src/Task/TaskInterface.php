@@ -2,6 +2,7 @@
 
 namespace Sokil\DeployBundle\Task;
 
+use Sokil\DeployBundle\Exception\TaskConfigurationValidateException;
 use Symfony\Component\Console\Output\OutputInterface;
 
 interface TaskInterface
@@ -31,12 +32,6 @@ interface TaskInterface
     public function getDescription();
 
     /**
-     * Get task options
-     * @return mixed
-     */
-    public function getOptions();
-
-    /**
      * Configure console command options
      * @return mixed
      */
@@ -44,11 +39,11 @@ interface TaskInterface
 
     /**
      * Run task
+     *
      * @param array $commandOptions
      * @param $environment
      * @param $verbosity
      * @param OutputInterface $output
-     * @return mixed
      */
     public function run(
         array $commandOptions,

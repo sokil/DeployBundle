@@ -17,6 +17,21 @@ class ComposerTask extends AbstractTask implements
     private $processRunner;
 
     /**
+     * @var bool
+     */
+    private $isScriptExecutionAllowed = true;
+
+    /**
+     * @var bool
+     */
+    private $isUpdateRequired = false;
+
+    /**
+     * @var string
+     */
+    private $pathToComposer = 'composer.phar';
+
+    /**
      * @param ProcessRunner $runner
      */
     public function setProcessRunner(ProcessRunner $runner)
@@ -29,32 +44,9 @@ class ComposerTask extends AbstractTask implements
         return 'Update composer dependencies';
     }
 
-    protected function prepareOptions(array $options)
-    {
-        // disable composer scripts by default
-        if (!isset($options['scripts'])) {
-            $options['scripts'] = true;
-        } else {
-            $options['scripts'] = (bool)$options['scripts'];
-        }
-
-        // configure install method
-        if (!isset($options['update'])) {
-            $options['update'] = false;
-        } else {
-            $options['update'] = (bool)$options['update'];
-        }
-        
-        // configure path to composer
-        if (!isset($options['path'])) {
-            $options['path'] = 'composer.phar';
-        } else {
-            $options['path'] = $options['path'];
-        }
-
-        return $options;
-    }
-
+    /**
+     * @return array
+     */
     public function getCommandOptionDefinitions()
     {
         return [
@@ -63,6 +55,27 @@ class ComposerTask extends AbstractTask implements
                 'mode' => InputOption::VALUE_NONE,
             ]
         ];
+    }
+
+    /**
+     * @param array $options
+     */
+    protected function configure(array $options)
+    {
+        // disable composer scripts by default
+        if (isset($options['scripts'])) {
+            $this->isScriptExecutionAllowed = (bool)$options['scripts'];
+        }
+
+        // configure install method
+        if (isset($options['update'])) {
+            $this->isUpdateRequired = (bool)$options['update'];
+        }
+
+        // configure path to composer
+        if (isset($options['path'])) {
+            $this->pathToComposer = $options['path'];
+        }
     }
 
     public function run(
@@ -74,17 +87,14 @@ class ComposerTask extends AbstractTask implements
         $output->writeln('<' . self::STYLE_H2 . '>Updating composer dependencies</>');
 
         // get install method
-        if (!empty($commandOptions['update']) || $this->getOption('update')) {
+        if (!empty($commandOptions['update']) || $this->isUpdateRequired) {
             $installMethod = 'update';
         } else {
             $installMethod = 'install';
         }
         
-        // composer path
-        $composerPath = $this->getOption('path');
-        
         // command
-        $command = $composerPath . ' ' . $installMethod . ' --optimize-autoloader --no-interaction';
+        $command = $this->pathToComposer . ' ' . $installMethod . ' --optimize-autoloader --no-interaction';
 
         // env
         if ($environment !== 'dev') {
@@ -92,7 +102,7 @@ class ComposerTask extends AbstractTask implements
         }
 
         // scripts
-        if (false === $this->getOption('scripts')) {
+        if (false === $this->isScriptExecutionAllowed) {
             $command .= ' --no-scripts';
         }
 

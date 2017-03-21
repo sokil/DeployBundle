@@ -23,11 +23,27 @@ class MigrateTask extends AbstractTask
         $this->commandLocator = $locator;
     }
 
+    /**
+     * @return string
+     */
     public function getDescription()
     {
-        return 'Migrate datbase';
+        return 'Migrate database';
     }
 
+    /**
+     * @param array $options
+     */
+    protected function configure(array $options) {}
+
+    /**
+     * @param array $commandOptions
+     * @param string $environment
+     * @param int $verbosity
+     * @param OutputInterface $output
+     *
+     * @throws TaskExecuteException
+     */
     public function run(
         array $commandOptions,
         $environment,

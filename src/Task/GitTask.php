@@ -64,6 +64,21 @@ class GitTask extends AbstractTask implements
     private $wasRun = false;
 
     /**
+     * @var string
+     */
+    private $defaultRemote = self::DEFAULT_REMOTE_NAME;
+
+    /**
+     * @var string
+     */
+    private $defaultBranch = self::DEFAULT_BRANCH_NAME;
+
+    /**
+     * @var array
+     */
+    private $repos = [];
+
+    /**
      * @param ProcessRunner $runner
      */
     public function setProcessRunner(ProcessRunner $runner)
@@ -84,7 +99,7 @@ class GitTask extends AbstractTask implements
     ) {
         $output->writeln('<' . self::STYLE_H2 . '>Updating source from Git repository</>');
 
-        foreach ($this->getOption('repos') as $repoName => $repoParams) {
+        foreach ($this->repos as $repoName => $repoParams) {
             // pull
             $isSuccessful = $this->processRunner->run(
                 'cd ' . $repoParams['path'] . '; git pull ' . $repoParams['remote'] . ' ' . $repoParams['branch'],
@@ -120,24 +135,26 @@ class GitTask extends AbstractTask implements
 
     /**
      * Git config of repositories
+     *
+     * @param array $options
+     *
      * @throws TaskConfigurationValidateException
      */
-    protected function prepareOptions(array $options)
+    protected function configure(array $options)
     {
-        if (empty($options['defaultRemote'])) {
-            $options['defaultRemote'] = self::DEFAULT_REMOTE_NAME;
+        if (!empty($options['defaultRemote'])) {
+            $this->defaultRemote = $options['defaultRemote'];
         }
 
-        if (empty($options['defaultBranch'])) {
-            $options['defaultBranch'] = self::DEFAULT_BRANCH_NAME;
+        if (!empty($options['defaultBranch'])) {
+            $this->defaultBranch = $options['defaultBranch'];
         }
 
-        // prepare repos config
         if (empty($options['repos']) || !is_array($options['repos'])) {
             throw new TaskConfigurationValidateException('No repos found in configuration');
         }
 
-        foreach ($options['repos'] as $repoName => &$repoParams) {
+        foreach ($options['repos'] as $repoName => $repoParams) {
             if (empty($repoParams['path'])) {
                 throw new TaskConfigurationValidateException('Path not configured for git repo "' . $repoName . '"');
             }
@@ -159,9 +176,9 @@ class GitTask extends AbstractTask implements
             } elseif (true === $repoParams['tag']) {
                 $repoParams['tag'] = self::DEFAULT_TAG_PATTERN;
             }
-        }
 
-        return $options;
+            $this->repos[$repoName] = $repoParams;
+        }
     }
 
     public static function getSubscribedEvents()
@@ -179,7 +196,7 @@ class GitTask extends AbstractTask implements
             return;
         }
 
-        foreach ($this->getOption('repos') as $repoName => $repoParams) {
+        foreach ($this->repos as $repoName => $repoParams) {
             if (empty($repoParams['tag'])) {
                 continue;
             }
