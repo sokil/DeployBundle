@@ -8,7 +8,7 @@ use Symfony\Component\EventDispatcher\Event;
 
 class AfterTaskRunEvent extends Event
 {
-    const name = 'afterTaskRun';
+    const NAME = 'afterTaskRun';
 
     /**
      * @var TaskInterface

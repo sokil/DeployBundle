@@ -8,7 +8,7 @@ use Symfony\Component\EventDispatcher\Event;
 
 class BeforeTaskRunEvent extends Event
 {
-    const name = 'beforeTaskRun';
+    const NAME = 'beforeTaskRun';
 
     /**
      * @var TaskInterface

@@ -7,7 +7,7 @@ use Symfony\Component\EventDispatcher\Event;
 
 class AfterTasksEvent extends Event
 {
-    const name = 'afterTasks';
+    const NAME = 'afterTasks';
 
     /**
      * @var string

@@ -184,7 +184,7 @@ class GitTask extends AbstractTask implements
     public static function getSubscribedEvents()
     {
         return [
-            AfterTasksEvent::name => [
+            AfterTasksEvent::NAME => [
                 'onAfterTasksFinishedTagRelease'
             ]
         ];

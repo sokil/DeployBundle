@@ -273,7 +273,7 @@ class TaskManager
 
         // before all tasks event
         $this->eventDispatcher->dispatch(
-            BeforeTasksEvent::name,
+            BeforeTasksEvent::NAME,
             new BeforeTasksEvent($environment, $verbosity, $output)
         );
 
@@ -287,7 +287,7 @@ class TaskManager
 
             // before run task
             $this->eventDispatcher->dispatch(
-                BeforeTaskRunEvent::name,
+                BeforeTaskRunEvent::NAME,
                 new BeforeTaskRunEvent($task, $environment, $verbosity, $output)
             );
 
@@ -301,7 +301,7 @@ class TaskManager
                 );
             } catch (\Exception $exception) {
                 $this->eventDispatcher->dispatch(
-                    TaskRunErrorEvent::name,
+                    TaskRunErrorEvent::NAME,
                     new TaskRunErrorEvent($task, $exception, $environment, $verbosity, $output)
                 );
                 throw $exception;
@@ -309,14 +309,14 @@ class TaskManager
 
             // after run task
             $this->eventDispatcher->dispatch(
-                AfterTaskRunEvent::name,
+                AfterTaskRunEvent::NAME,
                 new AfterTaskRunEvent($task, $environment, $verbosity, $output)
             );
         }
 
         // after all tasks event
         $this->eventDispatcher->dispatch(
-            AfterTasksEvent::name,
+            AfterTasksEvent::NAME,
             new AfterTasksEvent($environment, $verbosity, $output)
         );
     }

@@ -8,7 +8,7 @@ use Symfony\Component\EventDispatcher\Event;
 
 class TaskRunErrorEvent extends Event
 {
-    const name = 'taskRunError';
+    const NAME = 'taskRunError';
 
     /**
      * @var TaskInterface
