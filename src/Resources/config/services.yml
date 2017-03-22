@@ -90,3 +90,10 @@ services:
     public: false
     tags:
       - {name: "deploy.task", alias: "npm"}
+
+  deploy.task_manager.abstract_task.sync:
+    class: Sokil\DeployBundle\Task\SyncTask
+    abstract: true
+    public: false
+    tags:
+      - {name: "deploy.task", alias: "sync"}

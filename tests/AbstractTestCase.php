@@ -3,15 +3,15 @@
 namespace Sokil\DeployBundle;
 
 use PHPUnit\Framework\TestCase;
-use Sokil\DeployBundle\Command\DeployCommand;
-use Sokil\DeployBundle\TaskManager\AbstractTask;
+use Sokil\DeployBundle\Task\AbstractTask;
 use Sokil\DeployBundle\TaskManager\CommandLocator;
+use Sokil\DeployBundle\TaskManager\ProcessRunner;
+use Sokil\DeployBundle\TaskManager\ResourceLocator;
+use Symfony\Component\Console\Input\Input;
+use Symfony\Component\Console\Output\Output;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\HelperSet;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractTestCase extends TestCase
 {
@@ -61,6 +61,7 @@ abstract class AbstractTestCase extends TestCase
                 'asseticDump' => [],
                 'assetsInstall' => [],
                 'clearCache' => [],
+                'sync' => []
             ],
         ];
 
@@ -123,12 +124,12 @@ abstract class AbstractTestCase extends TestCase
 
     /**
      * @param array $commandMap
-     * @return \PHPUnit_Framework_MockObject_MockObject|Application
+     * @return Application
      */
     private function createConsoleApplication(array $commandMap = [])
     {
         // add kernel dependency
-        /* @var $application \Symfony\Component\Console\Application */
+        /* @var $application Application */
         $application = $this
             ->getMockBuilder('Symfony\Component\Console\Application')
             ->setMethods(['find', 'getHelperSet'])
@@ -149,7 +150,7 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
-     * @return ResourceLocator|\PHPUnit_Framework_MockObject_MockObject
+     * @return ResourceLocator
      */
     private function createResourceLocator()
     {
@@ -182,9 +183,9 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
-     * @param array expected commands
-     * @param bool expected command execution result
-     * @return ProcessRunner|\PHPUnit_Framework_MockObject_MockObject
+     * @param array $expectedCommands expected commands
+     * @param bool $expectedStatus expected command execution result
+     * @return ProcessRunner
      */
     public function createProcessRunner(
         array $expectedCommands = [],
@@ -210,7 +211,7 @@ abstract class AbstractTestCase extends TestCase
 
     /**
      * @param string $taskAlias name of task
-     * @return AbstractTask|\PHPUnit_Framework_MockObject_MockObject
+     * @return AbstractTask
      */
     private function createSimpleTask($taskAlias = 'simpleTask')
     {
@@ -232,7 +233,7 @@ abstract class AbstractTestCase extends TestCase
 
     /**
      * @param string $taskAlias name of task
-     * @return AbstractTask|\PHPUnit_Framework_MockObject_MockObject
+     * @return AbstractTask
      */
     public function createSimpleTaskWithoutAdditionalCommandOptions($taskAlias = 'simpleTask')
     {
@@ -248,7 +249,7 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
-     * @return AbstractTask|\PHPUnit_Framework_MockObject_MockObject
+     * @return AbstractTask
      */
     public function createSimpleTaskWithAdditionalCommandOptions($taskAlias = 'simpleTask')
     {
@@ -271,13 +272,21 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
-     * @return Input|\PHPUnit_Framework_MockObject_MockObject
+     * @param array $options
+     * @return Input
      */
     public function createInput(array $options = [])
     {
         $mock = $this
-            ->getMockBuilder('Symfony\Component\Console\Input\Input')
-            ->setMethods(['getOption', 'getOptions', 'parse', 'getFirstArgument', 'hasParameterOption', 'getParameterOption'])
+            ->getMockBuilder(Input::class)
+            ->setMethods([
+                'getOption',
+                'getOptions',
+                'parse',
+                'getFirstArgument',
+                'hasParameterOption',
+                'getParameterOption'
+            ])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -300,12 +309,12 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
-     * @return Output|\PHPUnit_Framework_MockObject_MockObject
+     * @return Output
      */
     public function createOutput()
     {
         return $this
-            ->getMockBuilder('Symfony\Component\Console\Output\Output')
+            ->getMockBuilder(Output::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

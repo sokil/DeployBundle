@@ -233,6 +233,7 @@ class TaskManagerTest extends AbstractTestCase
             'asseticDump',
             'assetsInstall',
             'clearCache',
+            'sync'
         ], array_keys($tasks));
     }
 
