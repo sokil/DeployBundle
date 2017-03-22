@@ -161,7 +161,6 @@ class GruntTask extends AbstractTask implements
 
         // run task
         foreach ($gruntfilePathList as $bundleName => $gruntfilePath) {
-
             $output->writeln('<' . self::STYLE_H2 . '>Execute grunt tasks from ' . $gruntfilePath . '</>');
 
             // configure grunt tasks

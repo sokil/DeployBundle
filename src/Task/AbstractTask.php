@@ -83,7 +83,9 @@ abstract class AbstractTask implements TaskInterface
      *
      * @throws TaskConfigurationValidateException
      */
-    protected function configure(array $options) {}
+    protected function configure(array $options)
+    {
+    }
 
     /**
      * @param array $commandOptions

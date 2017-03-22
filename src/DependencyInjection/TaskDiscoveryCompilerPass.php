@@ -35,7 +35,6 @@ class TaskDiscoveryCompilerPass implements CompilerPassInterface
         // build task references
         foreach ($container->findTaggedServiceIds('deploy.task') as $abstractTaskServiceId => $taskServiceTags) {
             foreach ($taskServiceTags as $taskServiceTagParameters) {
-
                 $taskAlias = $taskServiceTagParameters['alias'];
 
                 // check if task configured

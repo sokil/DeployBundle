@@ -81,7 +81,6 @@ class TaskManager
 
         /* @var AbstractTask $task */
         foreach ($this->tasks as $task) {
-
             $alias = $task->getAlias();
 
             // configure command parameter to launch task
@@ -236,7 +235,7 @@ class TaskManager
 
         // no tasks specified in cli - run default bundle
         // in always contain only tasks
-        if (empty ($taskNames)) {
+        if (empty($taskNames)) {
             $taskNames = $this->taskBundles[self::DEFAULT_TASK_BUNDLE_NAME];
         }
 
@@ -303,7 +302,8 @@ class TaskManager
             } catch (\Exception $exception) {
                 $this->eventDispatcher->dispatch(
                     TaskRunErrorEvent::name,
-                    new TaskRunErrorEvent($task, $exception, $environment, $verbosity, $output));
+                    new TaskRunErrorEvent($task, $exception, $environment, $verbosity, $output)
+                );
                 throw $exception;
             }
 

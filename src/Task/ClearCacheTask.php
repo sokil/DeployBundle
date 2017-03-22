@@ -7,8 +7,7 @@ use Sokil\DeployBundle\TaskManager\CommandLocator;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ClearCacheTask extends AbstractTask
-    implements CommandAwareTaskInterface
+class ClearCacheTask extends AbstractTask implements CommandAwareTaskInterface
 {
     /**
      * @var CommandLocator
@@ -28,7 +27,9 @@ class ClearCacheTask extends AbstractTask
         return 'Clear cache';
     }
 
-    protected function configure(array $options) {}
+    protected function configure(array $options)
+    {
+    }
 
     public function run(
         array $commandOptions,

@@ -25,11 +25,11 @@ class ProcessRunner
      * @return Process
      */
     protected function createProcess(
-        $commandline, 
-        $cwd = null, 
-        array $env = null, 
-        $input = null, 
-        $timeout = 60, 
+        $commandline,
+        $cwd = null,
+        array $env = null,
+        $input = null,
+        $timeout = 60,
         array $options = array()
     ) {
         return new Process(
@@ -80,7 +80,7 @@ class ProcessRunner
         }
 
         // wait exitcode
-        while($process->getExitCode() === null) {
+        while ($process->getExitCode() === null) {
             usleep(self::WAIT_PROCESS_EXIT_DELAY);
         }
 
@@ -133,7 +133,7 @@ class ProcessRunner
                 }
 
                 // wait exit code
-                while($process->getExitCode() === null) {
+                while ($process->getExitCode() === null) {
                     usleep(self::WAIT_PROCESS_EXIT_DELAY);
                 }
 

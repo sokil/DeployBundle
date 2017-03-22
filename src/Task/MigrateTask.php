@@ -16,8 +16,7 @@ use Sokil\DeployBundle\TaskManager\CommandLocator;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MigrateTask extends AbstractTask
-    implements CommandAwareTaskInterface
+class MigrateTask extends AbstractTask implements CommandAwareTaskInterface
 {
     /**
      * @var CommandLocator
@@ -43,7 +42,9 @@ class MigrateTask extends AbstractTask
     /**
      * @param array $options
      */
-    protected function configure(array $options) {}
+    protected function configure(array $options)
+    {
+    }
 
     /**
      * @param array $commandOptions

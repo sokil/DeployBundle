@@ -7,8 +7,7 @@ use Sokil\DeployBundle\TaskManager\CommandLocator;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AssetsInstallTask extends AbstractTask
-    implements CommandAwareTaskInterface
+class AssetsInstallTask extends AbstractTask implements CommandAwareTaskInterface
 {
     /**
      * @var CommandLocator
@@ -28,7 +27,9 @@ class AssetsInstallTask extends AbstractTask
         return 'Install bundle assets';
     }
 
-    protected function configure(array $options) {}
+    protected function configure(array $options)
+    {
+    }
 
     public function run(
         array $commandOptions,
