@@ -61,7 +61,27 @@ abstract class AbstractTestCase extends TestCase
                 'asseticDump' => [],
                 'assetsInstall' => [],
                 'clearCache' => [],
-                'sync' => []
+                'sync' => [
+                    'web' => [
+                        'source' => '.',
+                        'target' => [
+                            'user@web1.server.com://var/www/site',
+                            'user@web2.server.com://var/www/site',
+                        ],
+                        'exclude' => [
+                            '/var',
+                            '/app/conf/nginx/',
+                            '/.idea',
+                            '/app/config/parameters.yml',
+                        ],
+                        'include' => [
+                            '/app/conf/nginx/*.conf.sample',
+                        ],
+                        'deleteExtraneousFiles' => true,
+                        'verbose' => true,
+                    ],
+                    'parallel' => false,
+                ]
             ],
         ];
 
