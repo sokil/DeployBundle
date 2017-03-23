@@ -312,7 +312,7 @@ deploy:
 
 ## Sync
 
-Task user to sync data between servers. Add configuration:
+Task userd to sync data to production servers. Add configuration:
 ```yaml
 deploy:
   config:
