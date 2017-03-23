@@ -22,6 +22,7 @@ Task runner for Symfony project
   * [Dump Assetic](#dump-assetic)
   * [Composer](#composer)
   * [Clear cache](#clear-cache)
+  * [Sync](#sync)
   * [Writting own tasks](#writting-own-tasks)
 
 
@@ -308,6 +309,36 @@ deploy:
   config:
     clearCache: {}
 ```
+
+## Sync
+
+Task user to sync data between servers. Add configuration:
+```yaml
+deploy:
+  config:
+    parallel: 3
+    rules:
+      web:
+        src: '.'
+        dest:
+          - user@www1.server.com://var/www/some
+          - user@www2.server.com://var/www/some
+        delete: true
+        verbose: true
+        exclude:
+          - /var
+          - /app/conf/nginx/
+          - /.idea
+          - /app/config/parameters.yml
+        include:
+          - /app/conf/nginx/*.conf.sample
+```
+
+Parameter `rules` define rules to sync files from source to destination.
+May be configured any number of rules. Every rule consists of parameter
+`src` (defaults to "."), parameter `dest` which may be string or array of hosts.
+Other rule parameters same to `rsync` options. See man page of `rsync`
+to find description of this options.
 
 ## Writing own tasks
 
