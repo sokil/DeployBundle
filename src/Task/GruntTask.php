@@ -86,7 +86,9 @@ class GruntTask extends AbstractTask implements
     {
         // configure bundle list
         if (empty($options['bundles']) || !is_array($options['bundles'])) {
-            throw new TaskConfigurationValidateException('Bundles not specified for grunt task "' . $this->getAlias() . '"');
+            throw new TaskConfigurationValidateException(
+                'Bundles not specified for grunt task "' . $this->getAlias() . '"'
+            );
         }
 
         $this->bundleTaskList = $options['bundles'];
@@ -104,7 +106,11 @@ class GruntTask extends AbstractTask implements
         // find path to Gruntfile
         $gruntPath = $bundlePath . 'Gruntfile.js';
         if (!file_exists($gruntPath)) {
-            throw new TaskConfigurationValidateException('Bundle "' . $bundleName . '" configured for running grunt task but Gruntfile.js not found at "' . $bundlePath . '"');
+            throw new TaskConfigurationValidateException(sprintf(
+                'Bundle "%s" configured for running grunt task but Gruntfile.js not found at "%s"',
+                $bundleName,
+                $bundlePath
+            ));
         }
         return $gruntPath;
     }
@@ -113,7 +119,7 @@ class GruntTask extends AbstractTask implements
     {
         return [
             'tasks' => [
-                'description' => 'List of bundles with specified grunt tasks, e.g. "bundle1Name:task1Name,task2Name;bundle2Name;"',
+                'description' => 'List of bundles with grunt tasks: "bundle1Name:task1Name,task2Name;bundle2Name;"',
             ]
         ];
     }

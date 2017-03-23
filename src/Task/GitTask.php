@@ -25,21 +25,21 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * Sample configuration:
  *
  *  tasks:
- *      git:
- *          defaultRemote: origin                   # default remote to pull (optional; default: origin)
- *          defaultBranch: master                   # default branch to pull (optional; default: master)
- *          repos:                                  # list of repos to pull and tag
- *              core:                               # name of repo
- *                  path: "%kernel.root_dir%/../"   # path to repo
- *                  branch: master                  # remote to pull (optional; default: origin, or configured in defaultRemote)
- *                  remote: origin                  # branch to pull (optional; default: master, or configured in defaultBranch)
- *                  tag: true                       # allow tag release
+ *    git:
+ *      defaultRemote: origin               # default remote to pull (optional; default: origin)
+ *      defaultBranch: master               # default branch to pull (optional; default: master)
+ *      repos:                              # list of repos to pull and tag
+ *        core:                             # name of repo
+ *          path: "%kernel.root_dir%/../"   # path to repo
+ *          branch: master                  # remote to pull (optional; default: origin, or configured in defaultRemote)
+ *          remote: origin                  # branch to pull (optional; default: master, or configured in defaultBranch)
+ *          tag: true                       # allow tag release
  *
  * If 'tag' key is true, rag release will be in format '%date%-release', also you can pass your own pattern:
  *
- *          repos:
- *              core:
- *                  tag: 'release-%date%'
+ * repos:
+ *   core:
+ *     tag: 'release-%date%'
  *
  * Currently supported only %date% and %datetime% placeholder for release tag.
  */

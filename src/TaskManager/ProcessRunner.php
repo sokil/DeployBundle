@@ -15,8 +15,10 @@ class ProcessRunner
      * Create instance of process
      *
      * @param string         $commandline The command line to run
-     * @param string|null    $cwd         The working directory or null to use the working dir of the current PHP process
-     * @param array|null     $env         The environment variables or null to use the same environment as the current PHP process
+     * @param string|null    $cwd         The working directory or null to use the working
+     *                                    dir of the current PHP process
+     * @param array|null     $env         The environment variables or null to use the same environment
+     *                                    as the current PHP process
      * @param mixed|null     $input       The input as stream resource, scalar or \Traversable, or null for no input
      * @param int|float|null $timeout     The timeout in seconds or null to disable
      * @param array          $options     An array of options for proc_open
@@ -145,7 +147,12 @@ class ProcessRunner
                     $isSuccessful &= true;
                 } else {
                     // exit code
-                    $output->writeln('Process ' . $pid . ' exited with error #' . $process->getExitCode() . ' ' . $process->getExitCodeText());
+                    $output->writeln(sprintf(
+                        'Process %s exited with error #%s %s',
+                        $pid,
+                        $process->getExitCode(),
+                        $process->getExitCodeText()
+                    ));
                     // render error output
                     $output->writeln($process->getErrorOutput());
                     // status

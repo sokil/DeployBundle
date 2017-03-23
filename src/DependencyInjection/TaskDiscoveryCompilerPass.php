@@ -60,7 +60,10 @@ class TaskDiscoveryCompilerPass implements CompilerPassInterface
         // add tasks to task manager
         foreach ($taskServices as $taskAlias => $taskService) {
             if (!($taskService instanceof Reference)) {
-                throw new TaskNotFoundException('Task "' . $taskAlias . '" has configuration but no tasks with this alias found');
+                throw new TaskNotFoundException(sprintf(
+                    'Task "%s" has configuration but no tasks with this alias found',
+                    $taskAlias
+                ));
             }
 
             $taskManagerDefinition->addMethodCall(

@@ -77,7 +77,11 @@ class BowerTask extends AbstractTask implements
         // find path to Gruntfile
         $bowerfilePath = $bundlePath . 'bower.json';
         if (!file_exists($bowerfilePath)) {
-            throw new TaskConfigurationValidateException('Bundle "' . $bundleName . '" configured for running bower task but bower.json not found at "' . $bundlePath . '"');
+            throw new TaskConfigurationValidateException(sprintf(
+                'Bundle "%s" configured for running bower task but bower.json not found at "%s"',
+                $bundleName,
+                $bundlePath
+            ));
         }
         return $bowerfilePath;
     }
