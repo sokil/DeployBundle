@@ -12,7 +12,7 @@ class ProcessRunner
     const WAIT_PROCESS_CHECKSTATUS_DELAY = 300000;
 
     /**
-     * Create instane of process
+     * Create instance of process
      *
      * @param string         $commandline The command line to run
      * @param string|null    $cwd         The working directory or null to use the working dir of the current PHP process
