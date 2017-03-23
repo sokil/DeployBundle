@@ -12,7 +12,6 @@
 namespace Sokil\DeployBundle\Task;
 
 use Sokil\DeployBundle\Exception\TaskConfigurationValidateException;
-use Sokil\DeployBundle\Task\SyncTask\SyncCommand;
 use Sokil\DeployBundle\TaskManager\ProcessRunner;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -21,7 +20,7 @@ class SyncTask extends AbstractTask implements ProcessRunnerAwareTaskInterface
     /**
      * @var array
      */
-    private $commands = [];
+    private $rules;
 
     /**
      * @var int
@@ -51,32 +50,12 @@ class SyncTask extends AbstractTask implements ProcessRunnerAwareTaskInterface
      */
     protected function configure(array $options)
     {
-        // configure commands
-        foreach ($options as $commandName => $commandDefinition) {
-            $command = new SyncCommand();
-
-            if (!empty($commandDefinition['source'])) {
-                $command->setSource($commandDefinition['source']);
-            }
-
-            if (!empty($commandDefinition['target'])) {
-                $command->setTarget((array)$commandDefinition['target']);
-            }
-
-            if (!empty($commandDefinition['exclude'])) {
-                $command->setExclude((array)$commandDefinition['exclude']);
-            }
-
-            if (!empty($commandDefinition['include'])) {
-                $command->setInclude((array)$commandDefinition['include']);
-            }
-
-            if (isset($commandDefinition['deleteExtraneousFiles'])) {
-                $command->setDeleteExtraneousFiles((bool)$commandDefinition['deleteExtraneousFiles']);
-            }
-
-            $this->commands[$commandName] = $command;
+        // set rules
+        if (empty($options['rules']) || !is_array($options['rules'])) {
+            throw new TaskConfigurationValidateException('Rules for sync not configured');
         }
+
+        $this->rules = $options['rules'];
 
         // set parallel
         if (!empty($options['parallel']) && is_numeric($options['parallel'])) {
@@ -106,18 +85,50 @@ class SyncTask extends AbstractTask implements ProcessRunnerAwareTaskInterface
         $verbosity,
         OutputInterface $output
     ) {
+        // build command list
         $commands = [];
+        foreach ($this->rules as $ruleName => $commandOptions) {
+            // source
+            $source = '.';
+            if (!empty($commandOptions['src'])) {
+                $source = $commandOptions['src'];
+                unset($commandOptions['src']);
+            }
 
-        /**
-         * @var string $commandName
-         * @var SyncCommand $command
-         */
-        foreach ($this->commands as $commandName => $command) {
-            foreach ($command->getNext() as $commandString) {
-                $commands[] = $commandString;
+            // destination
+            if (empty($commandOptions['dest'])) {
+                throw new TaskConfigurationValidateException(sprintf('Destination not specified for %s', $ruleName));
+            }
+
+            $destinationList = (array)$commandOptions['dest'];
+            unset($commandOptions['dest']);
+
+            // build command
+            $command = ['rsync -a'];
+            foreach ($commandOptions as $commandOptionName => $commandOptionValue) {
+                if (is_bool($commandOptionValue)) {
+                    // flag
+                    if ($commandOptionValue === true) {
+                        $command[] = '--' . $commandOptionName;
+                    }
+                } elseif (is_array($commandOptionValue)) {
+                    // array argument
+                    foreach ($commandOptionValue as $commandOptionValueElement) {
+                        $command[] = '--' . $commandOptionName . ' ' . $commandOptionValueElement;
+                    }
+                } else {
+                    // scalar argument
+                    $command[] = '--' . $commandOptionName . ' ' . $commandOptionValue;
+                }
+            }
+
+            // build command list
+            foreach ($destinationList as $destination) {
+                $commands[] = implode(' ', $command) . ' ' . $source . ' ' . $destination;
             }
         }
 
+        // run commands
         if ($this->parallelProcessesCount > 1) {
             $commandChunks = array_chunk($commands, $this->parallelProcessesCount);
             foreach ($commandChunks as $commandChunk) {

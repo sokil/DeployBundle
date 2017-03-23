@@ -15,23 +15,25 @@ class SyncTaskTest extends AbstractTestCase
         $syncTask = new SyncTask(
             'sync',
             [
-                'web' => [
-                    'source' => '.',
-                    'target' => [
-                        'user@web1.server.com://var/www/site',
-                        'user@web2.server.com://var/www/site',
+                'rules' => [
+                    'web' => [
+                        'src' => '.',
+                        'dest' => [
+                            'user@web1.server.com://var/www/site',
+                            'user@web2.server.com://var/www/site',
+                        ],
+                        'exclude' => [
+                            '/var',
+                            '/app/conf/nginx/',
+                            '/.idea',
+                            '/app/config/parameters.yml',
+                        ],
+                        'include' => [
+                            '/app/conf/nginx/*.conf.sample',
+                        ],
+                        'delete' => true,
+                        'verbose' => true,
                     ],
-                    'exclude' => [
-                        '/var',
-                        '/app/conf/nginx/',
-                        '/.idea',
-                        '/app/config/parameters.yml',
-                    ],
-                    'include' => [
-                        '/app/conf/nginx/*.conf.sample',
-                    ],
-                    'deleteExtraneousFiles' => true,
-                    'verbose' => true,
                 ],
                 'parallel' => 1,
             ]
@@ -41,13 +43,13 @@ class SyncTaskTest extends AbstractTestCase
         $syncTask->setProcessRunner($this->createProcessRunner(
             [
                 [
-                    'rsync -a -v --delete --exclude /var --exclude /app/conf/nginx/ --exclude /.idea --exclude /app/config/parameters.yml --include /app/conf/nginx/*.conf.sample . user@web1.server.com://var/www/site',
+                    'rsync -a --exclude /var --exclude /app/conf/nginx/ --exclude /.idea --exclude /app/config/parameters.yml --include /app/conf/nginx/*.conf.sample --delete --verbose . user@web1.server.com://var/www/site',
                     'dev',
                     OutputInterface::VERBOSITY_NORMAL,
                     $this->isInstanceOf(Output::class)
                 ],
                 [
-                    'rsync -a -v --delete --exclude /var --exclude /app/conf/nginx/ --exclude /.idea --exclude /app/config/parameters.yml --include /app/conf/nginx/*.conf.sample . user@web2.server.com://var/www/site',
+                    'rsync -a --exclude /var --exclude /app/conf/nginx/ --exclude /.idea --exclude /app/config/parameters.yml --include /app/conf/nginx/*.conf.sample --delete --verbose . user@web2.server.com://var/www/site',
                     'dev',
                     OutputInterface::VERBOSITY_NORMAL,
                     $this->isInstanceOf(Output::class)
