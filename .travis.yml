@@ -15,8 +15,8 @@ before_script:
   - composer update --no-interaction
 
 script:
-  - mkdir -p build/logs
-  - phpunit -c tests/phpunit.xml --coverage-clover build/logs/clover.xml tests
+  - mkdir -p logs
+  - composer.phar test
 
 after_script:
-  - php ./vendor/bin/coveralls -v
+  - composer.phar coveralls
