@@ -69,7 +69,8 @@ deploy:
     release: [updateBack, updateFront, compileAssets]
 ```
 
-Section `config` declared options of every task, able to run. Section `tasks` declered bundles of tasks, runs sequentially.
+Section `config` declared options of every task, able to run. 
+Section `tasks` declares bundles of tasks, which run sequentially.
 Tasks may be run by defining task aliases in cli command:
 
 ```
@@ -78,12 +79,15 @@ $ ./app/console deploy --git --npm
 
 Also tasks bundles may be defined:
 ```
-$ ./app/console deploy --up
+$ ./app/console deploy --compileAssets
 ```
 
-If no task specified then `default` task bundle will be run. This task bundle may be defined in configuration, but if it omitted, then default task consists of all tasks in order of `config` section.
-Tasks and task bundles both may be specified in cli options, then tasks will be run in order of first occurrence.
-Task bundle also may contain other bundles.
+If no task specified then `default` task bundle will be run. This task 
+bundle may be defined in configuration, but if it omitted, 
+then default task consists of all tasks in order of `config` section.
+Tasks and task bundles both may be specified in cli options, then tasks 
+will be run in order of first occurrence. Task bundle also may contain 
+other bundles.
 
 
 # Tasks
