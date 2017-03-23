@@ -16,7 +16,7 @@ before_script:
 
 script:
   - mkdir -p logs
-  - composer.phar test
+  - composer test
 
 after_script:
-  - composer.phar coveralls
+  - composer coveralls
