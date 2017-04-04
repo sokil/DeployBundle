@@ -12,7 +12,7 @@ before_script:
 
 script:
   - mkdir -p logs
-  - composer test
+  - composer cover
 
 after_script:
   - composer coveralls
