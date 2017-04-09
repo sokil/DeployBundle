@@ -10,8 +10,8 @@ class GruntTaskTest extends AbstractTestCase
 {
     public function testRun()
     {
-        $taskMock = $this->getMockBuilder('\Sokil\DeployBundle\Task\GruntTask')
-            ->setMethods(['getGruntfilePath'])
+        $taskMock = $this->getMockBuilder(GruntTask::class)
+            ->setMethods(['getGruntfilePathList'])
             ->setConstructorArgs([
                 'grunt',
                 [
@@ -31,11 +31,10 @@ class GruntTaskTest extends AbstractTestCase
 
         $taskMock
             ->expects($this->any())
-            ->method('getGruntfilePath')
-            ->will($this->returnValueMap([
-                ['bundle1', '/tmp/bundle1/Gruntfile.js'],
-                ['bundle2', '/tmp/bundle2/Gruntfile.js'],
-                ['bundle3', '/tmp/bundle3/Gruntfile.js'],
+            ->method('getGruntfilePathList')
+            ->will($this->returnValue([
+                'bundle1' => '/tmp/bundle1/Gruntfile.js',
+                'bundle2' => '/tmp/bundle2/Gruntfile.js',
             ]));
 
         $taskMock->setProcessRunner($this->createProcessRunner(
@@ -67,8 +66,8 @@ class GruntTaskTest extends AbstractTestCase
     public function testRun_CliConfiguration()
     {
         /* @var $taskMock \Sokil\DeployBundle\Task\GruntTask */
-        $taskMock = $this->getMockBuilder('\Sokil\DeployBundle\Task\GruntTask')
-            ->setMethods(['getGruntfilePath'])
+        $taskMock = $this->getMockBuilder(GruntTask::class)
+            ->setMethods(['getGruntfilePathList'])
             ->setConstructorArgs([
                 'grunt',
                 [
@@ -88,11 +87,10 @@ class GruntTaskTest extends AbstractTestCase
 
         $taskMock
             ->expects($this->any())
-            ->method('getGruntfilePath')
-            ->will($this->returnValueMap([
-                ['bundle1', '/tmp/bundle1/Gruntfile.js'],
-                ['bundle2', '/tmp/bundle2/Gruntfile.js'],
-                ['bundle3', '/tmp/bundle3/Gruntfile.js'],
+            ->method('getGruntfilePathList')
+            ->will($this->returnValue([
+                'bundle2' => '/tmp/bundle2/Gruntfile.js',
+                'bundle3' => '/tmp/bundle3/Gruntfile.js',
             ]));
 
         $taskMock->setProcessRunner($this->createProcessRunner(

@@ -73,7 +73,7 @@ class DeployExtensionTest extends AbstractTestCase
 
         $reflectionClass = new \ReflectionClass($gitTask);
 
-        $bundleTaskListProperty = $reflectionClass->getProperty('bundleTaskList');
+        $bundleTaskListProperty = $reflectionClass->getProperty('bundleConfigurationList');
         $bundleTaskListProperty->setAccessible(true);
         $this->assertSame(
             [

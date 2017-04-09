@@ -131,32 +131,15 @@ class GruntTask extends AbstractTask implements
         return $gruntTaskConfig;
     }
 
-    public function run(
-        array $commandOptions,
-        $environment,
-        $verbosity,
-        OutputInterface $output
-    ) {
-        // get task list
-        $bundleConfigurationList = $this->bundleConfigurationList;
-        if (!empty($commandOptions['tasks'])) {
-            // get bundles and their tasks from cli
-            $overriddenBundleConfigurationList = $this->parseGruntTaskString($commandOptions['tasks']);
-            // get configuration only for passed tasks and their bundles in cli
-            $bundleConfigurationList = array_intersect_key(
-                $bundleConfigurationList,
-                $overriddenBundleConfigurationList
-            );
-            // override tasks with values in cli list
-            $bundleConfigurationList = array_replace(
-                $bundleConfigurationList,
-                $overriddenBundleConfigurationList
-            );
-        }
-
+    /**
+     * @return array
+     * @throws TaskConfigurationValidateException
+     */
+    protected function getGruntfilePathList()
+    {
         // get path list to Gruntfile
         $gruntfilePathList = [];
-        foreach ($bundleConfigurationList as $bundleName => $bundleConfiguration) {
+        foreach ($this->bundleConfigurationList as $bundleName => $bundleConfiguration) {
             // skip disabled bundles
             if ($bundleConfiguration === false) {
                 continue;
@@ -181,6 +164,35 @@ class GruntTask extends AbstractTask implements
                 ));
             }
         }
+
+        return $gruntfilePathList;
+    }
+
+    public function run(
+        array $commandOptions,
+        $environment,
+        $verbosity,
+        OutputInterface $output
+    ) {
+        // get task list
+        $bundleConfigurationList = $this->bundleConfigurationList;
+        if (!empty($commandOptions['tasks'])) {
+            // get bundles and their tasks from cli
+            $overriddenBundleConfigurationList = $this->parseGruntTaskString($commandOptions['tasks']);
+            // get configuration only for passed tasks and their bundles in cli
+            $bundleConfigurationList = array_intersect_key(
+                $bundleConfigurationList,
+                $overriddenBundleConfigurationList
+            );
+            // override tasks with values in cli list
+            $bundleConfigurationList = array_replace(
+                $bundleConfigurationList,
+                $overriddenBundleConfigurationList
+            );
+        }
+
+        // get path list to Gruntfile
+        $gruntfilePathList = $this->getGruntfilePathList();
 
         // run task
         foreach ($gruntfilePathList as $bundleName => $gruntfileDir) {
