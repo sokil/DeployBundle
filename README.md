@@ -195,8 +195,11 @@ deploy:
   config:
     grunt:
       bundles: # bundles where grunt need to be run
-        SomeBundle: true
-        SomeOtherBundle: true
+        SomeBundle1: true
+        SomeBundle2:
+          tasks: [task1, task2, task3]
+          gruntfile: ../ # dir with Gruntfile.js, relatively to SomeBundle2.php
+            
       parallel: true # run grunts from all bundles in parallel. Default: false
 ```
 

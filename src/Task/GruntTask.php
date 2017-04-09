@@ -51,7 +51,7 @@ class GruntTask extends AbstractTask implements
     /**
      * @var array
      */
-    private $bundleTaskList;
+    private $bundleConfigurationList;
 
     /**
      * @var bool
@@ -91,7 +91,7 @@ class GruntTask extends AbstractTask implements
             );
         }
 
-        $this->bundleTaskList = $options['bundles'];
+        $this->bundleConfigurationList = $options['bundles'];
 
         // allow fork tasks
         if (!empty($options['parallel'])) {
@@ -99,20 +99,34 @@ class GruntTask extends AbstractTask implements
         }
     }
 
-    protected function getGruntfilePath($bundleName)
+    /**
+     * Try to locate Gruntfile.js in directory with bundle file
+     *
+     * @param string $bundleName
+     * @return array|string
+     * @throws TaskConfigurationValidateException
+     */
+    protected function getGruntfilePath($bundleName, $relativePath = null)
     {
         // get bundle path
-        $bundlePath = $this->resourceLocator->locateResource('@' . $bundleName);
-        // find path to Gruntfile
-        $gruntPath = $bundlePath . 'Gruntfile.js';
-        if (!file_exists($gruntPath)) {
+        $bundleDir = $this->resourceLocator->locateResource('@' . $bundleName);
+
+        // get dir with bundle file
+        $gruntDir = $bundleDir;
+        if ($relativePath) {
+            $gruntDir .= rtrim($relativePath, '/') . '/';
+        }
+
+        // check existence of gruntfile
+        if (!file_exists($gruntDir . 'Gruntfile.js')) {
             throw new TaskConfigurationValidateException(sprintf(
                 'Bundle "%s" configured for running grunt task but Gruntfile.js not found at "%s"',
                 $bundleName,
-                $bundlePath
+                $bundleDir
             ));
         }
-        return $gruntPath;
+
+        return $gruntDir;
     }
 
     public function getCommandOptionDefinitions()
@@ -138,7 +152,9 @@ class GruntTask extends AbstractTask implements
                 $gruntTaskConfig[$bundleTaskString] = true;
             } else {
                 list ($bundleTame, $commaDelimitedGruntTasks) = explode('=', $bundleTaskString);
-                $gruntTaskConfig[$bundleTame] = ['tasks' => explode(',', $commaDelimitedGruntTasks)];
+                $gruntTaskConfig[$bundleTame] = [
+                    'tasks' => explode(',', $commaDelimitedGruntTasks)
+                ];
             }
         }
 
@@ -152,17 +168,39 @@ class GruntTask extends AbstractTask implements
         OutputInterface $output
     ) {
         // get task list
-        if (empty($commandOptions['tasks'])) {
-            $bundleTasksList = $this->bundleTaskList;
-        } else {
-            $bundleTasksList = $this->parseGruntTaskString($commandOptions['tasks']);
+        $bundleConfigurationList = $this->bundleConfigurationList;
+        if (!empty($commandOptions['tasks'])) {
+            // get bundles and their tasks from cli
+            $overriddenBundleConfigurationList = $this->parseGruntTaskString($commandOptions['tasks']);
+            // get configuration only for passed tasks and their bundles in cli
+            $bundleConfigurationList = array_intersect_key(
+                $bundleConfigurationList,
+                $overriddenBundleConfigurationList
+            );
+            // override tasks with values in cli list
+            $bundleConfigurationList = array_replace(
+                $bundleConfigurationList,
+                $overriddenBundleConfigurationList
+            );
         }
 
         // get path list to Gruntfile
         $gruntfilePathList = [];
-        foreach ($bundleTasksList as $bundleName => $bundleTaskConfiguration) {
-            // store bundle path
-            $gruntfilePathList[$bundleName] = $this->getGruntfilePath($bundleName);
+        foreach ($bundleConfigurationList as $bundleName => $bundleConfiguration) {
+            // skip disabled bundles
+            if ($bundleConfiguration === false) {
+                continue;
+            }
+
+            // get bundles with gruntfile inside
+            if (is_array($bundleConfiguration) && !empty($bundleConfiguration['gruntfile'])) {
+                $gruntfilePathList[$bundleName] = $this->getGruntfilePath(
+                    $bundleName,
+                    $bundleConfiguration['gruntfile']
+                );
+            } else {
+                $gruntfilePathList[$bundleName] = $this->getGruntfilePath($bundleName);
+            }
         }
 
         // run task
@@ -170,15 +208,11 @@ class GruntTask extends AbstractTask implements
             $output->writeln('<' . self::STYLE_H2 . '>Execute grunt tasks from ' . $gruntfilePath . '</>');
 
             // configure grunt tasks
-            $bundleTaskConfiguration = $bundleTasksList[$bundleName];
+            $bundleConfiguration = $bundleConfigurationList[$bundleName];
             $bundleGruntTasks = null;
-            if (is_array($bundleTaskConfiguration)) {
-                if (!empty($bundleTaskConfiguration['tasks']) && is_array($bundleTaskConfiguration['tasks'])) {
-                    $bundleGruntTasks = ' ' . implode(' ', $bundleTaskConfiguration['tasks']);
-                }
-            } elseif (is_bool($bundleTaskConfiguration)) {
-                if ($bundleTaskConfiguration === false) {
-                    continue;
+            if (is_array($bundleConfiguration)) {
+                if (!empty($bundleConfiguration['tasks']) && is_array($bundleConfiguration['tasks'])) {
+                    $bundleGruntTasks = ' ' . implode(' ', $bundleConfiguration['tasks']);
                 }
             }
 
