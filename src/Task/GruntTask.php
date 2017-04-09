@@ -99,36 +99,6 @@ class GruntTask extends AbstractTask implements
         }
     }
 
-    /**
-     * Try to locate Gruntfile.js in directory with bundle file
-     *
-     * @param string $bundleName
-     * @return array|string
-     * @throws TaskConfigurationValidateException
-     */
-    protected function getGruntfilePath($bundleName, $relativePath = null)
-    {
-        // get bundle path
-        $bundleDir = $this->resourceLocator->locateResource('@' . $bundleName);
-
-        // get dir with bundle file
-        $gruntDir = $bundleDir;
-        if ($relativePath) {
-            $gruntDir .= rtrim($relativePath, '/') . '/';
-        }
-
-        // check existence of gruntfile
-        if (!file_exists($gruntDir . 'Gruntfile.js')) {
-            throw new TaskConfigurationValidateException(sprintf(
-                'Bundle "%s" configured for running grunt task but Gruntfile.js not found at "%s"',
-                $bundleName,
-                $bundleDir
-            ));
-        }
-
-        return $gruntDir;
-    }
-
     public function getCommandOptionDefinitions()
     {
         return [
@@ -193,19 +163,28 @@ class GruntTask extends AbstractTask implements
             }
 
             // get bundles with gruntfile inside
+            $bundleDir = $this->resourceLocator->locateResource('@' . $bundleName);
+
+            // get dir with bundle file
+            $gruntfileDir = $bundleDir;
             if (is_array($bundleConfiguration) && !empty($bundleConfiguration['gruntfile'])) {
-                $gruntfilePathList[$bundleName] = $this->getGruntfilePath(
+                $gruntfileDir .= rtrim($bundleConfiguration['gruntfile'], '/') . '/';
+            }
+
+            // check existence of gruntfile
+            $gruntfilePathList[$bundleName] = $gruntfileDir . 'Gruntfile.js';
+            if (!file_exists($gruntfilePathList[$bundleName])) {
+                throw new TaskConfigurationValidateException(sprintf(
+                    'Bundle "%s" configured for running grunt task but Gruntfile.js not found at "%s"',
                     $bundleName,
-                    $bundleConfiguration['gruntfile']
-                );
-            } else {
-                $gruntfilePathList[$bundleName] = $this->getGruntfilePath($bundleName);
+                    $bundleDir
+                ));
             }
         }
 
         // run task
-        foreach ($gruntfilePathList as $bundleName => $gruntfilePath) {
-            $output->writeln('<' . self::STYLE_H2 . '>Execute grunt tasks from ' . $gruntfilePath . '</>');
+        foreach ($gruntfilePathList as $bundleName => $gruntfileDir) {
+            $output->writeln('<' . self::STYLE_H2 . '>Execute grunt tasks from ' . $gruntfileDir . '</>');
 
             // configure grunt tasks
             $bundleConfiguration = $bundleConfigurationList[$bundleName];
@@ -220,7 +199,7 @@ class GruntTask extends AbstractTask implements
             $commandPattern = 'cd %s; grunt --env=%s%s';
             $command = sprintf(
                 $commandPattern,
-                dirname($gruntfilePath),
+                dirname($gruntfileDir),
                 $environment,
                 $bundleGruntTasks
             );
