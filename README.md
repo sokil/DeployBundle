@@ -173,7 +173,8 @@ deploy:
     npm:
       bundles:
         SomeBundle: true
-        SomeOtherBundle: true
+        SomeOtherBundle:
+           package: ../ # path to project.json, relative to SomeOtherBundle.php file
 ```
 ## Bower
 
