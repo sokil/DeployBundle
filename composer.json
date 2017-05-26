@@ -2,6 +2,7 @@
     "name": "sokil/deploy-bundle",
     "description": "Symfony application deploy bundle",
     "license": "MIT",
+    "type": "symfony-bundle",
     "authors": [
         {
             "name": "Dmytro Sokil",
