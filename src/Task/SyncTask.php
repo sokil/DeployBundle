@@ -74,10 +74,12 @@ class SyncTask extends AbstractTask implements ProcessRunnerAwareTaskInterface
     /**
      * Run task
      *
-     * @param array $commandOptions
-     * @param $environment
-     * @param $verbosity
+     * @param array $commandOptions cli options
+     * @param string $environment
+     * @param int $verbosity
      * @param OutputInterface $output
+     *
+     * @throws TaskConfigurationValidateException
      */
     public function run(
         array $commandOptions,
@@ -87,38 +89,38 @@ class SyncTask extends AbstractTask implements ProcessRunnerAwareTaskInterface
     ) {
         // build command list
         $commands = [];
-        foreach ($this->rules as $ruleName => $commandOptions) {
+        foreach ($this->rules as $ruleName => $rule) {
             // source
             $source = '.';
-            if (!empty($commandOptions['src'])) {
-                $source = $commandOptions['src'];
-                unset($commandOptions['src']);
+            if (!empty($rule['src'])) {
+                $source = $rule['src'];
+                unset($rule['src']);
             }
 
             // destination
-            if (empty($commandOptions['dest'])) {
+            if (empty($rule['dest'])) {
                 throw new TaskConfigurationValidateException(sprintf('Destination not specified for %s', $ruleName));
             }
 
-            $destinationList = (array)$commandOptions['dest'];
-            unset($commandOptions['dest']);
+            $destinationList = (array)$rule['dest'];
+            unset($rule['dest']);
 
             // build command
             $command = ['rsync -a'];
-            foreach ($commandOptions as $commandOptionName => $commandOptionValue) {
-                if (is_bool($commandOptionValue)) {
+            foreach ($rule as $ruleOptionName => $ruleOptionValue) {
+                if (is_bool($ruleOptionValue)) {
                     // flag
-                    if ($commandOptionValue === true) {
-                        $command[] = '--' . $commandOptionName;
+                    if ($ruleOptionValue === true) {
+                        $command[] = '--' . $ruleOptionName;
                     }
-                } elseif (is_array($commandOptionValue)) {
+                } elseif (is_array($ruleOptionValue)) {
                     // array argument
-                    foreach ($commandOptionValue as $commandOptionValueElement) {
-                        $command[] = '--' . $commandOptionName . ' ' . $commandOptionValueElement;
+                    foreach ($ruleOptionValue as $commandOptionValueElement) {
+                        $command[] = '--' . $ruleOptionName . ' ' . $commandOptionValueElement;
                     }
                 } else {
                     // scalar argument
-                    $command[] = '--' . $commandOptionName . ' ' . $commandOptionValue;
+                    $command[] = '--' . $ruleOptionName . ' ' . $ruleOptionValue;
                 }
             }
 

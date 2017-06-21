@@ -37,7 +37,7 @@ class GruntTaskTest extends AbstractTestCase
                 'bundle2' => '/tmp/bundle2/Gruntfile.js',
             ]));
 
-        $taskMock->setProcessRunner($this->createProcessRunner(
+        $taskMock->setProcessRunner($this->createProcessRunnerMock(
             [
                 [
                     'cd /tmp/bundle1; grunt --env=dev task1 task2',
@@ -93,7 +93,7 @@ class GruntTaskTest extends AbstractTestCase
                 'bundle3' => '/tmp/bundle3/Gruntfile.js',
             ]));
 
-        $taskMock->setProcessRunner($this->createProcessRunner(
+        $taskMock->setProcessRunner($this->createProcessRunnerMock(
             [
                 [
                     'cd /tmp/bundle2; grunt --env=dev task3 task4',

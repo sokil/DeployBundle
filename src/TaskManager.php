@@ -105,9 +105,13 @@ class TaskManager
                     ? $commandOptionDefinition['mode']
                     : InputOption::VALUE_OPTIONAL;
 
+                $shortcut = !empty($commandOptionDefinition['shortcut'])
+                    ? $commandOptionDefinition['shortcut']
+                    : null;
+
                 $command->addOption(
                     $alias . '-' . $commandOptionName,
-                    null,
+                    $shortcut,
                     $mode,
                     $description,
                     $defaultValue
@@ -253,6 +257,8 @@ class TaskManager
      *
      * @param InputInterface $input
      * @param OutputInterface $output
+     *
+     * @throws \Exception
      */
     public function execute(
         InputInterface $input,

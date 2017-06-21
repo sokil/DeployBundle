@@ -15,6 +15,7 @@ Task runner for Symfony project
     * [Configuring git task](#configuring-git-task)
     * [Private repositories](#private-repositories)
   * [Npm](#npm)
+  * [Webpack](#webpack)
   * [Bower](#bower)
   * [Grunt](#grunt)
   * [Migrations](#migrations)
@@ -95,6 +96,7 @@ other bundles.
 
 * [Git](#git)
 * [Npm](#npm)
+* [Webpack](#webpack)
 * [Bower](#bower)
 * [Grunt](#grunt)
 * [Migrations](#migrations)
@@ -165,6 +167,21 @@ ssh -T git@github.com
 ssh -T git@bitbucket.com
 ```
 
+## Webpack
+
+You can use any webpack parameter. Also you can optionaly specify `webpackPath` to `webpack` application. If omitted,
+globally installed application with `webpack` path will be used.
+
+```yaml
+deploy:
+  config:
+    webpack:
+      webpackPath: "./node_modules/.bin/webpack" # Path to webpack. May be optional.
+      p: true # Build for production
+      progress: true # Show progress
+
+```
+
 ## Npm
 
 ```yaml
@@ -176,6 +193,7 @@ deploy:
         SomeOtherBundle:
            package: ../ # path to project.json, relative to SomeOtherBundle.php file
 ```
+
 ## Bower
 
 ```yaml

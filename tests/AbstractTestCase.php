@@ -20,7 +20,7 @@ abstract class AbstractTestCase extends TestCase
      */
     private $container;
 
-    public function getBundleConfiguration()
+    protected function getBundleConfiguration()
     {
         $config = [
             'config' => [
@@ -110,7 +110,7 @@ abstract class AbstractTestCase extends TestCase
     /**
      * @return ContainerBuilder
      */
-    public function getContainer()
+    protected function getContainer()
     {
         if ($this->container) {
             return $this->container;
@@ -130,7 +130,7 @@ abstract class AbstractTestCase extends TestCase
 
         // mock dependencies
         $this->container->set('deploy.task_manager.resource_locator', $this->createResourceLocator());
-        $this->container->set('deploy.task_manager.process_runner', $this->createProcessRunner());
+        $this->container->set('deploy.task_manager.process_runner', $this->createProcessRunnerMock());
         $this->container->set('deploy.task_manager.command_locator', $this->createCommandLocator());
 
         // create container
@@ -209,7 +209,7 @@ abstract class AbstractTestCase extends TestCase
      * @param bool $expectedStatus expected command execution result
      * @return ProcessRunner
      */
-    public function createProcessRunner(
+    protected function createProcessRunnerMock(
         array $expectedCommands = [],
         $expectedStatus = true
     ) {
@@ -228,8 +228,6 @@ abstract class AbstractTestCase extends TestCase
 
         return $locator;
     }
-
-
 
     /**
      * @param string $taskAlias name of task
@@ -257,7 +255,7 @@ abstract class AbstractTestCase extends TestCase
      * @param string $taskAlias name of task
      * @return AbstractTask
      */
-    public function createSimpleTaskWithoutAdditionalCommandOptions($taskAlias = 'simpleTask')
+    protected function createSimpleTaskWithoutAdditionalCommandOptions($taskAlias = 'simpleTask')
     {
         $task = $this->createSimpleTask($taskAlias);
 
@@ -273,7 +271,7 @@ abstract class AbstractTestCase extends TestCase
     /**
      * @return AbstractTask
      */
-    public function createSimpleTaskWithAdditionalCommandOptions($taskAlias = 'simpleTask')
+    protected function createSimpleTaskWithAdditionalCommandOptions($taskAlias = 'simpleTask')
     {
         $task = $this->createSimpleTask($taskAlias);
 
@@ -297,7 +295,7 @@ abstract class AbstractTestCase extends TestCase
      * @param array $options
      * @return Input
      */
-    public function createInput(array $options = [])
+    protected function createInput(array $options = [])
     {
         $mock = $this
             ->getMockBuilder(Input::class)
@@ -333,7 +331,7 @@ abstract class AbstractTestCase extends TestCase
     /**
      * @return Output
      */
-    public function createOutput()
+    protected function createOutput()
     {
         return $this
             ->getMockBuilder(Output::class)

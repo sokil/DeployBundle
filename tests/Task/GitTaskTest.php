@@ -27,7 +27,7 @@ class GitTaskTest extends AbstractTestCase
             ]
         );
 
-        $task->setProcessRunner($this->createProcessRunner(
+        $task->setProcessRunner($this->createProcessRunnerMock(
             [
                 [
                     'cd /tmp; git pull origin master',
@@ -65,7 +65,7 @@ class GitTaskTest extends AbstractTestCase
             ]
         );
 
-        $task->setProcessRunner($this->createProcessRunner(
+        $task->setProcessRunner($this->createProcessRunnerMock(
             [
                 [
                     'cd /tmp; git pull origin master',

@@ -37,7 +37,7 @@ interface TaskInterface
      * Run task
      *
      * @param array $commandOptions
-     * @param $environment
+     * @param string $environment
      * @param $verbosity
      * @param OutputInterface $output
      */

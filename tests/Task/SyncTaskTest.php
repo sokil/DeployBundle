@@ -40,7 +40,7 @@ class SyncTaskTest extends AbstractTestCase
         );
 
         // mock process runner
-        $syncTask->setProcessRunner($this->createProcessRunner(
+        $syncTask->setProcessRunner($this->createProcessRunnerMock(
             [
                 [
                     'rsync -a --exclude /var --exclude /app/conf/nginx/ --exclude /.idea --exclude /app/config/parameters.yml --include /app/conf/nginx/*.conf.sample --delete --verbose . user@web1.server.com://var/www/site',

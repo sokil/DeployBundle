@@ -57,9 +57,22 @@ abstract class AbstractTask implements TaskInterface
 
     /**
      * Configuration of CLI options
+     *
      * Allowed keys:
-     *  - description - help message of configured CLI option
-     *  - default - default vlue of CLI option
+     *  - description: help message of configured CLI option
+     *  - default: default value of CLI option
+     *  - mode: one of InputOption::VALUE_*
+     *  - shortcut: The shortcuts, can be null, a string of shortcuts delimited by | or an array of shortcuts
+     *
+     * For example:
+     * [
+     *     'update' => [
+     *         'description' => 'Update dependencies instead of install it',
+     *         'mode' => InputOption::VALUE_OPTIONAL,
+     *         'default' => '42',
+     *         'shortcut' => 'u',
+     *     ],
+     * ]
      *
      * @return array command options with parameters
      */
@@ -88,9 +101,9 @@ abstract class AbstractTask implements TaskInterface
     }
 
     /**
-     * @param array $commandOptions
+     * @param array $commandOptions cli options
      * @param string $environment
-     * @param int $verbosity
+     * @param int $verbosity The current level of verbosity (one of the OutputInterface::VERBOSITY_* constants)
      * @param OutputInterface $output
      */
     abstract public function run(
