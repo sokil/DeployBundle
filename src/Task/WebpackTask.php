@@ -74,15 +74,32 @@ class WebpackTask extends AbstractTask implements ProcessRunnerAwareTaskInterfac
     ) {
         $webpackOptions = $this->options;
 
+        $command = [];
+        
+        // get working dir
+        $workingDir = !empty($webpackOptions['workingDir'])
+            ? $webpackOptions['workingDir']
+            : null;
+        
+        if ($workingDir) {
+            $command[] = 'cd ' . $workingDir . ';';
+        }
+        
         // get path to webpack
         $webpackPath = !empty($webpackOptions['webpackPath'])
             ? $webpackOptions['webpackPath']
             : 'webpack';
 
         unset($webpackOptions['webpackPath']);
+        
+        $command[] = $webpackPath;
+        
+        // force production flag in production env
+        if ($environment === 'prod' && empty($webpackOptions['p'])) {
+            $webpackOptions['p'] = true;
+        }
 
         // build command
-        $command = [$webpackPath];
         foreach ($webpackOptions as $webpackOptionName => $webpackOptionValue) {
             if (is_bool($webpackOptionValue)) {
                 // flag
