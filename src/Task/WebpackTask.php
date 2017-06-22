@@ -85,6 +85,8 @@ class WebpackTask extends AbstractTask implements ProcessRunnerAwareTaskInterfac
             $command[] = 'cd ' . $workingDir . ';';
         }
         
+        unset($webpackOptions['workingDir']);
+        
         // get path to webpack
         $webpackPath = !empty($webpackOptions['webpackPath'])
             ? $webpackOptions['webpackPath']
