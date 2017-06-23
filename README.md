@@ -169,18 +169,20 @@ ssh -T git@bitbucket.com
 
 ## Webpack
 
-You can use any webpack parameter. Also you can optionaly specify `webpackPath` to `webpack` application. If omitted,
-globally installed application with `webpack` path will be used.
+You can optionally specify path to webpack  in `pathToWebpack` parameter. If omitted , then `webpack` will be used.
+In this case webpack must be installed globally.
 
 ```yaml
 deploy:
   config:
     webpack:
-      webpackPath: "../assets/node_modules/.bin/webpack" # (Optional) Path to webpack
-      workingDir: "../assets/src" # (optional) Working dir where to run webpack
-      p: true # Build for production. For "prod" environment defined automatically
-      progress: true # Show progress
-      ...
+      pathToWebpack: assets/node_modules/.bin/webpack # (Optional) Path to webpack
+        projects: # list of webpack projects with own webpack.config.js inside
+          assets:
+            config: "assets/webpack.config.js" # (required) path to config. Context will be set to dirname of config.
+            progress: true # (optional) Show build progress
+            p: true # (optional) Build for production. For "prod" environment defined automatically
+            ...
 ```
 
 ## Npm

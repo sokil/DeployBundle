@@ -52,35 +52,33 @@ class WebpackTask extends AbstractTask implements ProcessRunnerAwareTaskInterfac
     {
         // set path to webpack
         $this->pathToWebpack = !empty($options['pathToWebpack'])
-            ? realpath($options['pathToWebpack'])
+            ? $options['pathToWebpack']
             : 'webpack';
 
         if (empty($this->pathToWebpack)) {
             throw new TaskConfigurationValidateException('Path to webpack is invalid');
         }
 
-        // set working dirs
+        // set webpack projects configuration
         if (empty($options['projects']) || !is_array($options['projects'])) {
             throw new TaskConfigurationValidateException('Empty webpack "projects" configuration parameter');
         }
 
         foreach ($options['projects'] as $projectId => $project) {
             // project dir
-            if (empty($project['dir'])) {
-                throw new TaskConfigurationValidateException(sprintf('Project %s has no "dir" parameter', $projectId));
+            if (empty($project['config'])) {
+                throw new TaskConfigurationValidateException(sprintf('Project %s has no "config" parameter', $projectId));
             }
 
-            // project options. all options will be passed to webpack as arguments
-            if (!empty($project['options'])) {
-                if (!is_array($project['options'])) {
-                    throw new TaskConfigurationValidateException(sprintf('Project %s has invalid "options" parameter', $projectId));
-                }
-            } else {
-                $project['options'] = [];
+            if (!file_exists($project['config'])) {
+                throw new TaskConfigurationValidateException(sprintf('Webpack config "%s" not found', $project['config']));
             }
+
+            $project['config'] = realpath($project['config']);
+            $project['context'] = dirname($project['config']);
 
             // register project
-            $this->addProject($project['dir'], $project['options']);
+            $this->addProject($project);
         }
     }
 
@@ -95,21 +93,13 @@ class WebpackTask extends AbstractTask implements ProcessRunnerAwareTaskInterfac
     /**
      * Add project configuration
      *
-     * @param string $dir
-     * @param array $options
+     * @param array $project
      *
      * @throws TaskConfigurationValidateException
      */
-    private function addProject($dir, array $options = [])
+    private function addProject(array $project)
     {
-        if (!file_exists($dir)) {
-            throw new TaskConfigurationValidateException(sprintf('Project directory "%s" not found', $dir));
-        }
-
-        $this->projects[] = [
-            'dir' => realpath($dir),
-            'options' => $options
-        ];
+        $this->projects[] = $project;
     }
 
     /**
@@ -130,8 +120,7 @@ class WebpackTask extends AbstractTask implements ProcessRunnerAwareTaskInterfac
     ) {
         foreach ($this->projects as $project) {
             $command = [
-                'cd ' . $project['dir'] . '; ',
-                $this->pathToWebpack
+                $this->pathToWebpack,
             ];
 
             // force production flag in production env
@@ -140,7 +129,7 @@ class WebpackTask extends AbstractTask implements ProcessRunnerAwareTaskInterfac
             }
 
             // build command
-            foreach ($project['options'] as $webpackOptionName => $webpackOptionValue) {
+            foreach ($project as $webpackOptionName => $webpackOptionValue) {
                 if (is_bool($webpackOptionValue)) {
                     // flag
                     if ($webpackOptionValue === true) {
