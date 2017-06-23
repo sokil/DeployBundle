@@ -81,7 +81,7 @@ class ProcessRunner
             }
         }
 
-        // wait exitcode
+        // wait exit code
         while ($process->getExitCode() === null) {
             usleep(self::WAIT_PROCESS_EXIT_DELAY);
         }

@@ -32,9 +32,18 @@ class NpmTask extends AbstractTask implements
     private $processRunner;
 
     /**
+     * List of path to package.json with additional data
+     * Format:
+     * [
+     *   [
+     *      'packageFile' => './some/path/to/package.json',     REQUIRED    Path to package.json
+     *      'bundleName' => 'AcmeBundle',                       OPTIONAL    Bundle name, if package.json in bundle
+     *   ],
+     *   ...
+     * ]
      * @var array
      */
-    private $bundleConfigurationList;
+    private $packageList = [];
 
     /**
      * @param ProcessRunner $runner
@@ -64,31 +73,25 @@ class NpmTask extends AbstractTask implements
     protected function configure(array $options)
     {
         // bundles list
-        if (empty($options['bundles']) || !is_array($options['bundles'])) {
-            throw new TaskConfigurationValidateException('Bundles not configured for npm');
+        if (!empty($options['bundles']) && !is_array($options['bundles'])) {
+            $this->addPackagesFromBundleConfig($options['bundles']);
+        } elseif (!empty($options['dirs']) && is_array($options['dirs'])) {
+            foreach ($options['dirs'] as $dir) {
+                $this->addPackage($dir);
+            }
+        } else {
+            throw new TaskConfigurationValidateException('Task "npm" has no packages configured');
         }
-
-        $this->bundleConfigurationList = $options['bundles'];
     }
 
     /**
-     * @param array $commandOptions
-     * @param $environment
-     * @param $verbosity
-     * @param OutputInterface $output
-     * @return bool
+     * @param array $bundleConfigurationList
+     *
      * @throws TaskConfigurationValidateException
-     * @throws TaskExecuteException
      */
-    public function run(
-        array $commandOptions,
-        $environment,
-        $verbosity,
-        OutputInterface $output
-    ) {
-        // get path list to package.js
-        $packagePathList = [];
-        foreach ($this->bundleConfigurationList as $bundleName => $bundleConfiguration) {
+    private function addPackagesFromBundleConfig(array $bundleConfigurationList)
+    {
+        foreach ($bundleConfigurationList as $bundleName => $bundleConfiguration) {
             // skip disabled bundles
             if ($bundleConfiguration === false) {
                 continue;
@@ -103,22 +106,60 @@ class NpmTask extends AbstractTask implements
                 $packageFileDir .= rtrim($bundleConfiguration['package'], '/') . '/';
             }
 
-            // check existence of gruntfile
-            $packagePathList[$bundleName] = $packageFileDir . 'package.json';
-            if (!file_exists($packagePathList[$bundleName])) {
-                throw new TaskConfigurationValidateException(sprintf(
-                    'Bundle "%s" configured for running npm but package.js not found at "%s"',
-                    $bundleName,
-                    $bundleDir
-                ));
-            }
+            // register package
+            $this->addPackage(
+                $packageFileDir,
+                [
+                    'bundleName' => $bundleName,
+                ]
+            );
+        }
+    }
+
+    /**
+     * @param string $dir directory where package.json placed
+     * @param array $metadata optional metadata
+     *
+     * @throws TaskConfigurationValidateException
+     */
+    private function addPackage($dir, array $metadata = []) {
+        // check existence of package file
+        $path = realpath($dir) . '/package.json';
+        if (!file_exists($path)) {
+            throw new TaskConfigurationValidateException(sprintf(
+                'File package.json not found in "%s"',
+                $dir
+            ));
         }
 
-        // run npm
-        foreach ($packagePathList as $bundleName => $packagePath) {
-            $output->writeln('<' . self::STYLE_H2 . '>Install npm dependencies from ' . $packagePath . '</>');
+        $this->packageList[] = [
+            'path' => $path,
+            'metadata' => $metadata,
+        ];
+    }
 
-            $packageDir = dirname($packagePath);
+    /**
+     * @param array $commandOptions
+     * @param $environment
+     * @param $verbosity
+     * @param OutputInterface $output
+     *
+     * @return bool
+     *
+     * @throws TaskConfigurationValidateException
+     * @throws TaskExecuteException
+     */
+    public function run(
+        array $commandOptions,
+        $environment,
+        $verbosity,
+        OutputInterface $output
+    ) {
+        // run npm
+        foreach ($this->packageList as $package) {
+            $output->writeln('<' . self::STYLE_H2 . '>Install npm dependencies from ' . $package['path'] . '</>');
+
+            $packageDir = dirname($package['path']);
             $productionFlag = $environment === 'prod' ? ' --production' : null;
             $isSuccessful = $this->processRunner->run(
                 'cd ' . $packageDir . '; npm install' . $productionFlag,
@@ -128,10 +169,10 @@ class NpmTask extends AbstractTask implements
             );
 
             if (!$isSuccessful) {
-                throw new TaskExecuteException('Error updating npm dependencies for bundle ' . $bundleName);
+                throw new TaskExecuteException(sprintf('Error updating npm dependencies in %s', $package['path']));
             }
 
-            $output->writeln('Npm dependencies updated successfully for bundle ' . $bundleName);
+            $output->writeln(sprintf('Npm dependencies updated successfully in %s', $package['path']));
         }
     }
 }
