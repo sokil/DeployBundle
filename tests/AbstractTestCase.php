@@ -40,9 +40,9 @@ abstract class AbstractTestCase extends TestCase
                 'migrate' => [],
                 'npm' => [
                     'bundles' => [
-                        "bundle1",
-                        "bundle2",
-                        "bundle3",
+                        "bundle1" => true,
+                        "bundle2" => true,
+                        "bundle3" => true,
                     ],
                 ],
                 'bower' => [

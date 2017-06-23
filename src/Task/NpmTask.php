@@ -73,7 +73,7 @@ class NpmTask extends AbstractTask implements
     protected function configure(array $options)
     {
         // bundles list
-        if (!empty($options['bundles']) && !is_array($options['bundles'])) {
+        if (!empty($options['bundles']) && is_array($options['bundles'])) {
             $this->addPackagesFromBundleConfig($options['bundles']);
         } elseif (!empty($options['dirs']) && is_array($options['dirs'])) {
             foreach ($options['dirs'] as $dir) {
