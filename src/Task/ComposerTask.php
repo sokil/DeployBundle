@@ -60,7 +60,7 @@ class ComposerTask extends AbstractTask implements
     /**
      * @param array $options
      */
-    protected function configure(array $options)
+    public function configure(array $options)
     {
         // disable composer scripts by default
         if (isset($options['scripts'])) {

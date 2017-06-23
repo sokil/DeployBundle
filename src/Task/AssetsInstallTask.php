@@ -27,7 +27,7 @@ class AssetsInstallTask extends AbstractTask implements CommandAwareTaskInterfac
         return 'Install bundle assets';
     }
 
-    protected function configure(array $options)
+    public function configure(array $options)
     {
     }
 

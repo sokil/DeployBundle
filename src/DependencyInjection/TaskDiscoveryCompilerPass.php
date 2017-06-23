@@ -15,12 +15,10 @@ class TaskDiscoveryCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         // find task manager
-        $taskManagerDefinition = $container->findDefinition(
-            'deploy.task_manager'
-        );
+        $taskManagerDefinition = $container->getDefinition('deploy.task_manager');
 
         // get deploy configuration
-        $tasksConfiguration = $container->getParameter('deploy.tasksConfiguration');
+        $tasksConfiguration = $taskManagerDefinition->getArgument(0);
         $allTaskNames = array_keys($tasksConfiguration);
 
         // get task bundles
@@ -30,7 +28,7 @@ class TaskDiscoveryCompilerPass implements CompilerPassInterface
         }
 
         // prepare tasks in pre-configured order
-        $taskServices = array_fill_keys($allTaskNames, null);
+        $taskServices = [];
 
         // build task references
         foreach ($container->findTaggedServiceIds('deploy.task') as $abstractTaskServiceId => $taskServiceTags) {
@@ -45,33 +43,19 @@ class TaskDiscoveryCompilerPass implements CompilerPassInterface
                 // create task definition
                 $taskServiceId = 'deploy.task.' . $taskAlias;
                 $taskDefinition = new DefinitionDecorator($abstractTaskServiceId);
-                $taskDefinition
-                    ->addArgument($taskAlias)
-                    ->addArgument($tasksConfiguration[$taskAlias]);
+                $taskDefinition->addArgument($taskAlias);
 
                 // register definition
                 $container->setDefinition($taskServiceId, $taskDefinition);
 
                 // services to initialize
-                $taskServices[$taskAlias] = new Reference($taskServiceId);
+                $taskManagerDefinition->addMethodCall(
+                    'addTask',
+                    [
+                        new Reference($taskServiceId),
+                    ]
+                );
             }
-        }
-
-        // add tasks to task manager
-        foreach ($taskServices as $taskAlias => $taskService) {
-            if (!($taskService instanceof Reference)) {
-                throw new TaskNotFoundException(sprintf(
-                    'Task "%s" has configuration but no tasks with this alias found',
-                    $taskAlias
-                ));
-            }
-
-            $taskManagerDefinition->addMethodCall(
-                'addTask',
-                [
-                    $taskService,
-                ]
-            );
         }
 
         // add task bundles to task manager

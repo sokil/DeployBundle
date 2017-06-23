@@ -12,32 +12,30 @@ class SyncTaskTest extends AbstractTestCase
     public function testRun()
     {
         // create task
-        $syncTask = new SyncTask(
-            'sync',
-            [
-                'rules' => [
-                    'web' => [
-                        'src' => '.',
-                        'dest' => [
-                            'user@web1.server.com://var/www/site',
-                            'user@web2.server.com://var/www/site',
-                        ],
-                        'exclude' => [
-                            '/var',
-                            '/app/conf/nginx/',
-                            '/.idea',
-                            '/app/config/parameters.yml',
-                        ],
-                        'include' => [
-                            '/app/conf/nginx/*.conf.sample',
-                        ],
-                        'delete' => true,
-                        'verbose' => true,
+        $syncTask = new SyncTask('sync');
+        $syncTask->configure([
+            'rules' => [
+                'web' => [
+                    'src' => '.',
+                    'dest' => [
+                        'user@web1.server.com://var/www/site',
+                        'user@web2.server.com://var/www/site',
                     ],
+                    'exclude' => [
+                        '/var',
+                        '/app/conf/nginx/',
+                        '/.idea',
+                        '/app/config/parameters.yml',
+                    ],
+                    'include' => [
+                        '/app/conf/nginx/*.conf.sample',
+                    ],
+                    'delete' => true,
+                    'verbose' => true,
                 ],
-                'parallel' => 1,
-            ]
-        );
+            ],
+            'parallel' => 1,
+        ]);
 
         // mock process runner
         $syncTask->setProcessRunner($this->createProcessRunnerMock(

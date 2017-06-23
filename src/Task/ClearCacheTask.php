@@ -27,7 +27,7 @@ class ClearCacheTask extends AbstractTask implements CommandAwareTaskInterface
         return 'Clear cache';
     }
 
-    protected function configure(array $options)
+    public function configure(array $options)
     {
     }
 

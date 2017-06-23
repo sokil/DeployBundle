@@ -28,6 +28,11 @@ class TaskManager
     const DEFAULT_TASK_BUNDLE_NAME = 'default';
 
     /**
+     * @var array
+     */
+    private $tasksConfiguration;
+
+    /**
      * @var ProcessRunner
      */
     private $processRunner;
@@ -64,11 +69,19 @@ class TaskManager
      */
     private $eventDispatcher;
 
+    /**
+     * @param array $tasksConfiguration
+     * @param ProcessRunner $processRunner
+     * @param ResourceLocator $resourceLocator
+     * @param CommandLocator $consoleCommandLocator
+     */
     public function __construct(
+        array $tasksConfiguration,
         ProcessRunner $processRunner,
         ResourceLocator $resourceLocator,
         CommandLocator $consoleCommandLocator
     ) {
+        $this->tasksConfiguration = $tasksConfiguration;
         $this->resourceLocator = $resourceLocator;
         $this->processRunner = $processRunner;
         $this->consoleCommandLocator = $consoleCommandLocator;
@@ -132,8 +145,9 @@ class TaskManager
 
     public function addTask(AbstractTask $task)
     {
-        // register task
-        $this->tasks[$task->getAlias()] = $task;
+        if (!isset($this->tasksConfiguration[$task->getAlias()])) {
+            throw new \Exception(sprintf('Task manager has no configuration for %s', $task->getAlias()));
+        }
 
         // register event subscriber
         if ($task instanceof EventSubscriberInterface) {
@@ -152,6 +166,12 @@ class TaskManager
         if ($task instanceof ProcessRunnerAwareTaskInterface) {
             $task->setProcessRunner($this->processRunner);
         }
+
+        // set configuration
+        $task->configure($this->tasksConfiguration[$task->getAlias()]);
+
+        // register task
+        $this->tasks[$task->getAlias()] = $task;
 
         return $this;
     }
@@ -172,7 +192,9 @@ class TaskManager
 
     /**
      * @param string $alias
+     *
      * @return AbstractTask
+     *
      * @throws TaskNotFoundException
      */
     public function getTask($alias)
@@ -189,6 +211,7 @@ class TaskManager
      * Convert it to plain task list
      *
      * @param array $taskNameList
+     *
      * @return array
      */
     private function normalizeTaskList(array $taskNameList)

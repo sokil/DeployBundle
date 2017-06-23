@@ -48,7 +48,7 @@ class SyncTask extends AbstractTask implements ProcessRunnerAwareTaskInterface
      *
      * @throws TaskConfigurationValidateException
      */
-    protected function configure(array $options)
+    public function configure(array $options)
     {
         // set rules
         if (empty($options['rules']) || !is_array($options['rules'])) {

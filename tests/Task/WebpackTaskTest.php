@@ -13,19 +13,25 @@ class WebpackTaskTest extends AbstractTestCase
     {
         // create task
         $webpackTask = new WebpackTask(
-            'webpack',
-            [
-                'webpackPath' => './node_modules/.bin/webpack',
-                'p' => true,
-                'progress' => true,
-            ]
+            'webpack'
         );
+
+        $webpackTask->configure([
+            'pathToWebpack' => './node_modules/.bin/webpack',
+            'projects' => [
+                'assets' => [
+                    'config' => 'assets/webpack.config.js',
+                    'p' => true,
+                    'progress' => true,
+                ],
+            ],
+        ]);
 
         // mock process runner
         $webpackTask->setProcessRunner($this->createProcessRunnerMock(
             [
                 [
-                    './node_modules/.bin/webpack -p --progress',
+                    './node_modules/.bin/webpack --config assets/webpack.config.js -p --progress --context assets',
                     'dev',
                     OutputInterface::VERBOSITY_NORMAL,
                     $this->isInstanceOf(Output::class)

@@ -53,7 +53,7 @@ class BowerTask extends AbstractTask implements
      *
      * @throws TaskConfigurationValidateException
      */
-    protected function configure(array $options)
+    public function configure(array $options)
     {
         // bundles list
         if (empty($options['bundles']) || !is_array($options['bundles'])) {

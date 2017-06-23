@@ -42,7 +42,7 @@ class MigrateTask extends AbstractTask implements CommandAwareTaskInterface
     /**
      * @param array $options
      */
-    protected function configure(array $options)
+    public function configure(array $options)
     {
     }
 

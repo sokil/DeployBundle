@@ -140,7 +140,7 @@ class GitTask extends AbstractTask implements
      *
      * @throws TaskConfigurationValidateException
      */
-    protected function configure(array $options)
+    public function configure(array $options)
     {
         if (!empty($options['defaultRemote'])) {
             $this->defaultRemote = $options['defaultRemote'];

@@ -70,7 +70,7 @@ class NpmTask extends AbstractTask implements
      *
      * @throws TaskConfigurationValidateException
      */
-    protected function configure(array $options)
+    public function configure(array $options)
     {
         // bundles list
         if (!empty($options['bundles']) && is_array($options['bundles'])) {
@@ -125,12 +125,6 @@ class NpmTask extends AbstractTask implements
     private function addPackage($dir, array $metadata = []) {
         // check existence of package file
         $path = realpath($dir) . '/package.json';
-        if (!file_exists($path)) {
-            throw new TaskConfigurationValidateException(sprintf(
-                'File package.json not found in "%s"',
-                $dir
-            ));
-        }
 
         $this->packageList[] = [
             'path' => $path,

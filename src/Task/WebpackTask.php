@@ -48,7 +48,7 @@ class WebpackTask extends AbstractTask implements ProcessRunnerAwareTaskInterfac
      *
      * @throws TaskConfigurationValidateException
      */
-    protected function configure(array $options)
+    public function configure(array $options)
     {
         // set path to webpack
         $this->pathToWebpack = !empty($options['pathToWebpack'])
@@ -70,11 +70,7 @@ class WebpackTask extends AbstractTask implements ProcessRunnerAwareTaskInterfac
                 throw new TaskConfigurationValidateException(sprintf('Project %s has no "config" parameter', $projectId));
             }
 
-            if (!file_exists($project['config'])) {
-                throw new TaskConfigurationValidateException(sprintf('Webpack config "%s" not found', $project['config']));
-            }
-
-            $project['config'] = realpath($project['config']);
+            $project['config'] = $project['config'];
             $project['context'] = dirname($project['config']);
 
             // register project

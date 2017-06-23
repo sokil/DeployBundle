@@ -13,6 +13,7 @@ services:
   deploy.task_manager:
     class: Sokil\DeployBundle\TaskManager
     arguments:
+      - {} # configuration, passed in bundle extension
       - '@deploy.task_manager.process_runner'
       - '@deploy.task_manager.resource_locator'
       - '@deploy.task_manager.command_locator'

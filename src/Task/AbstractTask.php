@@ -39,15 +39,10 @@ abstract class AbstractTask implements TaskInterface
      * @param string $alias
      * @param array $options
      */
-    public function __construct(
-        $alias,
-        array $options
-    ) {
+    public function __construct($alias)
+    {
         // set alias
         $this->alias = $alias;
-
-        // set options
-        $this->configure($options);
     }
 
     /**
@@ -96,7 +91,7 @@ abstract class AbstractTask implements TaskInterface
      *
      * @throws TaskConfigurationValidateException
      */
-    protected function configure(array $options)
+    public function configure(array $options)
     {
     }
 

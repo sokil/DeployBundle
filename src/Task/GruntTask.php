@@ -82,7 +82,7 @@ class GruntTask extends AbstractTask implements
      *
      * @throws TaskConfigurationValidateException
      */
-    protected function configure(array $options)
+    public function configure(array $options)
     {
         // configure bundle list
         if (empty($options['bundles']) || !is_array($options['bundles'])) {
