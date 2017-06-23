@@ -191,7 +191,9 @@ deploy:
 deploy:
   config:
     npm:
-      bundles:
+      dirs: # Optional list of dirs to search package.json and install dependencies
+        - "assets"
+      bundles: # Optional list of bundles where to search package.json
         SomeBundle: true
         SomeOtherBundle:
            package: ../ # path to project.json, relative to SomeOtherBundle.php file
