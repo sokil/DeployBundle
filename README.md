@@ -176,10 +176,11 @@ globally installed application with `webpack` path will be used.
 deploy:
   config:
     webpack:
-      webpackPath: "./node_modules/.bin/webpack" # Path to webpack. May be optional.
-      p: true # Build for production
+      webpackPath: "../assets/node_modules/.bin/webpack" # (Optional) Path to webpack
+      workingDir: "../assets/src" # (optional) Working dir where to run webpack
+      p: true # Build for production. For "prod" environment defined automatically
       progress: true # Show progress
-
+      ...
 ```
 
 ## Npm
