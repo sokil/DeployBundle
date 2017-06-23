@@ -70,19 +70,7 @@ class GruntTaskTest extends AbstractTestCase
         $taskMock = $this->getMockBuilder(GruntTask::class)
             ->setMethods(['getGruntfilePathList'])
             ->setConstructorArgs([
-                'grunt',
-                [
-                    'bundles' => [
-                        'bundle1' => [
-                            'tasks' => [
-                                'task1',
-                                'task2',
-                            ],
-                        ],
-                        'bundle2' => true,
-                        'bundle3' => false,
-                    ]
-                ]
+                'grunt'
             ])
             ->getMock();
 
@@ -111,6 +99,19 @@ class GruntTaskTest extends AbstractTestCase
             ],
             true
         ));
+
+        $taskMock->configure([
+            'bundles' => [
+                'bundle1' => [
+                    'tasks' => [
+                        'task1',
+                        'task2',
+                    ],
+                ],
+                'bundle2' => true,
+                'bundle3' => false,
+            ]
+        ]);
 
         $taskMock->run(
             ['tasks' => 'bundle2=task3,task4&bundle3'],
@@ -165,7 +166,8 @@ class GruntTaskTest extends AbstractTestCase
      */
     public function testParseGruntTaskString($gruntTaskString, $expectedTaskConfig)
     {
-        $task = new GruntTask('grunt', ['bundles' => ['bundle42' => true]]);
+        $task = new GruntTask('grunt');
+        $task->configure(['bundles' => ['bundle42' => true]]);
 
         // allow call private method
         $taskReflection = new \ReflectionClass($task);

@@ -174,7 +174,7 @@ abstract class AbstractTestCase extends TestCase
     /**
      * @return ResourceLocator
      */
-    private function createResourceLocator()
+    protected function createResourceLocator()
     {
         // add kernel dependency
         $locator = $this
@@ -198,7 +198,7 @@ abstract class AbstractTestCase extends TestCase
     /**
      * @return CommandLocator
      */
-    private function createCommandLocator()
+    protected function createCommandLocator()
     {
         $locator = new CommandLocator();
         return $locator;

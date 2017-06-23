@@ -52,7 +52,7 @@ class TaskManager
      *
      * @var array
      */
-    private $taskBundles;
+    private $taskBundles = [];
 
     /**
      * @var Command

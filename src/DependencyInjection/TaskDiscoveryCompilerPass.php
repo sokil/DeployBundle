@@ -21,6 +21,7 @@ class TaskDiscoveryCompilerPass implements CompilerPassInterface
         $tasksConfiguration = $taskManagerDefinition->getArgument(0);
         $allTaskNames = array_keys($tasksConfiguration);
 
+
         // get task bundles
         $taskBundleList = $container->getParameter('deploy.taskBundles');
         if (empty($taskBundleList['default'])) {
@@ -28,7 +29,7 @@ class TaskDiscoveryCompilerPass implements CompilerPassInterface
         }
 
         // prepare tasks in pre-configured order
-        $taskServices = [];
+        $taskServices = array_fill_keys($allTaskNames, null);
 
         // build task references
         foreach ($container->findTaggedServiceIds('deploy.task') as $abstractTaskServiceId => $taskServiceTags) {
@@ -47,15 +48,23 @@ class TaskDiscoveryCompilerPass implements CompilerPassInterface
 
                 // register definition
                 $container->setDefinition($taskServiceId, $taskDefinition);
-
-                // services to initialize
-                $taskManagerDefinition->addMethodCall(
-                    'addTask',
-                    [
-                        new Reference($taskServiceId),
-                    ]
-                );
             }
+        }
+
+        // add tasks to task manager with preserved order
+        foreach ($taskServices as $taskAlias => $taskService) {
+            if (!($taskService instanceof Reference)) {
+                throw new TaskNotFoundException(sprintf(
+                    'Task "%s" has configuration but no tasks with this alias found',
+                    $taskAlias
+                ));
+            }
+            $taskManagerDefinition->addMethodCall(
+                'addTask',
+                [
+                    $taskService,
+                ]
+            );
         }
 
         // add task bundles to task manager

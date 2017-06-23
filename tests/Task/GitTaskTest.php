@@ -48,20 +48,21 @@ class GitTaskTest extends AbstractTestCase
     public function testRun_TagRelease()
     {
         $task = new  GitTask(
-            'git',
-            [
-                'defaultRemote' => 'origin',
-                'defaultBranch' => 'master',
-                'repos' => [
-                    'core' => [
-                        'path' => sys_get_temp_dir(),
-                        'branch' => 'master',
-                        'remote' => 'origin',
-                        'tag' => 'someTagPattern'
-                    ]
-                ],
-            ]
+            'git'
         );
+
+        $task->configure([
+            'defaultRemote' => 'origin',
+            'defaultBranch' => 'master',
+            'repos' => [
+                'core' => [
+                    'path' => sys_get_temp_dir(),
+                    'branch' => 'master',
+                    'remote' => 'origin',
+                    'tag' => 'someTagPattern'
+                ]
+            ],
+        ]);
 
         $task->setProcessRunner($this->createProcessRunnerMock(
             [

@@ -10,10 +10,19 @@ class TaskManagerTest extends AbstractTestCase
 {
     public function testAddTask()
     {
-        $taskManager = $this->getContainer()->get('deploy.task_manager');
+        $taskManager = new TaskManager(
+            [
+                'myCustomTask' => [],
+            ],
+            $this->createProcessRunnerMock(),
+            $this->createResourceLocator(),
+            $this->createCommandLocator()
+        );
 
-        $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
-
+        $taskManager
+            ->addTask(
+                $this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask')
+            );
 
         $this->assertEquals(
             'myCustomTask',
@@ -33,23 +42,33 @@ class TaskManagerTest extends AbstractTestCase
 
     public function testGetTasks()
     {
-        $taskManager = $this->getContainer()->get('deploy.task_manager');
-        $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask'));
-        $tasks = $taskManager->getTasks();
+        $tasksConfiguration = [
+            'myCustomTask1' => [],
+            'myCustomTask2' => [],
+        ];
 
-        $registeredTasks = $this->getBundleConfiguration()['config'];
-        $registeredTasks['myCustomTask'] = [];
+        $taskManager = new TaskManager(
+            $tasksConfiguration,
+            $this->createProcessRunnerMock(),
+            $this->createResourceLocator(),
+            $this->createCommandLocator()
+        );
+
+        $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask1'));
+        $taskManager->addTask($this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask2'));
+
+        $registeredTasks = $taskManager->getTasks();
 
         // test list
         $this->assertSame(
-            array_keys($registeredTasks),
-            array_keys($tasks)
+            array_keys($tasksConfiguration),
+            array_keys($registeredTasks)
         );
 
         // test task
         $this->assertEquals(
-            'myCustomTask',
-            $tasks['myCustomTask']->getAlias()
+            'myCustomTask2',
+            $registeredTasks['myCustomTask2']->getAlias()
         );
     }
 
@@ -64,7 +83,15 @@ class TaskManagerTest extends AbstractTestCase
     public function testConfigureCommand_TaskWithoutAdditionalCommandOptions()
     {
         // create manager an add task
-        $taskManager = $this->getContainer()->get('deploy.task_manager');
+        $taskManager = new TaskManager(
+            [
+                'myCustomTask' => [],
+            ],
+            $this->createProcessRunnerMock(),
+            $this->createResourceLocator(),
+            $this->createCommandLocator()
+        );
+
         $taskManager->addTask(
             $this->createSimpleTaskWithoutAdditionalCommandOptions('myCustomTask')
         );
@@ -82,7 +109,14 @@ class TaskManagerTest extends AbstractTestCase
     public function testConfigureCommand_TaskWithAdditionalCommandOptions()
     {
         // create manager
-        $taskManager = $this->getContainer()->get('deploy.task_manager');
+        $taskManager = new TaskManager(
+            [
+                'myCustomTask' => [],
+            ],
+            $this->createProcessRunnerMock(),
+            $this->createResourceLocator(),
+            $this->createCommandLocator()
+        );
 
         // add task
         $myCustomTask = $this->createSimpleTaskWithAdditionalCommandOptions('myCustomTask');
@@ -111,7 +145,15 @@ class TaskManagerTest extends AbstractTestCase
     public function testExecute()
     {
         // create task manager
-        $taskManager = $this->getContainer()->get('deploy.task_manager');
+        $taskManager = new TaskManager(
+            [
+                'task1' => [],
+                'task2' => [],
+            ],
+            $this->createProcessRunnerMock(),
+            $this->createResourceLocator(),
+            $this->createCommandLocator()
+        );
 
         // add tasks
         $task1 = $this->createSimpleTaskWithoutAdditionalCommandOptions('task1');
