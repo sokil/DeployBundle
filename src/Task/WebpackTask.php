@@ -158,7 +158,7 @@ class WebpackTask extends AbstractTask implements ProcessRunnerAwareTaskInterfac
                 $output
             );
 
-            $output->writeln('<' . self::STYLE_H2 . '>Webpack funished successfully with config ' . $project['config'] . '</>');
+            $output->writeln('Webpack funished successfully with config ' . $project['config']);
         }
     }
 }
