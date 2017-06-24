@@ -48,6 +48,9 @@ class TaskDiscoveryCompilerPass implements CompilerPassInterface
 
                 // register definition
                 $container->setDefinition($taskServiceId, $taskDefinition);
+
+                // services to initialize
+                $taskServices[$taskAlias] = new Reference($taskServiceId);
             }
         }
 
