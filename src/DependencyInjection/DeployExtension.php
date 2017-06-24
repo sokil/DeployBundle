@@ -20,6 +20,6 @@ class DeployExtension extends Extension
         $loader->load('services.yml');
 
         $taskManagerDefinition = $container->getDefinition('deploy.task_manager');
-        $taskManagerDefinition->setArgument(0, $config['config']);
+        $taskManagerDefinition->replaceArgument(0, $config['config']);
     }
 }
