@@ -115,13 +115,15 @@ class WebpackTask extends AbstractTask implements ProcessRunnerAwareTaskInterfac
         OutputInterface $output
     ) {
         foreach ($this->projects as $project) {
+            $output->writeln('<' . self::STYLE_H2 . '>Webpack running with config ' . $project['config'] . '</>');
+
             $command = [
                 $this->pathToWebpack,
             ];
 
             // force production flag in production env
-            if ($environment === 'prod' && empty($project['options']['p'])) {
-                $project['options']['p'] = true;
+            if ($environment === 'prod' && empty($project['p'])) {
+                $project['p'] = true;
             }
 
             // build command
@@ -155,6 +157,8 @@ class WebpackTask extends AbstractTask implements ProcessRunnerAwareTaskInterfac
                 $verbosity,
                 $output
             );
+
+            $output->writeln('<' . self::STYLE_H2 . '>Webpack funished successfully with config ' . $project['config'] . '</>');
         }
     }
 }
