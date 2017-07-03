@@ -177,11 +177,11 @@ deploy:
   config:
     webpack:
       pathToWebpack: assets/node_modules/.bin/webpack # (Optional) Path to webpack
-        projects: # list of webpack projects with own webpack.config.js inside
-          assets:
-            config: "assets/webpack.config.js" # (required) path to config. Context will be set to dirname of config.
-            progress: true # (optional) Show build progress
-            p: true # (optional) Build for production. For "prod" environment defined automatically
+      projects: # list of webpack projects with own webpack.config.js inside
+        assets:
+          config: "assets/webpack.config.js" # (required) path to config. Context will be set to dirname of config.
+          progress: true # (optional) Show build progress
+          p: true # (optional) Build for production. For "prod" environment defined automatically
             ...
 ```
 
