@@ -91,6 +91,28 @@ Tasks and task bundles both may be specified in cli options, then tasks
 will be run in order of first occurrence. Task bundle also may contain 
 other bundles.
 
+To get list of all configured tasks run:
+```
+$ ./bin/console deploy --env=prod -h
+Usage:
+  deploy [options]
+
+Options:
+      --composer                   Update composer dependencies
+      --composer-update            Update dependencies instead of install it
+      --migrate                    Migrate datbase
+      --npm                        Updating npm dependencies
+      --bower                      Updating bower dependencies
+      --grunt                      Run grunt tasks in bundles
+      --grunt-tasks[=GRUNT-TASKS]  List of bundles with specified grunt tasks, e.g. "bundle1Name:task1Name,task2Name;bundle2Name;"
+      --asseticDump                Dump assetic assets
+      --assetsInstall              Install bundle assets
+      --clearCache                 Clear cache
+      --updateFront                Task bundle for tasks "npm","bower"
+      --compileAssets              Task bundle for tasks "grunt","asseticDump","assetsInstall","clearCache"
+      --release                    Task bundle for tasks "composer","migrate","updateFront","compileAssets"
+      --default                    Task bundle for tasks "composer","migrate","npm","bower","grunt","asseticDump","assetsInstall","clearCache"
+```
 
 # Tasks
 
