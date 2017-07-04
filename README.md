@@ -182,7 +182,12 @@ deploy:
           config: "assets/webpack.config.js" # (required) path to config. Context will be set to dirname of config.
           progress: true # (optional) Show build progress
           p: true # (optional) Build for production. For "prod" environment defined automatically
-            ...
+          ...
+```
+
+This will run command, where `context` value is dirname of config in parameters `config':
+```
+assets/node_modules/.bin/webpack --config assets/webpack.config.js -p --progress --context assets
 ```
 
 ## Npm
