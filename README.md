@@ -185,7 +185,7 @@ deploy:
           ...
 ```
 
-This will run command, where `context` value is dirname of config in parameters `config':
+This will run command, where `context` value is dirname of config in parameters `config`:
 ```
 assets/node_modules/.bin/webpack --config assets/webpack.config.js -p --progress --context assets
 ```
